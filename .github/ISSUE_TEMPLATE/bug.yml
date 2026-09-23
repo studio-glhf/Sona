@@ -1,0 +1,33 @@
+name: Bug report
+description: Report a reproducible problem in Sona.
+title: 'fix: '
+body:
+  - type: markdown
+    attributes:
+      value: Use synthetic examples. Do not include API keys, participant recordings, private transcripts, or personal service data.
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior
+      description: Explain what the researcher expected and what happened.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Include simulation/live mode and non-sensitive settings.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser/version, operating system, UI language, and Sona revision.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Include screenshots or error details only after removing credentials and personal information.

@@ -1,0 +1,30 @@
+name: Feature or implementation task
+description: Define a scoped research capability or implementation increment.
+title: 'feat: '
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Research need and resulting behavior
+      description: Explain who benefits and how the workflow should change. Link the manifest requirement or milestone.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Describe observable success, relevant failures, and validation. Distinguish simulation from live capabilities.
+    validations:
+      required: true
+  - type: textarea
+    id: ownership
+    attributes:
+      label: Ownership and boundaries
+      description: Record owner, branch/worktree, affected paths, dependencies, and out-of-scope work before implementation starts.
+    validations:
+      required: true
+  - type: textarea
+    id: references
+    attributes:
+      label: Capability and API evidence
+      description: For API/integration changes, add official sources and verification date. State any uncertain plan or action support.
