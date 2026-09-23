@@ -41,7 +41,7 @@ The shared `SessionConfig` validates the current supported model and voice selec
 | Semantic VAD and eagerness                  | Send the active turn-detection configuration; wait for acknowledgment |
 | Server VAD, threshold, and silence duration | Send the active turn-detection configuration; wait for acknowledgment |
 
-Draft edits must not mutate the applied configuration. An update is pending until confirmed, and rejection or timeout retains the previous applied state. The shared conversion functions map product settings to the Realtime request shape. Settings irrelevant to the selected VAD mode are not sent as active parameters.
+Draft edits must not mutate the applied configuration. An update is pending until confirmed, and rejection or timeout retains the previous applied state. After a timeout, end and reconnect because the remote state cannot be confirmed. The shared conversion functions map product settings to the Realtime request shape. Settings irrelevant to the selected VAD mode are not sent as active parameters.
 
 Requiring a restart for every voice change is a deliberate prototype simplification. OpenAI permits many runtime updates but restricts changing voice after audio output has started. Sona provides a consistent restart boundary instead of depending on whether the current session has spoken. [Realtime conversations](https://developers.openai.com/api/docs/guides/realtime-conversations).
 
@@ -74,6 +74,7 @@ Unit tests and browser fixtures cover configuration validation, credential broke
 API design reference checked **2026-09-23**:
 
 - [OpenAI Realtime WebRTC](https://developers.openai.com/api/docs/guides/voice-webrtc?api=realtime): ephemeral credential brokerage and direct browser WebRTC.
+- [OpenAI Realtime event reference](https://developers.openai.com/api/reference/resources/realtime): response completion status and sanitized failure handling.
 - [OpenAI Realtime conversations](https://developers.openai.com/api/docs/guides/realtime-conversations): session events and acknowledged configuration updates.
 
 Recheck current official documentation before changing API behavior. These links establish the transport design, not personal ChatGPT integration capabilities; the latter require the separate [M3 catalogue work](https://github.com/studio-glhf/Sona/issues/8).

@@ -5,7 +5,9 @@
   "type": "module",
   "license": "MIT",
   "packageManager": "pnpm@10.30.2",
-  "engines": { "node": ">=24 <25" },
+  "engines": {
+    "node": ">=24 <25"
+  },
   "scripts": {
     "dev": "pnpm --parallel --filter './apps/*' dev",
     "build": "pnpm --filter @sona/web build && pnpm --filter @sona/server build",

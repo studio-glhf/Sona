@@ -503,6 +503,12 @@ export class VoiceSessionController {
         break;
       case 'response.created':
         run.responseActive = true;
+        if (
+          ['response_failed', 'rate_limited'].includes(
+            this.snapshot.error ?? '',
+          )
+        )
+          this.patch({ error: null });
         if (!run.playing) this.patch({ status: 'thinking' });
         break;
       case 'output_audio_buffer.started':
@@ -517,10 +523,24 @@ export class VoiceSessionController {
           level: 0,
         });
         break;
-      case 'response.done':
+      case 'response.done': {
         run.responseActive = false;
+        const response = object(event.response);
+        if (
+          response?.status === 'failed' ||
+          response?.status === 'incomplete'
+        ) {
+          const details = object(response.status_details);
+          const error = object(details?.error);
+          const quota = ['rate_limit_exceeded', 'insufficient_quota'].includes(
+            String(error?.code ?? error?.type),
+          );
+          this.patch({ error: quota ? 'rate_limited' : 'response_failed' });
+          this.event('response_failed');
+        }
         if (!run.playing) this.patch({ status: 'listening', level: 0 });
         break;
+      }
       case 'response.output_audio_transcript.delta':
       case 'response.output_text.delta':
         if (typeof event.delta === 'string') {

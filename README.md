@@ -37,7 +37,9 @@ pnpm build
 pnpm start
 ```
 
-Open [http://localhost:3001](http://localhost:3001). The server serves the built frontend and API together. A public deployment needs a backend and HTTPS; static GitHub Pages alone cannot run the session broker. Hosted delivery is [M4](https://github.com/studio-glhf/Sona/milestone/4).
+Open [http://localhost:3001](http://localhost:3001). The server serves the built frontend and API together. A public deployment needs a backend and HTTPS; static GitHub Pages alone cannot run the session broker. Optional server settings are `HOST` (default `127.0.0.1`), `PORT` (default `3001`), and `SONA_ORIGIN` (the exact public HTTPS origin). Set `SONA_ORIGIN` before binding beyond localhost. Supply these as process environment variables; `.env` files are not loaded automatically. Never set a shared API key.
+
+Hosted delivery is [M4](https://github.com/studio-glhf/Sona/milestone/4).
 
 ## Develop and validate
 

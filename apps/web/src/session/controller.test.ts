@@ -392,6 +392,45 @@ describe('WebRTC startup and cleanup', () => {
 });
 
 describe('speech and configuration events', () => {
+  it('reports failed responses safely and does not confuse deliberate cancellation with failure', async () => {
+    const f = setup();
+    await f.begin();
+    f.send({ type: 'response.created' });
+    f.send({
+      type: 'response.done',
+      response: {
+        status: 'failed',
+        status_details: {
+          error: {
+            code: 'insufficient_quota',
+            message: 'private-provider-payload',
+          },
+        },
+      },
+    });
+    expect(f.controller.getSnapshot()).toMatchObject({
+      status: 'listening',
+      error: 'rate_limited',
+    });
+    expect(JSON.stringify(f.controller.getSnapshot())).not.toContain(
+      'private-provider-payload',
+    );
+    f.send({ type: 'response.created' });
+    expect(f.controller.getSnapshot().error).toBeNull();
+    f.send({
+      type: 'response.done',
+      response: {
+        status: 'failed',
+        status_details: { error: { type: 'server_error' } },
+      },
+    });
+    expect(f.controller.getSnapshot().error).toBe('response_failed');
+    f.send({ type: 'response.created' });
+    f.send({ type: 'response.done', response: { status: 'cancelled' } });
+    expect(f.controller.getSnapshot().error).toBeNull();
+    f.controller.stop();
+  });
+
   it('uses playback completion, rather than generation completion, and reads actual audio amplitude', async () => {
     const f = setup();
     await f.begin();
