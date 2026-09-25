@@ -4,14 +4,12 @@ import {
   Check,
   ChevronDown,
   CircleStop,
-  FlaskConical,
   Headphones,
   Mic,
   MicOff,
   Play,
   Settings2,
   SlidersHorizontal,
-  Sparkles,
   VolumeX,
   X,
 } from 'lucide-react';
@@ -22,7 +20,6 @@ import {
   requiresRestart,
   sessionConfigSchema,
   type SessionConfig,
-  type SessionMode,
   type SessionStatus,
 } from '@sona/shared';
 import { useVoiceSession } from './session/useVoiceSession';
@@ -134,22 +131,13 @@ function Character({
 
 export default function App() {
   const [locale, setLocale] = useState<Locale>('en');
-  const [mode, setMode] = useState<SessionMode>('simulation');
   const [draft, setDraft] = useState<SessionConfig>({ ...defaultConfig });
   const [apiKey, setApiKey] = useState('');
   const [settingsOpen, setSettingsOpen] = useState(true);
   const [advanced, setAdvanced] = useState(false);
   const [conversationOpen, setConversationOpen] = useState(false);
-  const {
-    snapshot,
-    start,
-    stop,
-    setMuted,
-    interrupt,
-    apply,
-    simulateTurn,
-    simulateFailure,
-  } = useVoiceSession();
+  const { snapshot, start, stop, setMuted, interrupt, apply } =
+    useVoiceSession();
   const t = copy[locale];
   const active = !['idle', 'error'].includes(snapshot.status);
   const connected = active && snapshot.status !== 'connecting';
@@ -173,7 +161,7 @@ export default function App() {
   const begin = () => {
     const key = apiKey;
     setApiKey('');
-    void start(mode, draft, key);
+    void start('live', draft, key);
   };
   const statusTitle = {
     idle: t.welcome,
@@ -241,35 +229,6 @@ export default function App() {
           </span>
         </div>
         <div className="stage">
-          <div
-            className="mode-switch"
-            role="group"
-            aria-label={t.mode}
-            title={active ? t.modeLocked : undefined}
-          >
-            <button
-              disabled={active}
-              aria-pressed={mode === 'simulation'}
-              onClick={() => {
-                setMode('simulation');
-                setApiKey('');
-              }}
-            >
-              <FlaskConical size={15} />
-              {t.simulation}
-            </button>
-            <button
-              disabled={active}
-              aria-pressed={mode === 'live'}
-              onClick={() => setMode('live')}
-            >
-              <span className="live-symbol" />
-              {t.live}
-            </button>
-          </div>
-          <p className="mode-note">
-            {mode === 'simulation' ? t.noCredits : t.liveCredits}
-          </p>
           <Character
             status={snapshot.status}
             level={snapshot.level}
@@ -280,13 +239,9 @@ export default function App() {
             <p>
               {snapshot.muted
                 ? t.microphoneMuted
-                : mode === 'simulation'
-                  ? connected
-                    ? t.simulationActiveHint
-                    : t.simulationHint
-                  : active
-                    ? t.liveHint
-                    : t.idleHint}
+                : active
+                  ? t.liveHint
+                  : t.idleHint}
             </p>
           </div>
           {snapshot.error && (
@@ -294,7 +249,7 @@ export default function App() {
               {t.errors[snapshot.error]}
             </div>
           )}
-          {mode === 'live' && !active && (
+          {!active && (
             <div className="key-entry">
               <label htmlFor="api-key">{t.apiKey}</label>
               <input
@@ -317,8 +272,6 @@ export default function App() {
                 className="round-button"
                 aria-label={snapshot.muted ? t.unmute : t.mute}
                 aria-pressed={snapshot.muted}
-                disabled={mode === 'simulation'}
-                title={mode === 'simulation' ? t.simulationMic : undefined}
                 onClick={() => setMuted(!snapshot.muted)}
               >
                 {snapshot.muted ? <MicOff size={20} /> : <Mic size={20} />}
@@ -326,10 +279,7 @@ export default function App() {
             )}
             <button
               className={`session-button ${active ? 'end' : ''}`}
-              disabled={
-                !active &&
-                (!valid || (mode === 'live' && apiKey.trim().length < 10))
-              }
+              disabled={!active && (!valid || apiKey.trim().length < 10)}
               onClick={active ? stop : begin}
             >
               {active ? (
@@ -354,21 +304,6 @@ export default function App() {
               </button>
             )}
           </div>
-          {mode === 'simulation' && connected && (
-            <div className="simulation-actions">
-              <button
-                className="text-button"
-                onClick={simulateTurn}
-                disabled={snapshot.status !== 'listening'}
-              >
-                <Sparkles size={15} />
-                {t.simulate}
-              </button>
-              <button className="quiet-button" onClick={simulateFailure}>
-                {t.simulateFail}
-              </button>
-            </div>
-          )}
           <div className="stage-footnote">
             <span className="mini-wave">
               {[0.4, 0.7, 1, 0.6, 0.3].map((h, i) => (
@@ -383,7 +318,7 @@ export default function App() {
                 />
               ))}
             </span>
-            {mode === 'simulation' ? t.simulatedAnimation : t.audioReactive}
+            {t.audioReactive}
           </div>
         </div>
         <section
@@ -412,11 +347,7 @@ export default function App() {
           </button>
           {conversationOpen && (
             <div id="transcript" className="transcript">
-              <span className="transcript-tag">
-                {snapshot.mode === 'simulation'
-                  ? t.synthetic
-                  : t.liveTranscript}
-              </span>
+              <span className="transcript-tag">{t.liveTranscript}</span>
               {snapshot.transcript.length === 0 ? (
                 <div className="empty-transcript">
                   <p>{t.emptyTranscript}</p>

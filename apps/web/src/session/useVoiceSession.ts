@@ -16,7 +16,5 @@ export function useVoiceSession() {
     setMuted: controller.setMuted,
     interrupt: controller.interrupt,
     apply: controller.apply,
-    simulateTurn: controller.simulateTurn,
-    simulateFailure: controller.simulateFailure,
   };
 }

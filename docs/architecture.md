@@ -10,7 +10,7 @@ sequenceDiagram
     participant Browser as Sona browser app
     participant Server as Sona session broker
     participant OpenAI as OpenAI Realtime
-    Researcher->>Browser: Choose live mode, key, and configuration
+    Researcher->>Browser: Enter key and choose configuration
     Browser->>Server: POST /api/realtime/sessions
     Server->>Server: Validate request
     Server->>OpenAI: Create temporary client credential
@@ -53,9 +53,9 @@ Requiring a restart for every voice change is a deliberate prototype simplificat
 - Live audio and session content reach OpenAI as part of the selected API session. Device-local research storage does not mean live inference runs offline.
 - M1 exposes no service tools and sets Realtime tools to an empty list. Guided OAuth connections, secret storage for integrations, custom MCP, and hosted isolation require their own implementation and validation before release.
 
-## Simulation and extension points
+## Test fixtures and extension points
 
-Simulation uses deterministic synthetic conversation and activity. It must not request a microphone, mint a credential, call OpenAI, or execute a real service action. It supports repeatable development and browser checks; it does not validate model quality, live voice timing, or integration parity.
+The researcher UI starts live sessions only and exposes no scripted mode or simulation controls. The controller retains deterministic simulation for unit tests; it must not request a microphone, mint a credential, call OpenAI, or execute a real service action. Browser tests exercise the live UI with test-scoped synthetic API and media fixtures. Fixtures are not a product feature and do not validate model quality, live voice timing, or integration parity.
 
 The shared package supplies initial extension contracts:
 

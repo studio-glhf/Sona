@@ -41,7 +41,7 @@ Development uses frontend port 5173 and server port 3001. Production serves both
 - The per-session key entered in the UI may exist transiently only as needed to create a session. Do not add server persistence, global credential state, or a shared API key fallback.
 - Realtime updates must be acknowledged before being shown as applied. Handle rejection and timeout; retain the previous applied configuration when an update fails. Model and voice changes currently require a new session.
 - Stop media tracks, peer connections, timers, audio resources, and event listeners when the session stops or fails. A failed connection must not leave an active microphone unnoticed.
-- Simulation must be deterministic and must never contact OpenAI or real service tools. Label simulated activity clearly. Planned or unavailable capabilities must not execute.
+- The researcher UI opens directly into live voice setup. Keep scripted controller simulation internal to automated tests; do not expose a Simulation tab, sample-turn control, or test backdoor. Simulation must be deterministic and must never contact OpenAI or real service tools. Label any future simulated tool activity clearly. Planned or unavailable capabilities must not execute.
 - Tool, capability, and trial interfaces are extension points, not evidence that integrations or recording are implemented. Add live service execution only through an explicit capability and confirmation policy.
 
 ## API and capability accuracy

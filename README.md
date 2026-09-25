@@ -2,7 +2,7 @@
 
 Sona is a browser workbench for UX researchers to experiment with OpenAI voice agents. Talk to an agent, see when it is listening or speaking, and apply changes to its behavior during a session.
 
-This repository contains the **M1 prototype**: an English/Korean interface, a line-based character with audio-reactive mouth movement, a collapsible settings panel, deterministic simulation, and a live Realtime WebRTC connection. Connected services, complete parameter coverage, recordings, presets, and hosted deployment are tracked work, not available features. See the [project manifest](MANIFEST.md) for the full scope and roadmap.
+This repository contains the **M1 prototype**: an English/Korean interface, a line-based character with audio-reactive mouth movement, a collapsible settings panel, and a live Realtime WebRTC connection. Connected services, complete parameter coverage, recordings, presets, and hosted deployment are tracked work, not available features. See the [project manifest](MANIFEST.md) for the full scope and roadmap.
 
 ## Run locally
 
@@ -17,11 +17,11 @@ pnpm dev
 
 Open [http://localhost:5173](http://localhost:5173). The development frontend forwards `/api` requests to the local server on port 3001.
 
-Simulation is the default and needs no API key. It provides a scripted conversation and predictable activity so researchers and contributors can try the interface without paid calls; it is not a voice model or a test of model quality.
+The workbench opens directly into live voice setup. Enter an API key to start a conversation. There is no scripted simulation mode in the researcher interface.
 
 For a live conversation:
 
-1. Select live mode and enter your own OpenAI API key for the session.
+1. Enter your own OpenAI API key for the session.
 2. Choose a model and voice, then start the session and allow microphone access.
 3. Open the settings panel, edit instructions or turn-taking controls, and choose **Apply**. The applied state changes after OpenAI acknowledges the update.
 4. Stop and start a new session to change the model or voice. Stop the session when finished.
@@ -49,7 +49,7 @@ pnpm exec playwright install chromium
 pnpm test:e2e
 ```
 
-`pnpm check` checks formatting and types, runs unit tests, and builds the app. Browser tests use synthetic fixtures and simulation; CI makes no paid API calls and performs no real service writes. A successful automated run does not establish live audio quality or account access. A separate live smoke test requires a researcher-supplied key; no paid live smoke test is claimed by this prototype.
+`pnpm check` checks formatting and types, runs unit tests, and builds the app. Browser tests use synthetic API and media fixtures; CI makes no paid API calls and performs no real service writes. A successful automated run does not establish live audio quality or account access. A separate live smoke test requires a researcher-supplied key; no paid live smoke test is claimed by this prototype.
 
 | Area                                                 | Location          |
 | ---------------------------------------------------- | ----------------- |

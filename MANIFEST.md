@@ -43,15 +43,15 @@ Sona must obtain its own service authorization; existing ChatGPT connections are
 
 ### M1 — Foundation and live voice
 
-This prototype delivers the public repository and collaboration workflow, TypeScript workspace, a bilingual workbench, deterministic session simulation, and an OpenAI Realtime session broker with direct browser WebRTC. It includes microphone controls, an audio-reactive line character, editable instructions, model/voice choices, semantic/server voice activity detection controls, explicit Apply, and restart notices. Model and voice changes require a new session; other supported updates wait for acknowledgment.
+This prototype delivers the public repository and collaboration workflow, TypeScript workspace, a bilingual workbench that opens directly into live voice setup, and an OpenAI Realtime session broker with direct browser WebRTC. It includes microphone controls, an audio-reactive line character, editable instructions, model/voice choices, semantic/server voice activity detection controls, explicit Apply, and restart notices. Model and voice changes require a new session; other supported updates wait for acknowledgment.
 
-The shared package defines capability, tool-execution, and trial interfaces for future work. These types do not implement connected tools or recording. Simulation currently demonstrates scripted session behavior; configurable tool simulations are M2.
+The shared package defines capability, tool-execution, and trial interfaces for future work. These types do not implement connected tools or recording. Scripted session simulation is an internal unit-test helper only; it is not exposed to researchers. The Simulation tab was removed by product decision on 2026-09-25 (#15). Configurable tool simulations remain separate M2 work.
 
-| Issue                                              | Delivery                                                        |
-| -------------------------------------------------- | --------------------------------------------------------------- |
-| [#1](https://github.com/studio-glhf/Sona/issues/1) | Repository, MIT license, documentation, agent workflow, and CI  |
-| [#2](https://github.com/studio-glhf/Sona/issues/2) | Bilingual voice workbench, controls, and character              |
-| [#3](https://github.com/studio-glhf/Sona/issues/3) | Secure session broker, browser transport, simulation, and tests |
+| Issue                                              | Delivery                                                       |
+| -------------------------------------------------- | -------------------------------------------------------------- |
+| [#1](https://github.com/studio-glhf/Sona/issues/1) | Repository, MIT license, documentation, agent workflow, and CI |
+| [#2](https://github.com/studio-glhf/Sona/issues/2) | Bilingual voice workbench, controls, and character             |
+| [#3](https://github.com/studio-glhf/Sona/issues/3) | Secure session broker, browser transport, and offline tests    |
 
 M1 acceptance requires passing formatting, types, unit tests, browser tests, and production build; accessible controls and localized layouts; accurate status and applied configuration; and cleanup on stop/failure. Tests cover session creation, rejected credentials, microphone denial, disconnects, interruption, and accepted/rejected updates. Automated tests use synthetic fixtures without paid API calls. A live voice smoke test requires a researcher-supplied key and is recorded separately; it is not claimed from automated results.
 
@@ -85,6 +85,7 @@ Acceptance: verified capability comparisons, participant/session isolation, safe
 
 ## Boundaries and decisions
 
+- The researcher interface is for live voice sessions. Do not reintroduce a scripted Simulation tab. Internal test fixtures and future configurable tool simulation are separate concerns.
 - Research data stays device-local; no cloud study library is planned.
 - There is no continuous background monitoring when the website is closed. Initiative is scoped to configured, active sessions.
 - Custom remote MCP is in scope; a generic arbitrary REST integration builder is not.
