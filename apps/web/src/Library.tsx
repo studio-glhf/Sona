@@ -221,7 +221,7 @@ export function Library() {
                         setRecipe({ ...recipe, credentialRef: e.target.value })
                       }
                     >
-                      <option value="project">Project — OPENAI_API_KEY</option>
+                      <option value="project">Project key</option>
                       <option value="admin">
                         Administration — OPENAI_ADMIN_KEY
                       </option>

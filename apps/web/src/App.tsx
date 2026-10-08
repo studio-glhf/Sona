@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Activity,
   BookOpen,
@@ -15,6 +15,7 @@ import {
   X,
   Copy,
   Trash2,
+  Upload,
 } from "lucide-react";
 import {
   Agent,
@@ -35,7 +36,6 @@ import {
   ActionButton,
   Clock,
   Devices,
-  Empty,
   Modal,
   Notice,
   Orb,
@@ -44,6 +44,7 @@ import {
   useAutosave,
 } from "./components";
 import { useVoice } from "./useVoice";
+import { WorkspaceSettings } from "./WorkspaceSettings";
 
 export default function App() {
   const [data, setData] = useState<Json>(null),
@@ -58,7 +59,6 @@ export default function App() {
     [studyId, setStudyId] = useState(""),
     [error, setError] = useState(""),
     [devices, setDevices] = useState(false),
-    [notice, setNotice] = useState(false),
     [run, setRun] = useState<Json>(null),
     [view, setView] = useState<"researcher" | "participant" | "handoff">(() =>
       sessionStorage.getItem("sona-view") === "participant"
@@ -70,7 +70,6 @@ export default function App() {
     [sidebar, setSidebar] = useState(false),
     [controls, setControls] = useState(false),
     [history, setHistory] = useState<Session | null>(null),
-    [retention, setRetention] = useState(30),
     [rename, setRename] = useState(false),
     [nextCondition, setNextCondition] = useState<Json>(null);
   const voice = useVoice();
@@ -88,7 +87,6 @@ export default function App() {
     setStudies(collection(result.studies, "studies"));
     setSessions(collection(result.sessions, "sessions"));
     setConnections(collection(result.connections, "connections"));
-    setRetention(result.settings.retentionDays);
   };
   useEffect(() => {
     void refresh().catch((e) => setError(e.message));
@@ -149,13 +147,6 @@ export default function App() {
   const start = async () => {
     try {
       if (!agent) return;
-      if (
-        localStorage.getItem("sona-processing-accepted") !==
-        `notice-v1:${retention}`
-      ) {
-        setNotice(true);
-        return;
-      }
       await api(
         `/agents/${agent.id}`,
         { name: agent.name, draft: agent.draft },
@@ -169,7 +160,6 @@ export default function App() {
         mode: "quick",
         researcherParticipant: true,
         view: "researcher",
-        processingAccepted: true,
         devices: { input: voice.input, output: voice.output },
       });
       await refresh();
@@ -249,7 +239,6 @@ export default function App() {
         studyId: context.study.id,
         conditionId: condition.id,
         agentId: chosen,
-        processingAccepted: true,
         devices: { input: voice.input, output: voice.output },
       });
       await refresh();
@@ -285,7 +274,7 @@ export default function App() {
                   : "Listening"
             : shown
               ? "Session ended"
-              : "Ready for a voice test";
+              : "Ready when you are";
   const evidence = history?.events ?? voice.events;
   const recorded = (shown?.kind ?? shown?.mode) === "study";
   const activeStudy = recorded
@@ -427,9 +416,11 @@ export default function App() {
           New agent
         </button>
         <label className="import-agent">
-          Import agent
+          <Upload size={16} />
+          <span>Import agent</span>
           <input
             type="file"
+            aria-label="Import agent"
             accept=".json,application/json"
             onChange={async (e) => {
               try {
@@ -603,8 +594,7 @@ export default function App() {
                     {recorded
                       ? "Study transcript saved"
                       : "Live transcript · Not saved"}
-                    <br />
-                    <span>
+                    <span className="recording-detail">
                       Raw audio not saved
                       {(shown?.snapshot?.configuration ?? agent.draft).settings
                         ?.audio?.input?.transcription
@@ -613,12 +603,12 @@ export default function App() {
                     </span>
                   </p>
                   {!voice.active && !data.readiness.openaiConfigured && (
-                    <p className="readiness">
-                      OpenAI API access is missing.{" "}
-                      <button onClick={() => setPage("settings")}>
-                        Open setup
-                      </button>
-                    </p>
+                    <button
+                      className="readiness-link"
+                      onClick={() => setPage("settings")}
+                    >
+                      Add API key
+                    </button>
                   )}
                   {voice.error && (
                     <Notice error>
@@ -711,9 +701,6 @@ export default function App() {
                   <Plus size={18} />
                   Create an agent
                 </button>
-                <p className="muted">
-                  Researcher view is the default. Raw audio is not saved.
-                </p>
               </div>
             )}
           </div>
@@ -756,66 +743,13 @@ export default function App() {
           </div>
         ))}
         {page === "settings" && (
-          <div className="page settings-page">
-            <header className="page-header">
-              <div>
-                <h1>Settings</h1>
-                <p className="muted">Local workspace · Sona {data.version}</p>
-              </div>
-            </header>
-            <h2>OpenAI access</h2>
-            <Notice>
-              {data.readiness.openaiConfigured
-                ? "The server has an OpenAI credential binding. Model and service access still need verification."
-                : "Set OPENAI_API_KEY in your private shell environment, then restart Sona. API use is billed separately from a ChatGPT subscription."}
-            </Notice>
-            <p>
-              Keep keys on the local server. Do not put them in an agent
-              configuration or share them in chat.
-            </p>
-            <p>
-              Setup: <code>docs/setup/README.md</code>. Run{" "}
-              <code>pnpm start</code> after <code>pnpm build</code>.
-            </p>
-            <h2>Devices</h2>
-            <button onClick={() => setDevices(true)}>
-              Select microphone and output
-            </button>
-            <h2>Data policy</h2>
-            <label className="field">
-              Retention (days)
-              <input
-                type="number"
-                min="1"
-                max="3650"
-                value={retention}
-                onChange={(e) => setRetention(Number(e.target.value))}
-              />
-            </label>
-            <ActionButton
-              action={async () => {
-                await api("/settings", { retentionDays: retention }, "PATCH");
-                await refresh();
-              }}
-            >
-              Apply retention
-            </ActionButton>
-            <ActionButton action={() => api("/settings/cleanup", {})}>
-              Delete expired records now
-            </ActionButton>
-            <p className="muted">
-              Raw audio is not saved. Cleanup runs at startup and each hour
-              while Sona runs. Exports, backups, provider records, and calendar
-              events are separate copies.
-            </p>
-            <h2>API and usage</h2>
-            <p>
-              Current API source and live verification are separate records.
-              Unknown charges remain unknown. Calls end after 15 minutes; this
-              is not an invoice cap.
-            </p>
-            <button onClick={() => setPage("library")}>Open API library</button>
-          </div>
+          <WorkspaceSettings
+            version={data.version}
+            active={voice.active}
+            onRefresh={refresh}
+            onDevices={() => setDevices(true)}
+            onLibrary={() => setPage("library")}
+          />
         )}
       </main>
       {agent && (
@@ -840,41 +774,13 @@ export default function App() {
         </div>
       )}
       {devices && <Devices voice={voice} onClose={() => setDevices(false)} />}{" "}
-      {notice && (
-        <Modal title="Voice processing notice" onClose={() => setNotice(false)}>
-          <p>
-            OpenAI processes microphone audio and generates speech. Selected
-            external services receive tool requests. Input transcription can add
-            cost. Raw audio is not saved.
-          </p>
-          <p>
-            Quick-test evidence stays in memory. Sona keeps the configuration
-            snapshot and redacted action journal for {retention} days for
-            recovery and duplicate prevention.
-          </p>
-          <p>This notice applies when you are the participant too.</p>
-          <button
-            className="primary"
-            onClick={() => {
-              localStorage.setItem(
-                "sona-processing-accepted",
-                `notice-v1:${retention}`,
-              );
-              setNotice(false);
-              void start();
-            }}
-          >
-            Accept and start quick test
-          </button>
-        </Modal>
-      )}
       {run && (
         <RunForm
           study={run.study}
           condition={run.condition}
           initial={run.initial}
           differences={run.differences}
-          retentionDays={retention}
+          retentionDays={data.settings.retentionDays}
           onStart={(values) => void startRun(values)}
           onClose={() => setRun(null)}
         />

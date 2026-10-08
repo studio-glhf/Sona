@@ -142,10 +142,6 @@ export function AgentPanel({
                       <option value="gpt-realtime" />
                       <option value="gpt-realtime-mini" />
                     </datalist>
-                    <small>
-                      Model access and supported settings are checked before a
-                      call.
-                    </small>
                   </label>
                 )}
                 {matches("voice audio.output.voice") && (
@@ -256,10 +252,13 @@ export function AgentPanel({
                       <option value="semantic_vad">Semantic VAD</option>
                       <option value="manual">Manual turns</option>
                     </select>
-                    <small>
-                      Manual turns use Finish turn. Writes stay blocked without
-                      VAD speech-start evidence.
-                    </small>
+                    <details>
+                      <summary>API details</summary>
+                      <p>
+                        Manual turns use Finish turn. External writes require
+                        VAD speech-start evidence.
+                      </p>
+                    </details>
                   </label>
                 )}
                 {vad.type === "server_vad" &&
@@ -312,9 +311,12 @@ export function AgentPanel({
                         <option key={x}>{x}</option>
                       ))}
                     </select>
-                    <small>
-                      Default auto equals medium. Observed timing can vary.
-                    </small>
+                    <details>
+                      <summary>API details</summary>
+                      <p>
+                        Default auto equals medium. Observed timing can vary.
+                      </p>
+                    </details>
                   </label>
                 )}
                 {i.turn_detection !== null &&
@@ -357,10 +359,13 @@ export function AgentPanel({
                         </option>
                         <option value="whisper-1">whisper-1</option>
                       </select>
-                      <small>
-                        Independent transcription can add cost. It is not a full
-                        record of model perception.
-                      </small>
+                      <details>
+                        <summary>API details</summary>
+                        <p>
+                          Input transcription is a separate process. It can add
+                          cost and does not fully represent model perception.
+                        </p>
+                      </details>
                     </label>
                     {i.transcription && (
                       <label className="field">
@@ -430,10 +435,6 @@ export function AgentPanel({
                   All parameters · JSON
                   <ChevronRight size={16} />
                 </button>
-                <small className="muted">
-                  JSON preserves nested fields, omitted values, custom voices,
-                  and model-specific settings. Validation is shared.
-                </small>
               </>
             )}
             {json && (

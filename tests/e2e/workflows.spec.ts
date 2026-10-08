@@ -283,3 +283,193 @@ test("native controls preserve a custom voice and show missing provider evidence
     data: { draft: agent.draft },
   });
 });
+
+test("Settings adds and removes a server-memory API key without browser storage", async ({
+  page,
+}) => {
+  const canary =
+    "sk-proj-SonaGuiSyntheticKeyNeverUsedForProviderCalls1234567890";
+  await page.goto("/");
+  await page.getByRole("button", { name: "Settings", exact: true }).click();
+  const settings = page.locator(".settings-page");
+  await expect(
+    settings.getByText("No API key added", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Data policy", { exact: true })).toHaveCount(0);
+  await expect(page.getByText(/Set OPENAI_API_KEY/)).toHaveCount(0);
+  const field = page.getByLabel("OpenAI API key", { exact: true });
+  await expect(field).toHaveAttribute("type", "password");
+  await expect(
+    settings.getByRole("button", { name: "Save key", exact: true }),
+  ).toBeDisabled();
+  try {
+    // A transport fixture exercises the UI response to the server's busy guard.
+    // The actual server lease guard has separate integration tests.
+    const credentialRoute = "**/api/settings/credentials/openai";
+    await page.route(credentialRoute, (route) =>
+      route.fulfill({
+        status: 409,
+        contentType: "application/json",
+        body: JSON.stringify({
+          code: "CREDENTIAL_IN_USE",
+          error: "Untrusted server text " + canary,
+        }),
+      }),
+    );
+    await field.fill(canary);
+    await settings
+      .getByRole("button", { name: "Save key", exact: true })
+      .click();
+    await expect(settings.getByRole("alert")).toHaveText(
+      "End the active test or API operation before changing your API key.",
+    );
+    await expect(field).toHaveValue("");
+    expect(await settings.innerText()).not.toContain(canary);
+    await page.unroute(credentialRoute);
+    await field.fill("sk-admin-InvalidSyntheticProjectKey1234567890");
+    const rejected = page.waitForResponse(
+      (r) =>
+        r.request().method() === "PUT" &&
+        r.url().endsWith("/api/settings/credentials/openai"),
+    );
+    await settings
+      .getByRole("button", { name: "Save key", exact: true })
+      .click();
+    const invalid = await rejected;
+    expect(invalid.status()).toBe(400);
+    expect((await invalid.json()).code).toBe("INVALID_PROJECT_API_KEY");
+    await expect(settings.getByRole("alert")).toHaveText(
+      "Enter an OpenAI project API key. Admin keys are not supported.",
+    );
+    await expect(field).toHaveValue("");
+    const bootstrapRoute = "**/api/bootstrap";
+    await page.route(bootstrapRoute, (route) =>
+      route.fulfill({
+        status: 503,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Untrusted refresh text " + canary }),
+      }),
+    );
+    await field.fill(canary);
+    const saved = page.waitForResponse(
+      (r) =>
+        r.request().method() === "PUT" &&
+        r.url().endsWith("/api/settings/credentials/openai"),
+    );
+    await settings
+      .getByRole("button", { name: "Save key", exact: true })
+      .click();
+    const response = await saved;
+    expect(response.ok()).toBe(true);
+    expect(await response.text()).not.toContain(canary);
+    await expect(field).toHaveValue("");
+    await expect(
+      settings.getByText("API key added", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      settings.getByText("API key saved for this Sona run.", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      settings.getByText("Reload Sona to refresh workspace access.", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(settings.getByRole("alert")).toHaveCount(0);
+    expect(await settings.innerText()).not.toContain(canary);
+    await page.unroute(bootstrapRoute);
+    const bootstrap = await (await page.request.get("/api/bootstrap")).json();
+    expect(bootstrap.readiness.openaiConfigured).toBe(true);
+    expect(JSON.stringify(bootstrap)).not.toContain(canary);
+    const browserStorage = await page.evaluate(() => ({
+      local: { ...localStorage },
+      session: { ...sessionStorage },
+    }));
+    expect(JSON.stringify(browserStorage)).not.toContain(canary);
+    await page.reload();
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
+    await expect(
+      settings.getByText("API key added", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByLabel("OpenAI API key", { exact: true }),
+    ).toHaveValue("");
+    const result = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+      .analyze();
+    expect(
+      result.violations.map((v) => ({
+        id: v.id,
+        targets: v.nodes.map((n) => n.target),
+      })),
+    ).toEqual([]);
+    await page.route(bootstrapRoute, (route) =>
+      route.fulfill({
+        status: 503,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Untrusted refresh text " + canary }),
+      }),
+    );
+    await settings
+      .getByRole("button", { name: "Remove key", exact: true })
+      .click();
+    await expect(
+      settings.getByText("No API key added", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      settings.getByText("API key removed.", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      settings.getByText("Reload Sona to refresh workspace access.", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(settings.getByRole("alert")).toHaveCount(0);
+    expect(await settings.innerText()).not.toContain(canary);
+    await page.unroute(bootstrapRoute);
+    const cleared = await (await page.request.get("/api/bootstrap")).json();
+    expect(cleared.readiness.openaiConfigured).toBe(false);
+    await page
+      .getByRole("button")
+      .filter({ hasText: /^Agent \d+$/ })
+      .first()
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Add API key", exact: true }),
+    ).toBeVisible();
+  } finally {
+    const bootstrap = await (await page.request.get("/api/bootstrap")).json();
+    await page.request.delete("/api/settings/credentials/openai", {
+      headers: { "X-Sona-Token": bootstrap.csrfToken },
+    });
+  }
+});
+
+test("quick tests open directly with calm evidence and no processing-notice gate", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("tab", { name: "Notes", exact: true }).click();
+  await expect(
+    page.getByText("Notes for this test", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Researcher notes", { exact: true }),
+  ).toHaveCount(0);
+  const submitted = page.waitForRequest(
+    (r) =>
+      r.method() === "POST" && new URL(r.url()).pathname === "/api/sessions",
+  );
+  await page
+    .getByRole("button", { name: "Start quick test", exact: true })
+    .click();
+  const request = await submitted;
+  expect(request.postDataJSON().mode).toBe("quick");
+  expect(request.postDataJSON().processingAccepted).toBeUndefined();
+  expect(request.postDataJSON().consent).toBeUndefined();
+  await expect(
+    page.getByRole("dialog", { name: "Voice processing notice" }),
+  ).toHaveCount(0);
+  expect(
+    await page.evaluate(() => localStorage.getItem("sona-processing-accepted")),
+  ).toBeNull();
+});
