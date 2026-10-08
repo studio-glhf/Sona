@@ -721,11 +721,7 @@ export function createStore(dataDir: string, options: StoreOptions = {}) {
               consent.id,
             );
           }
-        } else if (input.processingAccepted !== true)
-          throw new StoreError(
-            "PROCESSING_NOTICE_REQUIRED",
-            "Accept the processing notice before microphone capture.",
-          );
+        }
         assertSafeConfiguration(configuration);
         const plannedView = condition?.view ?? "researcher";
         const initialView = view(input.view ?? plannedView);

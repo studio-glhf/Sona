@@ -40,44 +40,58 @@ pnpm build
 pnpm start
 ```
 
-## Credentials
+## OpenAI API key
 
-Supply environment variables to the server process. Use a private environment file outside the repository or your operating system's credential facility.
+Start Sona without an environment file. Open **Settings**, enter your OpenAI project API key, then select **Save key**.
 
-The example file `.env.example` lists the variable names. It contains no credentials. Sona does not automatically read a repository `.env` file.
+Sona holds the key in local server memory until the server stops. It does not save the key in the browser, the study database, configurations, logs, or exports.
+The form clears after submission. It shows whether a key is present; it does not return the key.
 
-For a private environment file, use Node's environment-file option:
+Saving checks the key format. It does not call OpenAI or confirm project access. A voice or API request must establish that access separately.
+
+To replace or remove the key, first end active tests and API operations. Select **Remove key** to disable OpenAI access for the current run.
+Removing a key also disables any legacy environment seed. It does not fall back to that seed until a server restart.
+
+A browser reload keeps the current server key. A server restart removes GUI-entered keys. Enter your key again in **Settings**.
+A ChatGPT subscription does not cover API usage. Use a project key, not an administrative key.
+
+### Optional server credentials
+
+The GUI is the normal route for Sona's project key. Existing command-line installations can still supply `OPENAI_API_KEY` to the server.
+This is optional. The independent example runtime also uses its own server-side credentials.
+
+The example file `.env.example` lists optional variable names. It contains no credentials. Sona does not automatically read a repository `.env` file.
+Keep any private environment file outside the repository. To use one:
 
 ```sh
 node --env-file=/absolute/private/path/sona.env dist/server.mjs
 ```
 
-On Windows, give the full private file path instead. Put quotation marks around paths that contain spaces. Restrict file access to your user account.
+On Windows, give the full private file path. Put quotation marks around paths that contain spaces. Restrict file access to your user account.
 
-| Variable | Purpose |
-|---|---|
-| `OPENAI_API_KEY` | Project API access for voice and the API library. |
-| `OPENAI_PROJECT_ID` | Optional OpenAI project selection. |
-| `OPENAI_ADMIN_KEY` | Separate optional credential for administrative operations. |
-| `GOOGLE_CLIENT_ID` | Your OAuth application's client identifier. |
-| `GOOGLE_CLIENT_SECRET` | OAuth client secret, when the client type needs one. |
-| `GOOGLE_CALENDAR_ID` | Designated test resource. Tool policies also restrict the calendar argument. |
-| `SONA_PORT` | Local server port. Default: `4317`. |
-| `SONA_WEB_PORT` | Development browser port. Default: `5173`. |
-| `SONA_DATA_DIR` | Optional application-data path outside the checkout. |
+| Variable               | Purpose                                                                         |
+| ---------------------- | ------------------------------------------------------------------------------- |
+| `OPENAI_API_KEY`       | Optional legacy project key seed, or the independent runtime's project access.  |
+| `OPENAI_PROJECT_ID`    | Optional OpenAI project selection.                                              |
+| `OPENAI_ADMIN_KEY`     | Separate optional credential for administrative operations.                     |
+| `GOOGLE_CLIENT_ID`     | Your OAuth application's client identifier.                                     |
+| `GOOGLE_CLIENT_SECRET` | OAuth client secret, when the client type needs one.                            |
+| `GOOGLE_CALENDAR_ID`   | Designated test resource. Tool permissions also restrict the calendar argument. |
+| `SONA_PORT`            | Local server port. Default: `4317`.                                             |
+| `SONA_WEB_PORT`        | Development browser port. Default: `5173`.                                      |
+| `SONA_DATA_DIR`        | Optional application-data path outside the checkout.                            |
 
 No connection from the coding assistant transfers to Sona. Use Sona's supported sign-in route. Do not copy ChatGPT cookies or runtime tokens.
 
 ## First use
 
-1. Open **Settings** and examine the local readiness information.
+1. Open **Settings**, enter your project API key, and select **Save key**.
 2. Open **Devices** and select the microphone.
 3. Select the output, if Chrome permits output selection.
 4. If the selector shows **System output**, select the output in the operating system.
 5. Add an agent or import `sona-agent.json`.
 6. Add the necessary connection in **Connections**.
 7. Select **Start quick test**.
-8. Read and accept the applicable processing notice.
 
 A quick test keeps live evidence in memory. It saves the configuration snapshot and a redacted action journal for recovery. Raw audio is not saved.
 
@@ -119,15 +133,15 @@ The connection must pass a real read and approved write before a reuse claim. If
 
 ## Storage and deletion
 
-| System | Default data directory |
-|---|---|
-| Windows | `%LOCALAPPDATA%\Sona` |
-| macOS | `~/Library/Application Support/Sona` |
+| System            | Default data directory                          |
+| ----------------- | ----------------------------------------------- |
+| Windows           | `%LOCALAPPDATA%\Sona`                           |
+| macOS             | `~/Library/Application Support/Sona`            |
 | Linux development | `$XDG_DATA_HOME/Sona`, or `~/.local/share/Sona` |
 
 The study database is `sona.sqlite`. `SONA_DATA_DIR` can select another private directory. The server rejects a data directory inside the checkout.
 
-The initial retention period is 30 days. Set the workspace policy in **Settings**. Cleanup occurs at startup and during operation. It cannot run while Sona is stopped.
+Saved records have a 30-day retention period by default. Cleanup occurs at startup and during operation. It cannot run while Sona is stopped.
 
 A shorter policy can remove older records sooner. A longer policy applies to new records. It does not extend the period accepted for existing records.
 Sona can reuse study consent when participant code, policy, scope, and retention still match. Session consent applies to one session only.
@@ -141,18 +155,18 @@ Do not restore an older database over a newer running release. Keep a backup bef
 
 ## Commands
 
-| Command | Purpose |
-|---|---|
-| `pnpm dev` | Start the server and browser development processes. |
-| `pnpm build` | Build the production browser files and local server. |
-| `pnpm start` | Start the built local application. |
-| `pnpm check` | Do TypeScript checks. |
-| `pnpm test` | Do unit and integration tests. |
-| `pnpm test:e2e` | Do local browser tests with an isolated data directory. |
-| `pnpm test:live` | Report live prerequisites. Exit code 2 means verification is blocked. |
-| `pnpm coverage:api` | Make the operation coverage report. |
-| `pnpm example:agent` | Use the portable agent runtime. See its usage instructions. |
-| `pnpm package` | Make a local archive, file manifest, and SHA-256 checksum. |
+| Command               | Purpose                                                                       |
+| --------------------- | ----------------------------------------------------------------------------- |
+| `pnpm dev`            | Start the server and browser development processes.                           |
+| `pnpm build`          | Build the production browser files and local server.                          |
+| `pnpm start`          | Start the built local application.                                            |
+| `pnpm check`          | Do TypeScript checks.                                                         |
+| `pnpm test`           | Do unit and integration tests.                                                |
+| `pnpm test:e2e`       | Do local browser tests with an isolated data directory.                       |
+| `pnpm test:live`      | Report live prerequisites. Exit code 2 means verification is blocked.         |
+| `pnpm coverage:api`   | Make the operation coverage report.                                           |
+| `pnpm example:agent`  | Use the portable agent runtime. See its usage instructions.                   |
+| `pnpm package`        | Make a local archive, file manifest, and SHA-256 checksum.                    |
 | `pnpm verify:release` | Examine the archive and do a clean local installation with synthetic records. |
 
 For browser tests outside the supplied cloud environment, install Chromium with `pnpm exec playwright install chromium`. Set `SONA_CHROMIUM_PATH` only to an existing browser executable.
@@ -177,18 +191,18 @@ This is an admission budget, not a provider invoice cap. A session timer does no
 
 ## Troubleshooting
 
-| Problem | Action |
-|---|---|
-| Local session expired | Reload Sona. Drafts remain in local storage. |
-| Port in use | Stop the other local process or select a different `SONA_PORT`. Update the OAuth callback too. |
-| Microphone denied | Permit microphone access for the local Sona origin in Chrome. Select **Devices** again. |
-| No sound | Examine Chrome's playback permission and the operating system's selected output. |
-| Device change failed | Keep the microphone off. Select an available device, then try again. |
-| OpenAI authentication failed | Examine the server credential and project access. Do not paste the key into the browser. |
-| Calendar access expired | Use the connection's sign-in control. Keep the intended agent draft. |
-| Write outcome unknown | Reconcile the action with the service. Do not repeat the write blindly. |
-| API operation unavailable | Read its implementation, lifecycle, credential, and live-verification states separately. |
-| Model settings disagree | Examine requested and returned values. Do not treat **Saved** or **Sent** as **Applied**. |
+| Problem                      | Action                                                                                             |
+| ---------------------------- | -------------------------------------------------------------------------------------------------- |
+| Local session expired        | Reload Sona. Drafts remain in local storage.                                                       |
+| Port in use                  | Stop the other local process or select a different `SONA_PORT`. Update the OAuth callback too.     |
+| Microphone denied            | Permit microphone access for the local Sona origin in Chrome. Select **Devices** again.            |
+| No sound                     | Examine Chrome's playback permission and the operating system's selected output.                   |
+| Device change failed         | Keep the microphone off. Select an available device, then try again.                               |
+| OpenAI authentication failed | Open **Settings** and replace the project key after active operations end. Examine project access. |
+| Calendar access expired      | Use the connection's sign-in control. Keep the intended agent draft.                               |
+| Write outcome unknown        | Reconcile the action with the service. Do not repeat the write blindly.                            |
+| API operation unavailable    | Read its implementation, lifecycle, credential, and live-verification states separately.           |
+| Model settings disagree      | Examine requested and returned values. Do not treat **Saved** or **Sent** as **Applied**.          |
 
 Before a participant study, read [the live verification procedure](../verification/live-checks.md). An unverified device or service remains a release limitation.
 
