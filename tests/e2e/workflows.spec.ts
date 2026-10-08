@@ -290,8 +290,14 @@ test("Settings adds and removes a server-memory API key without browser storage"
   const canary =
     "sk-proj-SonaGuiSyntheticKeyNeverUsedForProviderCalls1234567890";
   await page.goto("/");
+  const creation = page.waitForResponse(
+    (r) =>
+      r.request().method() === "POST" &&
+      new URL(r.url()).pathname === "/api/agents",
+  );
   await page.getByRole("button", { name: "New agent", exact: true }).click();
-  const agentName = await page.locator(".workspace-header h1").innerText();
+  const agentName = (await (await creation).json()).name;
+  await expect(page.locator(".workspace-header h1")).toHaveText(agentName);
   await page.getByRole("button", { name: "Settings", exact: true }).click();
   const settings = page.locator(".settings-page");
   await expect(
