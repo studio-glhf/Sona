@@ -12,12 +12,14 @@ export function WorkspaceSettings({
   version,
   active,
   onRefresh,
+  onCredentialChange,
   onDevices,
   onLibrary,
 }: {
   version: string;
   active: boolean;
   onRefresh: () => Promise<void>;
+  onCredentialChange: (configured: boolean) => void;
   onDevices: () => void;
   onLibrary: () => void;
 }) {
@@ -62,6 +64,7 @@ export function WorkspaceSettings({
         remove ? "DELETE" : "PUT",
       );
       setCredential(result.openai);
+      onCredentialChange(result.openai.configured);
       setMessage(
         remove ? "API key removed." : "API key saved for this Sona run.",
       );
