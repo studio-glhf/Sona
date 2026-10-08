@@ -9,6 +9,12 @@ describe("server-run project credentials", () => {
     const credentials = new SessionCredentials({ OPENAI_API_KEY: first });
     expect(credentials.status().openai.source).toBe("environment");
     expect(() => credentials.set("not a key")).toThrow("project API key");
+    expect(() => credentials.set("not a key")).toThrow(
+      expect.objectContaining({
+        statusCode: 400,
+        code: "INVALID_PROJECT_API_KEY",
+      }),
+    );
     expect(() =>
       credentials.set("sk-admin-synthetic_admin_credential"),
     ).toThrow("project API key");

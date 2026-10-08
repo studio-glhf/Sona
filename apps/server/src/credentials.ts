@@ -55,8 +55,11 @@ export class SessionCredentials {
       apiKey.startsWith("sk-admin-") ||
       !/^sk-(?:proj-|svcacct-)?[A-Za-z0-9_-]{12,1024}$/.test(apiKey)
     )
-      throw new Error(
-        "Enter an OpenAI project API key. Sona checks its format here, not its access.",
+      throw Object.assign(
+        new Error(
+          "Enter an OpenAI project API key. Sona checks its format here, not its access.",
+        ),
+        { statusCode: 400, code: "INVALID_PROJECT_API_KEY" },
       );
     this.project = apiKey;
     this.retired.add(apiKey);

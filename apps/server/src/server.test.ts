@@ -237,13 +237,11 @@ describe("local server integration", { timeout: 20000 }, () => {
         })
       ).statusCode,
     ).toBe(403);
-    expect(
-      (
-        await request("PUT", "/api/settings/credentials/openai", {
-          apiKey: "invalid",
-        })
-      ).statusCode,
-    ).toBe(400);
+    const invalid = await request("PUT", "/api/settings/credentials/openai", {
+      apiKey: "invalid",
+    });
+    expect(invalid.statusCode).toBe(400);
+    expect(invalid.json().code).toBe("INVALID_PROJECT_API_KEY");
     await request("PUT", "/api/settings/credentials/openai", { apiKey: key });
     const a = (
       await request("POST", "/api/agents", { name: "No notice fixture" })
