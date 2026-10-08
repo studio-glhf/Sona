@@ -376,6 +376,19 @@ test("Settings adds and removes a server-memory API key without browser storage"
     ).toBeVisible();
     await expect(settings.getByRole("alert")).toHaveCount(0);
     expect(await settings.innerText()).not.toContain(canary);
+    // A successful save updates the workspace even when bootstrap cannot refresh.
+    await page
+      .getByRole("button")
+      .filter({ hasText: /^Agent \d+$/ })
+      .first()
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Add API key", exact: true }),
+    ).toHaveCount(0);
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
+    await expect(
+      settings.getByText("API key added", { exact: true }),
+    ).toBeVisible();
     await page.unroute(bootstrapRoute);
     const bootstrap = await (await page.request.get("/api/bootstrap")).json();
     expect(bootstrap.readiness.openaiConfigured).toBe(true);

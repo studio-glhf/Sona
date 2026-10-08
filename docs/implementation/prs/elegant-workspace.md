@@ -18,3 +18,5 @@ The Data policy settings and Voice processing notice are removed. A quick test s
 Browser tests use synthetic local data. They do not call a paid model or prove live voice or external-tool behavior. The supervisor must check the combined feature and its final screenshots before publication.
 
 The supervisor requested two corrections. Settings now maps only known error codes to local guidance. It keeps a successful key change when the later workspace refresh fails. Empty evidence uses direct copy, and the voice area does not repeat its workspace context. Type check and production build passed after these changes. The supervisor will run the integrated browser workflow.
+
+The integrated test found stale workspace readiness after a successful key removal with a failed refresh. Accepted key changes now update workspace readiness directly and clear its model-access verification list. The following bootstrap refresh remains a separate step. The GUI test checks immediate workspace readiness after both save and removal.

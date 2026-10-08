@@ -747,6 +747,20 @@ export default function App() {
             version={data.version}
             active={voice.active}
             onRefresh={refresh}
+            onCredentialChange={(configured) =>
+              setData((previous: Json) =>
+                previous
+                  ? {
+                      ...previous,
+                      readiness: {
+                        ...previous.readiness,
+                        openaiConfigured: configured,
+                        modelsVerified: [],
+                      },
+                    }
+                  : previous,
+              )
+            }
             onDevices={() => setDevices(true)}
             onLibrary={() => setPage("library")}
           />
