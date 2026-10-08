@@ -3,20 +3,21 @@ import type { FastifyInstance } from "fastify";
 import * as library from "../../../packages/api-library/src/index.js";
 import type { SonaStore } from "./storage/index.js";
 import type { VoiceService } from "./voice.js";
-import { redact } from "../../../packages/agent-core/src/index.js";
+import type { SessionCredentials } from "./credentials.js";
 export async function registerLibraryTransports(
   app: FastifyInstance,
   {
     store,
     env,
     voice,
-  }: { store: SonaStore; env: NodeJS.ProcessEnv; voice: VoiceService },
+    credentials,
+  }: {
+    store: SonaStore;
+    env: NodeJS.ProcessEnv;
+    voice: VoiceService;
+    credentials: SessionCredentials;
+  },
 ) {
-  const credentials = {
-    project: env.OPENAI_API_KEY,
-    admin: env.OPENAI_ADMIN_KEY,
-    projectId: env.OPENAI_PROJECT_ID,
-  };
   const streams = new Map<
     string,
     {
@@ -24,6 +25,7 @@ export async function registerLibraryTransports(
       events: unknown[];
       status: string;
       connection: ReturnType<typeof library.openApiStream>;
+      release: () => void;
     }
   >();
   const runs = new Map<
@@ -84,31 +86,40 @@ export async function registerLibraryTransports(
     const id = randomUUID(),
       events: unknown[] = [];
     let state = "connecting";
-    const connection = library.openApiStream(target, {
-      credentials,
-      confirmed: true,
-      maxDurationMs: 120_000,
-      onEvent(event) {
-        events.push(event);
-        if (events.length > 5000) events.shift();
-        const run = streams.get(id);
-        if (run) run.status = "open";
-      },
-      onError(error) {
-        events.push({ type: "error", message: error });
-        const run = streams.get(id);
-        if (run) run.status = "error";
-      },
-      onClose() {
-        const run = streams.get(id);
-        if (run) run.status = "closed";
-      },
-    });
+    const lease = credentials.acquire();
+    let connection;
+    try {
+      connection = library.openApiStream(target, {
+        credentials: lease.credentials,
+        confirmed: true,
+        maxDurationMs: 120_000,
+        onEvent(event) {
+          events.push(credentials.safe(event));
+          if (events.length > 5000) events.shift();
+          const run = streams.get(id);
+          if (run) run.status = "open";
+        },
+        onError(error) {
+          events.push({ type: "error", message: credentials.safe(error) });
+          const run = streams.get(id);
+          if (run) run.status = "error";
+        },
+        onClose() {
+          lease.release();
+          const run = streams.get(id);
+          if (run) run.status = "closed";
+        },
+      });
+    } catch (error) {
+      lease.release();
+      throw error;
+    }
     streams.set(id, {
       owner: req.cookies.sona ?? "",
       events,
       status: state,
       connection,
+      release: lease.release,
     });
     return { id, status: state, maxDurationMs: 120_000 };
   });
@@ -124,6 +135,7 @@ export async function registerLibraryTransports(
   app.delete("/api/library/streams/:id", async (req) => {
     const run = own(req);
     run.connection.close();
+    // Keep the credential lease until the socket confirms closure.
     run.status = "closed";
     return { closed: true };
   });
@@ -173,6 +185,7 @@ export async function registerLibraryTransports(
             "Too many API observations. Stop an existing observation.",
           );
       }
+      const lease = credentials.acquire();
       runs.set(id, run);
       void (async () => {
         try {
@@ -181,31 +194,34 @@ export async function registerLibraryTransports(
               pages = [];
             for await (const page of library.paginateRecipe(
               decode(input.recipe),
-              { credentials, signal: controller.signal },
+              { credentials: lease.credentials, signal: controller.signal },
               maxPages,
             ))
               pages.push(page);
-            run.result = {
+            run.result = credentials.safe({
               pages,
               maxPages,
               limitReached: pages.length === maxPages,
-            };
+            });
           } else
-            run.result = await library.pollRecipe(
-              decode(input.recipe),
-              { credentials, signal: controller.signal },
-              {
-                maxPolls: Math.min(30, Math.max(1, input.maxPolls ?? 10)),
-                intervalMs: 1000,
-              },
+            run.result = credentials.safe(
+              await library.pollRecipe(
+                decode(input.recipe),
+                { credentials: lease.credentials, signal: controller.signal },
+                {
+                  maxPolls: Math.min(30, Math.max(1, input.maxPolls ?? 10)),
+                  intervalMs: 1000,
+                },
+              ),
             );
           run.status = controller.signal.aborted ? "canceled" : "completed";
         } catch (error) {
           run.status = controller.signal.aborted ? "canceled" : "failed";
-          run.error = redact(
+          run.error = credentials.safe(
             error instanceof Error ? error.message : "API observation failed.",
-            [env.OPENAI_API_KEY ?? "", env.OPENAI_ADMIN_KEY ?? ""],
           );
+        } finally {
+          lease.release();
         }
       })();
       return { id, status: run.status };
@@ -243,14 +259,10 @@ export async function registerLibraryTransports(
       );
       if (result.accepted && !result.duplicate) {
         deliveries.push(
-          redact(
-            { receivedAt: new Date().toISOString(), event: result.event },
-            [
-              env.OPENAI_API_KEY ?? "",
-              env.OPENAI_ADMIN_KEY ?? "",
-              env.OPENAI_WEBHOOK_SECRET,
-            ],
-          ),
+          credentials.safe({
+            receivedAt: new Date().toISOString(),
+            event: result.event,
+          }),
         );
         if (deliveries.length > 100) deliveries.shift();
       }
@@ -258,7 +270,10 @@ export async function registerLibraryTransports(
     });
   });
   app.addHook("onClose", async () => {
-    for (const s of streams.values()) s.connection.close();
+    for (const s of streams.values()) {
+      s.connection.close();
+      s.release();
+    }
     for (const r of runs.values()) r.controller.abort();
   });
 }

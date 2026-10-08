@@ -6,6 +6,7 @@ import { randomUUID } from "node:crypto";
 import { installSecurity } from "./security.js";
 import { createStore, csv, type Document } from "./storage/index.js";
 import { VoiceService } from "./voice.js";
+import { SessionCredentials } from "./credentials.js";
 import {
   defaultAgentConfig,
   configDiff,
@@ -13,7 +14,6 @@ import {
   validateAgentConfig,
   exportAgent,
   CAPABILITY_REVISION,
-  redact,
 } from "../../../packages/agent-core/src/index.js";
 import {
   ConnectionManager,
@@ -40,12 +40,26 @@ export async function createApp(options: AppOptions) {
     options.development,
     Number(env.SONA_WEB_PORT ?? 5173),
   );
-  const secrets = [
-    env.OPENAI_API_KEY,
-    env.OPENAI_ADMIN_KEY,
-    env.GOOGLE_CLIENT_SECRET,
-  ].filter((s): s is string => Boolean(s));
-  const safe = <T>(value: T): T => redact(value, secrets);
+  const credentials = new SessionCredentials(env);
+  const safe = <T>(value: T): T => credentials.safe(value);
+  // Scrub any accidentally pasted credential before a request can enter study storage.
+  app.addHook("preHandler", async (req) => {
+    if (
+      req.url.split("?")[0] !== "/api/settings/credentials/openai" &&
+      req.body &&
+      typeof req.body === "object"
+    )
+      req.body = JSON.parse(safe(JSON.stringify(req.body)));
+  });
+  app.addHook("onSend", async (_req, reply, payload) => {
+    if (
+      typeof payload === "string" &&
+      String(reply.getHeader("content-type") ?? "").includes("application/json")
+    ) {
+      return safe(payload);
+    }
+    return payload;
+  });
   const connections = new ConnectionManager({
     callbackUrl: `http://127.0.0.1:${port}/api/oauth/callback`,
     env,
@@ -85,7 +99,8 @@ export async function createApp(options: AppOptions) {
   );
   const voice = new VoiceService({
     store,
-    apiKey: env.OPENAI_API_KEY,
+    getApiKey: () => credentials.apiKey,
+    getSecrets: () => credentials.secrets,
     project: env.OPENAI_PROJECT_ID,
     adapter: (id) => connections.createAdapter(id),
     prepareTool: (id, name, args, resource, operationId) =>
@@ -106,6 +121,11 @@ export async function createApp(options: AppOptions) {
       store.metadata.set("verifiedModels", [...verifiedModels]);
     },
   });
+  credentials.setBusyCheck(
+    () =>
+      store.sessions.list().some((session) => session.state === "active") ||
+      [...voice.calls.values()].some((call) => call.active),
+  );
   app.setErrorHandler((rawError, req, reply) => {
     const error = rawError as Error & { statusCode?: number; code?: string };
     const status =
@@ -157,13 +177,12 @@ export async function createApp(options: AppOptions) {
     sessions: store.sessions.list().map(info),
     connections: connections.list(),
     settings: store.settings.get(),
+    credentials: credentials.status(),
     defaultConfig: defaultAgentConfig(),
     readiness: {
       openaiConfigured: voice.configured,
       modelsVerified: [...verifiedModels],
-      missing: voice.configured
-        ? []
-        : ["Set OPENAI_API_KEY in the local server environment."],
+      missing: voice.configured ? [] : ["Add your OpenAI API key in Settings."],
       rawAudio: false,
       maxSessionMinutes: 15,
       liveVerification: "Not verified in this installation.",
@@ -355,7 +374,7 @@ export async function createApp(options: AppOptions) {
       kind = input.mode ?? input.kind ?? "quick";
     if (!voice.configured)
       throw new Error(
-        "Set OPENAI_API_KEY on the local server before a voice test. Your draft is saved.",
+        "Add your OpenAI API key in Settings before a voice test. Your draft is saved.",
       );
     const agent = store.agents.get(input.agentId);
     let config = parseAgentConfig(
@@ -492,6 +511,19 @@ export async function createApp(options: AppOptions) {
         }),
       );
   });
+  app.get("/api/settings/credentials", async () => credentials.status());
+  app.put("/api/settings/credentials/openai", async (req) => {
+    const result = credentials.set(body(req).apiKey);
+    verifiedModels.clear();
+    store.metadata.set("verifiedModels", []);
+    return result;
+  });
+  app.delete("/api/settings/credentials/openai", async () => {
+    const result = credentials.remove();
+    verifiedModels.clear();
+    store.metadata.set("verifiedModels", []);
+    return result;
+  });
   app.get("/api/settings", async () => store.settings.get());
   app.patch("/api/settings", async (req) => {
     const input = body(req);
@@ -606,13 +638,15 @@ export async function createApp(options: AppOptions) {
   );
   app.post("/api/library/execute", async (req, reply) => {
     const r = recipe(body(req));
-    const result = await library.executeRecipe(r, {
-      credentials: {
-        project: env.OPENAI_API_KEY,
-        admin: env.OPENAI_ADMIN_KEY,
-        projectId: env.OPENAI_PROJECT_ID,
-      },
-    });
+    const lease = credentials.acquire();
+    let result;
+    try {
+      result = await library.executeRecipe(r, {
+        credentials: lease.credentials,
+      });
+    } finally {
+      lease.release();
+    }
     const publicResult = safe({
       ...result,
       ...(result.binary
@@ -624,17 +658,20 @@ export async function createApp(options: AppOptions) {
           }
         : {}),
     });
-    store.metadata.set(`api-run:${randomUUID()}`, {
-      operationId: r.operationId,
-      at: new Date().toISOString(),
-      status: result.status,
-      requestId: result.requestId,
-      acceptance: result.acceptance,
-    });
+    store.metadata.set(
+      `api-run:${randomUUID()}`,
+      safe({
+        operationId: r.operationId,
+        at: new Date().toISOString(),
+        status: result.status,
+        ...(result.requestId ? { requestId: result.requestId } : {}),
+        acceptance: result.acceptance,
+      }),
+    );
     return reply.send(publicResult);
   });
   app.get("/api/library/coverage", async () => library.coverageReport());
-  await registerLibraryTransports(app, { store, env, voice });
+  await registerLibraryTransports(app, { store, env, voice, credentials });
   const web = resolve("dist/web");
   if (existsSync(web)) {
     await app.register(serveStatic, { root: web });
@@ -648,6 +685,7 @@ export async function createApp(options: AppOptions) {
     await voice.close();
     await connections.close();
     store.close();
+    credentials.clear();
   });
   return { app, store, voice, connections };
 }

@@ -1,12 +1,15 @@
-import { describe, it, expect, afterEach } from "vitest";
-import { mkdtempSync, rmSync } from "node:fs";
+import { describe, it, expect, afterEach, vi } from "vitest";
+import { mkdtempSync, rmSync, readdirSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createStore } from "./storage/index.js";
 import { createApp } from "./app.js";
 import { defaultAgentConfig } from "../../../packages/agent-core/src/index.js";
+import * as library from "../../../packages/api-library/src/index.js";
 const pending: { app: any; dir: string }[] = [];
 afterEach(async () => {
+  vi.unstubAllGlobals();
+  vi.restoreAllMocks();
   for (const p of pending.splice(0)) {
     await p.app.close();
     rmSync(p.dir, { recursive: true, force: true });
@@ -36,6 +39,7 @@ async function setup(key = "") {
   };
   return {
     ...result,
+    dir,
     headers,
     request: (method: any, url: string, payload?: any) =>
       result.app.inject({ method, url, headers, payload }),
@@ -167,8 +171,252 @@ describe("local server integration", { timeout: 20000 }, () => {
       processingAccepted: true,
     });
     expect(result.statusCode).toBe(400);
-    expect(result.json().error).toMatch("OPENAI_API_KEY");
+    expect(result.json().error).toMatch("API key in Settings");
     expect(store.sessions.list()).toHaveLength(0);
+  });
+  it("sets a GUI key for this server run without echo, preserves drafts, and does not persist it", async () => {
+    const { request, app, store, voice, dir } = await setup();
+    const key = "sk-proj-synthetic_GUI_credential_canary";
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    const saved = await request("PUT", "/api/settings/credentials/openai", {
+      apiKey: key,
+    });
+    expect(saved.statusCode).toBe(200);
+    expect(saved.headers["cache-control"]).toBe("no-store");
+    expect(saved.json()).toEqual({
+      openai: { configured: true, source: "session", storage: "memory" },
+    });
+    expect(saved.body).not.toContain(key);
+    expect(voice.configured).toBe(true);
+    expect(fetch).not.toHaveBeenCalled();
+    const boot = (await request("GET", "/api/bootstrap")).json();
+    expect(boot.readiness.openaiConfigured).toBe(true);
+    expect(boot.readiness.modelsVerified).toEqual([]);
+    const agent = (
+      await request("POST", "/api/agents", { name: "GUI fixture" })
+    ).json();
+    const draft = { ...agent.draft, instructions: `Accidental paste: ${key}` };
+    await request("PATCH", `/api/agents/${agent.id}`, { draft });
+    const exported = await request("GET", `/api/agents/${agent.id}/export`);
+    expect(exported.body).not.toContain(key);
+    expect(store.agents.get(agent.id).draft.instructions).toContain(
+      "[REDACTED]",
+    );
+    await app.close();
+    for (const file of readdirSync(dir))
+      expect(
+        readFileSync(join(dir, file)).includes(Buffer.from(key)),
+        file,
+      ).toBe(false);
+    const restarted = await createApp({ dataDir: dir, port: 4317, env: {} });
+    pending.push({ app: restarted.app, dir });
+    expect(restarted.voice.configured).toBe(false);
+    expect(restarted.store.agents.get(agent.id).name).toBe("GUI fixture");
+  });
+  it("protects GUI key changes from untrusted browsers and blocks replacement until a quick test ends", async () => {
+    const { app, request, headers } = await setup();
+    const key = "sk-proj-synthetic_GUI_guard_canary";
+    expect(
+      (
+        await app.inject({
+          method: "PUT",
+          url: "/api/settings/credentials/openai",
+          headers: { host: headers.host },
+          payload: { apiKey: key },
+        })
+      ).statusCode,
+    ).toBe(401);
+    expect(
+      (
+        await app.inject({
+          method: "PUT",
+          url: "/api/settings/credentials/openai",
+          headers: { ...headers, origin: "https://unrelated.example" },
+          payload: { apiKey: key },
+        })
+      ).statusCode,
+    ).toBe(403);
+    expect(
+      (
+        await request("PUT", "/api/settings/credentials/openai", {
+          apiKey: "invalid",
+        })
+      ).statusCode,
+    ).toBe(400);
+    await request("PUT", "/api/settings/credentials/openai", { apiKey: key });
+    const a = (
+      await request("POST", "/api/agents", { name: "No notice fixture" })
+    ).json();
+    const started = await request("POST", "/api/sessions", { agentId: a.id });
+    expect(started.statusCode, started.body).toBe(200);
+    const replacement = await request(
+      "PUT",
+      "/api/settings/credentials/openai",
+      { apiKey: key },
+    );
+    expect(replacement.statusCode).toBe(409);
+    expect(
+      (await request("DELETE", "/api/settings/credentials/openai")).statusCode,
+    ).toBe(409);
+    await request("POST", `/api/sessions/${started.json().id}/end`, {});
+    expect(
+      (await request("DELETE", "/api/settings/credentials/openai")).json()
+        .openai.configured,
+    ).toBe(false);
+    expect(
+      (await request("GET", "/api/bootstrap")).json().readiness.missing,
+    ).toEqual(["Add your OpenAI API key in Settings."]);
+  });
+  it("removes an environment key without falling back and redacts errors containing retired keys", async () => {
+    const envKey = "synthetic_legacy_environment_canary";
+    const { request, app } = await setup(envKey);
+    const guiKey = "sk-proj-synthetic_session_canary";
+    expect(
+      (await request("GET", "/api/settings/credentials")).json().openai.source,
+    ).toBe("environment");
+    await request("PUT", "/api/settings/credentials/openai", {
+      apiKey: guiKey,
+    });
+    await request("DELETE", "/api/settings/credentials/openai");
+    expect(
+      (await request("GET", "/api/settings/credentials")).json().openai.source,
+    ).toBe("none");
+    vi.spyOn(library, "executeRecipe").mockRejectedValueOnce(
+      new Error(`Async failure ${envKey} ${guiKey}`),
+    );
+    const failed = await request("POST", "/api/library/execute", {
+      operationId: "listModels",
+    });
+    expect(failed.body).not.toContain(envKey);
+    expect(failed.body).not.toContain(guiKey);
+    expect(failed.body).toContain("[REDACTED]");
+    expect(app.log).toBeTruthy();
+  });
+  it("uses the current GUI key for direct API requests and locks edits while that request is active", async () => {
+    const { request } = await setup();
+    const key = "sk-proj-synthetic_direct_API_canary";
+    await request("PUT", "/api/settings/credentials/openai", { apiKey: key });
+    let complete!: (value: Response) => void, observed!: () => void;
+    const began = new Promise<void>((resolve) => {
+      observed = resolve;
+    });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (_url, init) => {
+        expect(init.headers.get("Authorization")).toBe(`Bearer ${key}`);
+        observed();
+        return new Promise<Response>((resolve) => {
+          complete = resolve;
+        });
+      }),
+    );
+    const running = request("POST", "/api/library/execute", {
+      operationId: "listModels",
+    });
+    await began;
+    expect(
+      (await request("DELETE", "/api/settings/credentials/openai")).statusCode,
+    ).toBe(409);
+    complete(
+      new Response(JSON.stringify({ data: [], note: key }), {
+        headers: { "content-type": "application/json" },
+      }),
+    );
+    const finished = await running;
+    expect(finished.statusCode, finished.body).toBe(200);
+    expect(finished.body).not.toContain(key);
+    expect(
+      (await request("DELETE", "/api/settings/credentials/openai")).statusCode,
+    ).toBe(200);
+  });
+  it("uses a GUI key in the real SDK voice request without an environment seed", async () => {
+    const { request, voice } = await setup();
+    const key = "sk-proj-synthetic_voice_GUI_canary";
+    const fetch = vi.fn(async (_url, init) => {
+      if (_url === "data:,") return new Response("");
+      const headers = new Headers(init.headers);
+      expect(headers.get("authorization")).toBe(`Bearer ${key}`);
+      // A deliberately invalid fixture answer prevents any sideband network connection.
+      return new Response("invalid fixture SDP", {
+        headers: { "content-type": "application/sdp" },
+      });
+    });
+    vi.stubGlobal("fetch", fetch);
+    await request("PUT", "/api/settings/credentials/openai", { apiKey: key });
+    const a = (
+      await request("POST", "/api/agents", { name: "SDK request fixture" })
+    ).json();
+    const started = (
+      await request("POST", "/api/sessions", { agentId: a.id })
+    ).json();
+    const connected = await request(
+      "POST",
+      `/api/sessions/${started.id}/connect`,
+      { sdp: "v=0\r\nm=audio 9 UDP/TLS/RTP/SAVPF 111\r\n" },
+    );
+    expect(
+      fetch.mock.calls.filter(([url]) =>
+        String(url).startsWith("https://api.openai.com/"),
+      ),
+    ).toHaveLength(1);
+    expect(connected.statusCode).toBe(400);
+    expect(connected.body).toContain("invalid audio-only SDP");
+    expect(connected.body).not.toContain(key);
+    await request("DELETE", "/api/settings/credentials/openai");
+    expect(voice.configured).toBe(false);
+  });
+  it("binds observation and stream leases to the GUI key and redacts asynchronous delivery records", async () => {
+    const { request } = await setup();
+    const key = "sk-proj-synthetic_async_API_canary";
+    await request("PUT", "/api/settings/credentials/openai", { apiKey: key });
+    let fail!: (error: Error) => void;
+    vi.spyOn(library, "pollRecipe").mockImplementationOnce(
+      async (_recipe, context) => {
+        expect(context.credentials.project).toBe(key);
+        return new Promise((_resolve, reject) => {
+          fail = reject;
+        });
+      },
+    );
+    const observation = (
+      await request("POST", "/api/library/poll", {
+        recipe: { operationId: "listModels" },
+        maxPolls: 1,
+      })
+    ).json();
+    expect(
+      (await request("DELETE", "/api/settings/credentials/openai")).statusCode,
+    ).toBe(409);
+    fail(new Error(`Fixture failure ${key}`));
+    await Promise.resolve();
+    const failure = await request("GET", `/api/library/runs/${observation.id}`);
+    expect(failure.json().status).toBe("failed");
+    expect(failure.body).not.toContain(key);
+    let close!: () => void;
+    vi.spyOn(library, "openApiStream").mockImplementationOnce(
+      (_target, context) => {
+        expect(context.credentials.project).toBe(key);
+        close = () => context.onClose?.(1000);
+        context.onEvent({ message: key });
+        return { url: "wss://api.openai.com/fixture", send() {}, close };
+      },
+    );
+    const stream = (
+      await request("POST", "/api/library/streams", {
+        intent: true,
+        target: { kind: "realtime", model: "gpt-realtime-2.1" },
+      })
+    ).json();
+    expect(
+      (await request("DELETE", "/api/settings/credentials/openai")).statusCode,
+    ).toBe(409);
+    const events = await request("GET", `/api/library/streams/${stream.id}`);
+    expect(events.body).not.toContain(key);
+    await request("DELETE", `/api/library/streams/${stream.id}`);
+    expect(
+      (await request("DELETE", "/api/settings/credentials/openai")).statusCode,
+    ).toBe(200);
   });
   it("applies consent to a researcher participant, freezes study condition, filters exports, persists outcome", async () => {
     const { request, store } = await setup(

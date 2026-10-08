@@ -29,6 +29,7 @@ type Pending = {
 };
 type Call = {
   id: string;
+  client: OpenAI;
   remoteId?: string;
   socket?: OpenAIRealtimeWS;
   config: AgentConfig;
@@ -75,22 +76,37 @@ export interface VoiceOptions {
   ) => { arguments: Record<string, unknown>; resource?: string };
   onModelVerified: (model: string) => void;
   apiKey?: string;
+  getApiKey?: () => string | undefined;
+  getSecrets?: () => readonly string[];
   project?: string;
   client?: OpenAI;
   socketFactory?: (callId: string, client: OpenAI) => OpenAIRealtimeWS;
 }
 export class VoiceService {
   readonly calls = new Map<string, Call>();
-  private client?: OpenAI;
-  constructor(private options: VoiceOptions) {
-    if (options.client) this.client = options.client;
-    else if (options.apiKey)
-      this.client = new OpenAI({
-        apiKey: options.apiKey,
-        project: options.project,
-        maxRetries: 0,
-        timeout: 30_000,
-      });
+  private cachedClient?: OpenAI;
+  private cachedKey?: string;
+  constructor(private options: VoiceOptions) {}
+  private get client() {
+    if (this.options.client) return this.options.client;
+    const key = this.options.getApiKey
+      ? this.options.getApiKey()
+      : this.options.apiKey;
+    if (key !== this.cachedKey) {
+      this.cachedKey = key;
+      this.cachedClient = key
+        ? new OpenAI({
+            apiKey: key,
+            project: this.options.project,
+            maxRetries: 0,
+            timeout: 30_000,
+          })
+        : undefined;
+    }
+    return this.cachedClient;
+  }
+  private get secrets() {
+    return this.options.getSecrets?.() ?? [this.options.apiKey ?? ""];
   }
   get configured() {
     return Boolean(this.client);
@@ -107,7 +123,7 @@ export class VoiceService {
         type,
         source,
         completeness: payload.gap === true ? "gap" : "complete",
-        payload: redact(payload, [this.options.apiKey ?? ""]),
+        payload: redact(payload, this.secrets),
         originalEventId,
         responseId:
           typeof payload.response_id === "string"
@@ -123,8 +139,8 @@ export class VoiceService {
       call.active = false;
       call.ready = false;
       call.socket?.close();
-      if (call.remoteId && this.client)
-        void this.client.realtime.calls.hangup(call.remoteId).catch(() => {});
+      if (call.remoteId)
+        void call.client.realtime.calls.hangup(call.remoteId).catch(() => {});
       try {
         this.options.store.sessions.end(call.id, "interrupted");
       } catch {
@@ -143,7 +159,7 @@ export class VoiceService {
       item: {
         type: "function_call_output",
         call_id: callId,
-        output: JSON.stringify(redact(result)),
+        output: JSON.stringify(redact(result, this.secrets)),
       },
     });
     this.requestResponse(call);
@@ -161,9 +177,10 @@ export class VoiceService {
     return audio?.input?.transcription?.language === "ko" ? "ko" : "en";
   }
   async connect(id: string, sdp: string) {
-    if (!this.client)
+    const client = this.client;
+    if (!client)
       throw new Error(
-        "OpenAI API access is missing. Set OPENAI_API_KEY on the local server.",
+        "OpenAI API access is missing. Add a project API key before a voice test.",
       );
     if (
       !sdp.startsWith("v=0") ||
@@ -186,6 +203,7 @@ export class VoiceService {
       );
     const call: Call = {
       id,
+      client,
       config,
       active: true,
       ready: false,
@@ -200,13 +218,13 @@ export class VoiceService {
           this.calls.get(s)?.active === true &&
           this.calls.get(s)?.ready === true &&
           !this.calls.get(s)?.playbackBlocked,
-        secrets: [this.options.apiKey ?? ""],
+        secrets: this.secrets,
         readRetries: 0,
       }),
     };
     this.calls.set(id, call);
     try {
-      const response = await this.client.realtime.calls.create({
+      const response = await client.realtime.calls.create({
         sdp,
         session: toRealtimeSession(config) as any,
       });
@@ -225,15 +243,15 @@ export class VoiceService {
         throw new Error("OpenAI did not return a valid call identifier.");
       call.remoteId = remoteId;
       if (!call.active) {
-        await this.client.realtime.calls.hangup(remoteId);
+        await client.realtime.calls.hangup(remoteId);
         throw new Error("The connection was canceled.");
       }
       const socket =
-        this.options.socketFactory?.(remoteId, this.client) ??
-        new OpenAIRealtimeWS({ callID: remoteId }, this.client);
+        this.options.socketFactory?.(remoteId, client) ??
+        new OpenAIRealtimeWS({ callID: remoteId }, client);
       call.socket = socket;
       socket.on("error", (error) => {
-        call.error = redact(error.message, [this.options.apiKey ?? ""]);
+        call.error = redact(error.message, this.secrets);
         this.event(call, "connection.error", { message: call.error }, "server");
         void this.end(id, "provider_control_error").catch(() => {});
       });
@@ -279,7 +297,7 @@ export class VoiceService {
                   requestId: response.headers.get("x-request-id"),
                   remoteCallId: remoteId,
                 },
-                [this.options.apiKey ?? ""],
+                this.secrets,
               );
               this.options.store.sessions.setProviderEvidence(
                 id,
@@ -316,7 +334,7 @@ export class VoiceService {
                   error instanceof Error
                     ? error.message
                     : "Voice control failed.",
-                  [this.options.apiKey ?? ""],
+                  this.secrets,
                 );
                 this.event(
                   call,
@@ -331,7 +349,7 @@ export class VoiceService {
               error instanceof Error
                 ? error
                 : new Error("Provider evidence could not be stored.");
-            call.error = redact(failure.message, [this.options.apiKey ?? ""]);
+            call.error = redact(failure.message, this.secrets);
             this.event(
               call,
               "evidence.storage_failed",
@@ -528,7 +546,7 @@ export class VoiceService {
       if (record.state === "approved") {
         call.pending = undefined;
         void this.dispatch(call, p).catch((error) => {
-          call.error = redact(error.message, [this.options.apiKey ?? ""]);
+          call.error = redact(error.message, this.secrets);
           this.event(
             call,
             "action.error",
@@ -778,7 +796,7 @@ export class VoiceService {
       journal: this.options.store.actionJournal,
       policy: config.confirmationPolicy,
       isSessionActive: () => false,
-      secrets: [this.options.apiKey ?? ""],
+      secrets: this.secrets,
     });
     const result = await executor.reconcile(
       actionId,
@@ -834,8 +852,8 @@ export class VoiceService {
         await call.executor
           .cancel(call.pending.record.id, "Session ended.")
           .catch(() => {});
-      if (call.remoteId && this.client)
-        await this.client.realtime.calls.hangup(call.remoteId).catch(() => {});
+      if (call.remoteId)
+        await call.client.realtime.calls.hangup(call.remoteId).catch(() => {});
     }
     try {
       return this.options.store.sessions.end(
