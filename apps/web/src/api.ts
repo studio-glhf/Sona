@@ -32,6 +32,16 @@ let localToken = "";
 export function setLocalToken(value: string) {
   localToken = value;
 }
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+    public readonly code?: string,
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
 export async function api<T = Json>(
   path: string,
   body?: unknown,
@@ -50,12 +60,14 @@ export async function api<T = Json>(
     .json()
     .catch(() => ({ error: response.statusText }));
   if (!response.ok)
-    throw new Error(
+    throw new ApiError(
       typeof result.error === "string"
         ? result.error
         : (result.error?.message ??
             result.message ??
             `Request failed (${response.status})`),
+      response.status,
+      typeof result.code === "string" ? result.code : undefined,
     );
   return result;
 }

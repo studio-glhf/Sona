@@ -584,9 +584,6 @@ export default function App() {
                   />
                 </header>
                 <section className="voice-area" aria-label="Voice session">
-                  <span className="session-eyebrow">
-                    {voice.active ? "Voice session" : "Your voice workspace"}
-                  </span>
                   <Orb active={voice.active && !voice.muted} />
                   <h2 aria-live="polite">
                     {history ? "Saved session" : status}

@@ -13,6 +13,8 @@ The Data policy settings and Voice processing notice are removed. A quick test s
 - The new quick-start workflow passed. It checks the submitted request and absence of the old notice and browser acceptance flag.
 - The existing automated accessibility check found no violations in its tested WCAG tags. Laptop and narrow layouts remain usable.
 - After CSS consolidation, the agent workflow and accessibility/layout workflow passed again.
-- The new GUI key workflow is ready for the integrated server. It checks save, reload, removal, immediate readiness, and absence of the key from responses and browser storage. This worktree does not contain the new server routes.
+- The GUI key workflow is ready for the integrated server. It checks save, reload, removal, immediate readiness, and absence of the key from responses and browser storage. It also checks busy-operation guidance, invalid key format, and successful key changes when the workspace refresh fails. The busy and refresh failures use explicit transport fixtures. Key storage and invalid-format checks use the real local server routes. This worktree does not contain the new server routes.
 
 Browser tests use synthetic local data. They do not call a paid model or prove live voice or external-tool behavior. The supervisor must check the combined feature and its final screenshots before publication.
+
+The supervisor requested two corrections. Settings now maps only known error codes to local guidance. It keeps a successful key change when the later workspace refresh fails. Empty evidence uses direct copy, and the voice area does not repeat its workspace context. Type check and production build passed after these changes. The supervisor will run the integrated browser workflow.

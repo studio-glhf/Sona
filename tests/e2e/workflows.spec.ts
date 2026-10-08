@@ -303,6 +303,53 @@ test("Settings adds and removes a server-memory API key without browser storage"
     settings.getByRole("button", { name: "Save key", exact: true }),
   ).toBeDisabled();
   try {
+    // A transport fixture exercises the UI response to the server's busy guard.
+    // The actual server lease guard has separate integration tests.
+    const credentialRoute = "**/api/settings/credentials/openai";
+    await page.route(credentialRoute, (route) =>
+      route.fulfill({
+        status: 409,
+        contentType: "application/json",
+        body: JSON.stringify({
+          code: "CREDENTIAL_IN_USE",
+          error: "Untrusted server text " + canary,
+        }),
+      }),
+    );
+    await field.fill(canary);
+    await settings
+      .getByRole("button", { name: "Save key", exact: true })
+      .click();
+    await expect(settings.getByRole("alert")).toHaveText(
+      "End the active test or API operation before changing your API key.",
+    );
+    await expect(field).toHaveValue("");
+    expect(await settings.innerText()).not.toContain(canary);
+    await page.unroute(credentialRoute);
+    await field.fill("sk-admin-InvalidSyntheticProjectKey1234567890");
+    const rejected = page.waitForResponse(
+      (r) =>
+        r.request().method() === "PUT" &&
+        r.url().endsWith("/api/settings/credentials/openai"),
+    );
+    await settings
+      .getByRole("button", { name: "Save key", exact: true })
+      .click();
+    const invalid = await rejected;
+    expect(invalid.status()).toBe(400);
+    expect((await invalid.json()).code).toBe("INVALID_PROJECT_API_KEY");
+    await expect(settings.getByRole("alert")).toHaveText(
+      "Enter an OpenAI project API key. Admin keys are not supported.",
+    );
+    await expect(field).toHaveValue("");
+    const bootstrapRoute = "**/api/bootstrap";
+    await page.route(bootstrapRoute, (route) =>
+      route.fulfill({
+        status: 503,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Untrusted refresh text " + canary }),
+      }),
+    );
     await field.fill(canary);
     const saved = page.waitForResponse(
       (r) =>
@@ -322,6 +369,14 @@ test("Settings adds and removes a server-memory API key without browser storage"
     await expect(
       settings.getByText("API key saved for this Sona run.", { exact: true }),
     ).toBeVisible();
+    await expect(
+      settings.getByText("Reload Sona to refresh workspace access.", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(settings.getByRole("alert")).toHaveCount(0);
+    expect(await settings.innerText()).not.toContain(canary);
+    await page.unroute(bootstrapRoute);
     const bootstrap = await (await page.request.get("/api/bootstrap")).json();
     expect(bootstrap.readiness.openaiConfigured).toBe(true);
     expect(JSON.stringify(bootstrap)).not.toContain(canary);
@@ -347,12 +402,30 @@ test("Settings adds and removes a server-memory API key without browser storage"
         targets: v.nodes.map((n) => n.target),
       })),
     ).toEqual([]);
+    await page.route(bootstrapRoute, (route) =>
+      route.fulfill({
+        status: 503,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Untrusted refresh text " + canary }),
+      }),
+    );
     await settings
       .getByRole("button", { name: "Remove key", exact: true })
       .click();
     await expect(
       settings.getByText("No API key added", { exact: true }),
     ).toBeVisible();
+    await expect(
+      settings.getByText("API key removed.", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      settings.getByText("Reload Sona to refresh workspace access.", {
+        exact: true,
+      }),
+    ).toBeVisible();
+    await expect(settings.getByRole("alert")).toHaveCount(0);
+    expect(await settings.innerText()).not.toContain(canary);
+    await page.unroute(bootstrapRoute);
     const cleared = await (await page.request.get("/api/bootstrap")).json();
     expect(cleared.readiness.openaiConfigured).toBe(false);
     await page
@@ -377,7 +450,7 @@ test("quick tests open directly with calm evidence and no processing-notice gate
   await page.goto("/");
   await page.getByRole("tab", { name: "Notes", exact: true }).click();
   await expect(
-    page.getByText("Make space for what you learn", { exact: true }),
+    page.getByText("Notes for this test", { exact: true }),
   ).toBeVisible();
   await expect(
     page.getByLabel("Researcher notes", { exact: true }),

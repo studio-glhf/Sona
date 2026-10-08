@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, AudioLines, KeyRound } from "lucide-react";
-import { api } from "./api";
+import { api, ApiError } from "./api";
 
 type CredentialStatus = {
   configured: boolean;
@@ -26,6 +26,7 @@ export function WorkspaceSettings({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
+  const [refreshHint, setRefreshHint] = useState("");
   const keyInput = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (credential && !credential.configured) keyInput.current?.focus();
@@ -53,6 +54,7 @@ export function WorkspaceSettings({
     setBusy(true);
     setError("");
     setMessage("");
+    setRefreshHint("");
     try {
       const result = await api(
         "/settings/credentials/openai",
@@ -63,13 +65,25 @@ export function WorkspaceSettings({
       setMessage(
         remove ? "API key removed." : "API key saved for this Sona run.",
       );
-      await onRefresh();
-    } catch {
+      try {
+        await onRefresh();
+      } catch {
+        setRefreshHint("Reload Sona to refresh workspace access.");
+      }
+    } catch (failure) {
       // Provider and server error strings can contain sensitive request values.
       setError(
-        remove
-          ? "Could not remove the API key. Try again."
-          : "Could not save the API key. Check the key and try again.",
+        failure instanceof ApiError &&
+          failure.status === 409 &&
+          failure.code === "CREDENTIAL_IN_USE"
+          ? "End the active test or API operation before changing your API key."
+          : failure instanceof ApiError &&
+              failure.status === 400 &&
+              failure.code === "INVALID_PROJECT_API_KEY"
+            ? "Enter an OpenAI project API key. Admin keys are not supported."
+            : remove
+              ? "Could not remove the API key. Try again."
+              : "Could not save the API key. Try again.",
       );
     } finally {
       setBusy(false);
@@ -80,7 +94,7 @@ export function WorkspaceSettings({
       <header className="page-header">
         <div>
           <h1>Settings</h1>
-          <p className="muted">Make Sona yours.</p>
+          <p className="muted">Local workspace</p>
         </div>
         <span className="settings-version">Sona {version}</span>
       </header>
@@ -136,6 +150,7 @@ export function WorkspaceSettings({
                 setKey(event.target.value);
                 setError("");
                 setMessage("");
+                setRefreshHint("");
               }}
               aria-describedby="key-storage-description"
             />
@@ -185,6 +200,11 @@ export function WorkspaceSettings({
         {message && (
           <p className="settings-feedback" role="status">
             {message}
+          </p>
+        )}
+        {refreshHint && (
+          <p className="settings-footnote" role="status">
+            {refreshHint}
           </p>
         )}
         <p className="settings-footnote">

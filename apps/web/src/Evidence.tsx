@@ -196,8 +196,8 @@ export function Evidence({
             <Activity size={22} aria-hidden="true" />
             <h3>
               {tab === "Notes"
-                ? "Make space for what you learn"
-                : "Listen. Explore. Learn."}
+                ? "Notes for this test"
+                : "Your conversation appears here"}
             </h3>
             <p>
               {tab === "Notes"
