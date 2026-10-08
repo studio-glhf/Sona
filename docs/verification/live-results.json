@@ -1,0 +1,119 @@
+{
+  "format": "sona-live-verification/v1",
+  "timestamp": "2026-10-06T09:11:09.385Z",
+  "environment": "linux 6.18.44 x64",
+  "node": "v24.19.0",
+  "appVersion": "1.0.0-rc.1",
+  "scope": "Prerequisite checks and opt-in local runtime checks. Physical voice, OAuth grants, external writes, and teammate observations need their own evidence.",
+  "credentials": {
+    "OPENAI_API_KEY": false,
+    "OPENAI_ADMIN_KEY": false,
+    "GOOGLE_CLIENT_ID": false,
+    "GOOGLE_CLIENT_SECRET": false,
+    "GOOGLE_CALENDAR_ID": false
+  },
+  "admissionBudgetUSD": 10,
+  "estimatedChargesUSD": 0,
+  "observedChargesUSD": null,
+  "costNotice": "No billable call starts from this harness. A local admission budget is not a provider invoice cap.",
+  "checks": [
+    {
+      "id": "local-runtime",
+      "requirements": [
+        "DX-01"
+      ],
+      "status": "passed",
+      "scope": "Local server bootstrap only",
+      "detail": "Sona returned its own local session. This does not prove a service connection or teammate setup."
+    },
+    {
+      "id": "local-health",
+      "requirements": [
+        "DX-01"
+      ],
+      "status": "passed",
+      "scope": "Local server health only",
+      "detail": "HTTP 200"
+    },
+    {
+      "id": "voice-en-kr",
+      "requirements": [
+        "VS-01",
+        "VS-02",
+        "CF-02"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "An authorized OpenAI project, a supported selected model, dated prices, and actual laptop microphone/speaker access.",
+      "detail": "Complete the English and Korean voice protocol in docs/verification/live-checks.md."
+    },
+    {
+      "id": "calendar-read-write",
+      "requirements": [
+        "CN-01",
+        "TL-01",
+        "TL-02"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "A Sona-authorized Google account and an explicitly designated test calendar with no attendees or invitations.",
+      "detail": "Complete the read, spoken approval, rejection, duplicate, and unknown-outcome protocol."
+    },
+    {
+      "id": "chatgpt-reuse",
+      "requirements": [
+        "CN-00"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "A compatible released Codex app-server, its supported ChatGPT login, and an existing Calendar grant in the selected account.",
+      "detail": "Prove a same-account read and approved write without a new Google grant. Discovery alone is insufficient."
+    },
+    {
+      "id": "independent-runtime",
+      "requirements": [
+        "PT-01"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "An exported sona-agent.json and a different authorized local binding.",
+      "detail": "Operate the example runtime without the Sona study database."
+    },
+    {
+      "id": "physical-laptops",
+      "requirements": [
+        "VS-01",
+        "VS-02",
+        "UX-03",
+        "UX-05"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "Actual Windows and macOS laptops with current Chrome and physical microphones and speakers.",
+      "detail": "Do microphone, output, interruption, device-loss, output-selection, and recovery checks. Headless Chromium is insufficient."
+    },
+    {
+      "id": "researcher-usability",
+      "requirements": [
+        "UX-01",
+        "UX-03",
+        "UX-04"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "A representative researcher and supervised participant.",
+      "detail": "Record activations, time, mistakes, backtracking, and assistance for the PRD tasks."
+    },
+    {
+      "id": "teammate-setup",
+      "requirements": [
+        "DX-01",
+        "PT-01"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "An independent teammate with a laptop and their own authorized credentials.",
+      "detail": "Install the release, run the study procedure, and operate the portable agent. An automated clean install is insufficient."
+    }
+  ]
+}

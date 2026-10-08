@@ -1,0 +1,42 @@
+{
+  "planVersion": "1.0",
+  "prdVersion": "1.0",
+  "date": "2026-10-06",
+  "requirementIds": [
+    "AG-01",
+    "AP-01",
+    "AP-02",
+    "AP-03",
+    "CF-01",
+    "CF-02",
+    "CN-00",
+    "CN-01",
+    "CN-02",
+    "DH-01",
+    "DX-01",
+    "EV-01",
+    "EV-02",
+    "EX-01",
+    "PT-01",
+    "TL-01",
+    "TL-02",
+    "UX-01",
+    "UX-02",
+    "UX-03",
+    "UX-04",
+    "UX-05",
+    "VS-01",
+    "VS-02"
+  ],
+  "missingRequirementIds": [],
+  "status": "Planning-document consistency only. No application implementation or application test was performed.",
+  "autonomousBuildStarted": false,
+  "rendering": {
+    "horizontalOverflow": false,
+    "missingAnchors": [],
+    "tables": 5,
+    "pdfPages": 15,
+    "outOfBoundsPages": [],
+    "scope": "Document layout only. No language checker or application tests."
+  }
+}

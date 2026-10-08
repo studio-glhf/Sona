@@ -1,0 +1,58 @@
+{
+  "version": "1.0",
+  "date": "2026-10-06",
+  "source": "archive/Sona-PRD-v0.6.md",
+  "scope": "Document consistency only. No language-compliance scoring.",
+  "retained_requirement_ids": [
+    "AG-01",
+    "AP-01",
+    "AP-02",
+    "AP-03",
+    "CF-01",
+    "CF-02",
+    "CN-00",
+    "CN-01",
+    "CN-02",
+    "DH-01",
+    "DX-01",
+    "EV-01",
+    "EV-02",
+    "EX-01",
+    "PT-01",
+    "TL-01",
+    "TL-02",
+    "UX-01",
+    "UX-02",
+    "UX-03",
+    "VS-01",
+    "VS-02"
+  ],
+  "added_requirement_ids": [
+    "UX-04",
+    "UX-05"
+  ],
+  "all_prior_requirement_ids_retained": true,
+  "retained_source_urls": 17,
+  "all_prior_source_urls_retained": true,
+  "roles": [
+    "Researcher",
+    "Participant",
+    "Maintainer"
+  ],
+  "participant_view_default": false,
+  "layout": "One design, three surfaces",
+  "manual_decisions": [
+    "Researcher participation does not remove controls or evidence.",
+    "Participant view is optional and off for new configurations.",
+    "Saved conditions can intentionally use Participant view.",
+    "Program duration does not constrain the product.",
+    "Draft controls remain available during fixed-condition calls.",
+    "View changes and device changes become study events.",
+    "Historical language checker is not used."
+  ],
+  "figures": [
+    "images/researcher-workspace-v1.0.png",
+    "images/participant-view-v1.0.png",
+    "images/compare-results-v1.0.png"
+  ]
+}

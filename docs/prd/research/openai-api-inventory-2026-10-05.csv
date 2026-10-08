@@ -1,0 +1,355 @@
+family,method,path,operation_id,summary,deprecated_in_spec,availability
+assistants,GET,/assistants,listAssistants,List assistants,True,documentation_only_not_live_verified
+assistants,POST,/assistants,createAssistant,Create assistant,True,documentation_only_not_live_verified
+assistants,GET,/assistants/{assistant_id},getAssistant,Retrieve assistant,True,documentation_only_not_live_verified
+assistants,POST,/assistants/{assistant_id},modifyAssistant,Modify assistant,True,documentation_only_not_live_verified
+assistants,DELETE,/assistants/{assistant_id},deleteAssistant,Delete assistant,True,documentation_only_not_live_verified
+audio,POST,/audio/speech,createSpeech,Create speech,False,documentation_only_not_live_verified
+audio,POST,/audio/transcriptions,createTranscription,Create transcription,False,documentation_only_not_live_verified
+audio,POST,/audio/translations,createTranslation,Create translation,False,documentation_only_not_live_verified
+audio,POST,/audio/voice_consents,createVoiceConsent,Create voice consent,False,documentation_only_not_live_verified
+audio,GET,/audio/voice_consents,listVoiceConsents,List voice consents,False,documentation_only_not_live_verified
+audio,GET,/audio/voice_consents/{consent_id},getVoiceConsent,Retrieve voice consent,False,documentation_only_not_live_verified
+audio,POST,/audio/voice_consents/{consent_id},updateVoiceConsent,Update voice consent,False,documentation_only_not_live_verified
+audio,DELETE,/audio/voice_consents/{consent_id},deleteVoiceConsent,Delete voice consent,False,documentation_only_not_live_verified
+audio,POST,/audio/voices,createVoice,Create voice,False,documentation_only_not_live_verified
+batches,POST,/batches,createBatch,Create batch,False,documentation_only_not_live_verified
+batches,GET,/batches,listBatches,List batches,False,documentation_only_not_live_verified
+batches,GET,/batches/{batch_id},retrieveBatch,Retrieve batch,False,documentation_only_not_live_verified
+batches,POST,/batches/{batch_id}/cancel,cancelBatch,Cancel batch,False,documentation_only_not_live_verified
+chat,GET,/chat/completions,listChatCompletions,List Chat Completions,False,documentation_only_not_live_verified
+chat,POST,/chat/completions,createChatCompletion,Create chat completion,False,documentation_only_not_live_verified
+chat,GET,/chat/completions/{completion_id},getChatCompletion,Get chat completion,False,documentation_only_not_live_verified
+chat,POST,/chat/completions/{completion_id},updateChatCompletion,Update chat completion,False,documentation_only_not_live_verified
+chat,DELETE,/chat/completions/{completion_id},deleteChatCompletion,Delete chat completion,False,documentation_only_not_live_verified
+chat,GET,/chat/completions/{completion_id}/messages,getChatCompletionMessages,Get chat messages,False,documentation_only_not_live_verified
+completions,POST,/completions,createCompletion,Create completion,False,documentation_only_not_live_verified
+containers,GET,/containers,ListContainers,List containers,False,documentation_only_not_live_verified
+containers,POST,/containers,CreateContainer,Create container,False,documentation_only_not_live_verified
+containers,GET,/containers/{container_id},RetrieveContainer,Retrieve container,False,documentation_only_not_live_verified
+containers,DELETE,/containers/{container_id},DeleteContainer,Delete a container,False,documentation_only_not_live_verified
+containers,POST,/containers/{container_id}/files,CreateContainerFile,Create container file,False,documentation_only_not_live_verified
+containers,GET,/containers/{container_id}/files,ListContainerFiles,List container files,False,documentation_only_not_live_verified
+containers,GET,/containers/{container_id}/files/{file_id},RetrieveContainerFile,Retrieve container file,False,documentation_only_not_live_verified
+containers,DELETE,/containers/{container_id}/files/{file_id},DeleteContainerFile,Delete a container file,False,documentation_only_not_live_verified
+containers,GET,/containers/{container_id}/files/{file_id}/content,RetrieveContainerFileContent,Retrieve container file content,False,documentation_only_not_live_verified
+conversations,POST,/conversations/{conversation_id}/items,createConversationItems,Create items,False,documentation_only_not_live_verified
+conversations,GET,/conversations/{conversation_id}/items,listConversationItems,List items,False,documentation_only_not_live_verified
+conversations,GET,/conversations/{conversation_id}/items/{item_id},getConversationItem,Retrieve an item,False,documentation_only_not_live_verified
+conversations,DELETE,/conversations/{conversation_id}/items/{item_id},deleteConversationItem,Delete an item,False,documentation_only_not_live_verified
+embeddings,POST,/embeddings,createEmbedding,Create embeddings,False,documentation_only_not_live_verified
+evals,GET,/evals,listEvals,List evals,False,documentation_only_not_live_verified
+evals,POST,/evals,createEval,Create eval,False,documentation_only_not_live_verified
+evals,GET,/evals/{eval_id},getEval,Get an eval,False,documentation_only_not_live_verified
+evals,POST,/evals/{eval_id},updateEval,Update an eval,False,documentation_only_not_live_verified
+evals,DELETE,/evals/{eval_id},deleteEval,Delete an eval,False,documentation_only_not_live_verified
+evals,GET,/evals/{eval_id}/runs,getEvalRuns,Get eval runs,False,documentation_only_not_live_verified
+evals,POST,/evals/{eval_id}/runs,createEvalRun,Create eval run,False,documentation_only_not_live_verified
+evals,GET,/evals/{eval_id}/runs/{run_id},getEvalRun,Get an eval run,False,documentation_only_not_live_verified
+evals,DELETE,/evals/{eval_id}/runs/{run_id},deleteEvalRun,Delete eval run,False,documentation_only_not_live_verified
+evals,POST,/evals/{eval_id}/runs/{run_id}/cancel,cancelEvalRun,Cancel eval run,False,documentation_only_not_live_verified
+evals,GET,/evals/{eval_id}/runs/{run_id}/output_items,getEvalRunOutputItems,Get eval run output items,False,documentation_only_not_live_verified
+evals,GET,/evals/{eval_id}/runs/{run_id}/output_items/{output_item_id},getEvalRunOutputItem,Get an output item of an eval run,False,documentation_only_not_live_verified
+files,GET,/files,listFiles,List files,False,documentation_only_not_live_verified
+files,POST,/files,createFile,Upload file,False,documentation_only_not_live_verified
+files,DELETE,/files/{file_id},deleteFile,Delete file,False,documentation_only_not_live_verified
+files,GET,/files/{file_id},retrieveFile,Retrieve file,False,documentation_only_not_live_verified
+files,GET,/files/{file_id}/content,downloadFile,Retrieve file content,False,documentation_only_not_live_verified
+fine_tuning,POST,/fine_tuning/alpha/graders/run,runGrader,Run grader,False,documentation_only_not_live_verified
+fine_tuning,POST,/fine_tuning/alpha/graders/validate,validateGrader,Validate grader,False,documentation_only_not_live_verified
+fine_tuning,GET,/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions,listFineTuningCheckpointPermissions,List checkpoint permissions,False,documentation_only_not_live_verified
+fine_tuning,POST,/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions,createFineTuningCheckpointPermission,Create checkpoint permissions,False,documentation_only_not_live_verified
+fine_tuning,DELETE,/fine_tuning/checkpoints/{fine_tuned_model_checkpoint}/permissions/{permission_id},deleteFineTuningCheckpointPermission,Delete checkpoint permission,False,documentation_only_not_live_verified
+fine_tuning,POST,/fine_tuning/jobs,createFineTuningJob,Create fine-tuning job,False,documentation_only_not_live_verified
+fine_tuning,GET,/fine_tuning/jobs,listPaginatedFineTuningJobs,List fine-tuning jobs,False,documentation_only_not_live_verified
+fine_tuning,GET,/fine_tuning/jobs/{fine_tuning_job_id},retrieveFineTuningJob,Retrieve fine-tuning job,False,documentation_only_not_live_verified
+fine_tuning,POST,/fine_tuning/jobs/{fine_tuning_job_id}/cancel,cancelFineTuningJob,Cancel fine-tuning,False,documentation_only_not_live_verified
+fine_tuning,GET,/fine_tuning/jobs/{fine_tuning_job_id}/checkpoints,listFineTuningJobCheckpoints,List fine-tuning checkpoints,False,documentation_only_not_live_verified
+fine_tuning,GET,/fine_tuning/jobs/{fine_tuning_job_id}/events,listFineTuningEvents,List fine-tuning events,False,documentation_only_not_live_verified
+fine_tuning,POST,/fine_tuning/jobs/{fine_tuning_job_id}/pause,pauseFineTuningJob,Pause fine-tuning,False,documentation_only_not_live_verified
+fine_tuning,POST,/fine_tuning/jobs/{fine_tuning_job_id}/resume,resumeFineTuningJob,Resume fine-tuning,False,documentation_only_not_live_verified
+images,POST,/images/edits,createImageEdit,Create image edit,False,documentation_only_not_live_verified
+images,POST,/images/generations,createImage,Create image,False,documentation_only_not_live_verified
+images,POST,/images/variations,createImageVariation,Create image variation,True,documentation_only_not_live_verified
+live,POST,/live/sessions,create-live,Create session,False,documentation_only_not_live_verified
+live,POST,/live/sessions/{session_id}/accept,accept-live-session,Accept call,False,documentation_only_not_live_verified
+live,POST,/live/sessions/{session_id}/fork,fork-live-session,Fork session,False,documentation_only_not_live_verified
+live,POST,/live/sessions/{session_id}/hangup,hangup-live-session,Hang up session,False,documentation_only_not_live_verified
+live,POST,/live/sessions/{session_id}/refer,refer-live-session,Transfer call,False,documentation_only_not_live_verified
+live,POST,/live/sessions/{session_id}/reject,reject-live-session,Reject call,False,documentation_only_not_live_verified
+models,GET,/models,listModels,List models,False,documentation_only_not_live_verified
+models,GET,/models/{model},retrieveModel,Retrieve model,False,documentation_only_not_live_verified
+models,DELETE,/models/{model},deleteModel,Delete a fine-tuned model,False,documentation_only_not_live_verified
+moderations,POST,/moderations,createModeration,Create moderation,False,documentation_only_not_live_verified
+organization,GET,/organization/admin_api_keys,admin-api-keys-list,List all organization and project API keys.,False,documentation_only_not_live_verified
+organization,POST,/organization/admin_api_keys,admin-api-keys-create,Create admin API key,False,documentation_only_not_live_verified
+organization,GET,/organization/admin_api_keys/{key_id},admin-api-keys-get,Retrieve admin API key,False,documentation_only_not_live_verified
+organization,DELETE,/organization/admin_api_keys/{key_id},admin-api-keys-delete,Delete admin API key,False,documentation_only_not_live_verified
+organization,GET,/organization/audit_logs,list-audit-logs,List audit logs,False,documentation_only_not_live_verified
+organization,GET,/organization/certificates,listOrganizationCertificates,List organization certificates,False,documentation_only_not_live_verified
+organization,POST,/organization/certificates,uploadCertificate,Upload certificate,False,documentation_only_not_live_verified
+organization,POST,/organization/certificates/activate,activateOrganizationCertificates,Activate certificates for organization,False,documentation_only_not_live_verified
+organization,POST,/organization/certificates/deactivate,deactivateOrganizationCertificates,Deactivate certificates for organization,False,documentation_only_not_live_verified
+organization,GET,/organization/certificates/{certificate_id},getCertificate,Get certificate,False,documentation_only_not_live_verified
+organization,POST,/organization/certificates/{certificate_id},modifyCertificate,Modify certificate,False,documentation_only_not_live_verified
+organization,DELETE,/organization/certificates/{certificate_id},deleteCertificate,Delete certificate,False,documentation_only_not_live_verified
+organization,GET,/organization/costs,usage-costs,Costs,False,documentation_only_not_live_verified
+organization,GET,/organization/data_retention,retrieve-organization-data-retention,Retrieve organization data retention,False,documentation_only_not_live_verified
+organization,POST,/organization/data_retention,update-organization-data-retention,Update organization data retention,False,documentation_only_not_live_verified
+organization,GET,/organization/groups,list-groups,List groups,False,documentation_only_not_live_verified
+organization,POST,/organization/groups,create-group,Create group,False,documentation_only_not_live_verified
+organization,GET,/organization/groups/{group_id},retrieve-group,Retrieve group,False,documentation_only_not_live_verified
+organization,POST,/organization/groups/{group_id},update-group,Update group,False,documentation_only_not_live_verified
+organization,DELETE,/organization/groups/{group_id},delete-group,Delete group,False,documentation_only_not_live_verified
+organization,GET,/organization/groups/{group_id}/roles,list-group-role-assignments,List group organization role assignments,False,documentation_only_not_live_verified
+organization,POST,/organization/groups/{group_id}/roles,assign-group-role,Assign organization role to group,False,documentation_only_not_live_verified
+organization,GET,/organization/groups/{group_id}/roles/{role_id},retrieve-group-role,Retrieve group organization role,False,documentation_only_not_live_verified
+organization,DELETE,/organization/groups/{group_id}/roles/{role_id},unassign-group-role,Unassign organization role from group,False,documentation_only_not_live_verified
+organization,GET,/organization/groups/{group_id}/users,list-group-users,List group users,False,documentation_only_not_live_verified
+organization,POST,/organization/groups/{group_id}/users,add-group-user,Add group user,False,documentation_only_not_live_verified
+organization,GET,/organization/groups/{group_id}/users/{user_id},retrieve-group-user,Retrieve group user,False,documentation_only_not_live_verified
+organization,DELETE,/organization/groups/{group_id}/users/{user_id},remove-group-user,Remove group user,False,documentation_only_not_live_verified
+organization,GET,/organization/invites,list-invites,List invites,False,documentation_only_not_live_verified
+organization,POST,/organization/invites,inviteUser,Create invite,False,documentation_only_not_live_verified
+organization,GET,/organization/invites/{invite_id},retrieve-invite,Retrieve invite,False,documentation_only_not_live_verified
+organization,DELETE,/organization/invites/{invite_id},delete-invite,Delete invite,False,documentation_only_not_live_verified
+organization,GET,/organization/projects,list-projects,List projects,False,documentation_only_not_live_verified
+organization,POST,/organization/projects,create-project,Create project,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id},retrieve-project,Retrieve project,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id},modify-project,Modify project,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/api_keys,list-project-api-keys,List project API keys,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/api_keys/{api_key_id},retrieve-project-api-key,Retrieve project API key,False,documentation_only_not_live_verified
+organization,DELETE,/organization/projects/{project_id}/api_keys/{api_key_id},delete-project-api-key,Delete project API key,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/archive,archive-project,Archive project,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/certificates,listProjectCertificates,List project certificates,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/certificates/activate,activateProjectCertificates,Activate certificates for project,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/certificates/deactivate,deactivateProjectCertificates,Deactivate certificates for project,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/data_retention,retrieve-project-data-retention,Retrieve project data retention,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/data_retention,update-project-data-retention,Update project data retention,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/groups,list-project-groups,List project groups,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/groups,add-project-group,Add project group,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/groups/{group_id},retrieve-project-group,Retrieve project group,False,documentation_only_not_live_verified
+organization,DELETE,/organization/projects/{project_id}/groups/{group_id},remove-project-group,Remove project group,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/hosted_tool_permissions,retrieve-project-hosted-tool-permissions,Retrieve project hosted tool permissions,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/hosted_tool_permissions,update-project-hosted-tool-permissions,Modify project hosted tool permissions,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/model_permissions,retrieve-project-model-permissions,Retrieve project model permissions,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/model_permissions,update-project-model-permissions,Modify project model permissions,False,documentation_only_not_live_verified
+organization,DELETE,/organization/projects/{project_id}/model_permissions,delete-project-model-permissions,Delete project model permissions,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/rate_limits,list-project-rate-limits,List project rate limits,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/rate_limits/{rate_limit_id},update-project-rate-limits,Modify project rate limit,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/service_accounts,list-project-service-accounts,List project service accounts,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/service_accounts,create-project-service-account,Create project service account,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/service_accounts/{service_account_id},retrieve-project-service-account,Retrieve project service account,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/service_accounts/{service_account_id},update-project-service-account,Update project service account,False,documentation_only_not_live_verified
+organization,DELETE,/organization/projects/{project_id}/service_accounts/{service_account_id},delete-project-service-account,Delete project service account,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/spend_alerts,list-project-spend-alerts,List project spend alerts,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/spend_alerts,create-project-spend-alert,Create project spend alert,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/spend_alerts/{alert_id},retrieve-project-spend-alert,Retrieve project spend alert,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/spend_alerts/{alert_id},update-project-spend-alert,Update project spend alert,False,documentation_only_not_live_verified
+organization,DELETE,/organization/projects/{project_id}/spend_alerts/{alert_id},delete-project-spend-alert,Delete project spend alert,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/users,list-project-users,List project users,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/users,create-project-user,Create project user,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/users/{user_id},retrieve-project-user,Retrieve project user,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/users/{user_id},modify-project-user,Modify project user,False,documentation_only_not_live_verified
+organization,DELETE,/organization/projects/{project_id}/users/{user_id},delete-project-user,Delete project user,False,documentation_only_not_live_verified
+organization,GET,/organization/roles,list-roles,List organization roles,False,documentation_only_not_live_verified
+organization,POST,/organization/roles,create-role,Create organization role,False,documentation_only_not_live_verified
+organization,GET,/organization/roles/{role_id},retrieve-role,Retrieve organization role,False,documentation_only_not_live_verified
+organization,POST,/organization/roles/{role_id},update-role,Update organization role,False,documentation_only_not_live_verified
+organization,DELETE,/organization/roles/{role_id},delete-role,Delete organization role,False,documentation_only_not_live_verified
+organization,GET,/organization/spend_alerts,list-organization-spend-alerts,List organization spend alerts,False,documentation_only_not_live_verified
+organization,POST,/organization/spend_alerts,create-organization-spend-alert,Create organization spend alert,False,documentation_only_not_live_verified
+organization,GET,/organization/spend_alerts/{alert_id},retrieve-organization-spend-alert,Retrieve organization spend alert,False,documentation_only_not_live_verified
+organization,POST,/organization/spend_alerts/{alert_id},update-organization-spend-alert,Update organization spend alert,False,documentation_only_not_live_verified
+organization,DELETE,/organization/spend_alerts/{alert_id},delete-organization-spend-alert,Delete organization spend alert,False,documentation_only_not_live_verified
+organization,GET,/organization/usage/audio_speeches,usage-audio-speeches,Audio speeches,False,documentation_only_not_live_verified
+organization,GET,/organization/usage/audio_transcriptions,usage-audio-transcriptions,Audio transcriptions,False,documentation_only_not_live_verified
+organization,GET,/organization/usage/code_interpreter_sessions,usage-code-interpreter-sessions,Code interpreter sessions,False,documentation_only_not_live_verified
+organization,GET,/organization/usage/completions,usage-completions,Completions,False,documentation_only_not_live_verified
+organization,GET,/organization/usage/embeddings,usage-embeddings,Embeddings,False,documentation_only_not_live_verified
+organization,GET,/organization/usage/file_search_calls,usage-file-search-calls,File search calls,False,documentation_only_not_live_verified
+organization,GET,/organization/usage/images,usage-images,Images,False,documentation_only_not_live_verified
+organization,GET,/organization/usage/moderations,usage-moderations,Moderations,False,documentation_only_not_live_verified
+organization,GET,/organization/usage/vector_stores,usage-vector-stores,Vector stores,False,documentation_only_not_live_verified
+organization,GET,/organization/usage/web_search_calls,usage-web-search-calls,Web search calls,False,documentation_only_not_live_verified
+organization,GET,/organization/users,list-users,List users,False,documentation_only_not_live_verified
+organization,GET,/organization/users/{user_id},retrieve-user,Retrieve user,False,documentation_only_not_live_verified
+organization,POST,/organization/users/{user_id},modify-user,Modify user,False,documentation_only_not_live_verified
+organization,DELETE,/organization/users/{user_id},delete-user,Delete user,False,documentation_only_not_live_verified
+organization,GET,/organization/users/{user_id}/roles,list-user-role-assignments,List user organization role assignments,False,documentation_only_not_live_verified
+organization,POST,/organization/users/{user_id}/roles,assign-user-role,Assign organization role to user,False,documentation_only_not_live_verified
+organization,GET,/organization/users/{user_id}/roles/{role_id},retrieve-user-role,Retrieve user organization role,False,documentation_only_not_live_verified
+organization,DELETE,/organization/users/{user_id}/roles/{role_id},unassign-user-role,Unassign organization role from user,False,documentation_only_not_live_verified
+projects,GET,/projects/{project_id}/groups/{group_id}/roles,list-project-group-role-assignments,List project group role assignments,False,documentation_only_not_live_verified
+projects,POST,/projects/{project_id}/groups/{group_id}/roles,assign-project-group-role,Assign project role to group,False,documentation_only_not_live_verified
+projects,GET,/projects/{project_id}/groups/{group_id}/roles/{role_id},retrieve-project-group-role,Retrieve project group role,False,documentation_only_not_live_verified
+projects,DELETE,/projects/{project_id}/groups/{group_id}/roles/{role_id},unassign-project-group-role,Unassign project role from group,False,documentation_only_not_live_verified
+projects,GET,/projects/{project_id}/roles,list-project-roles,List project roles,False,documentation_only_not_live_verified
+projects,POST,/projects/{project_id}/roles,create-project-role,Create project role,False,documentation_only_not_live_verified
+projects,GET,/projects/{project_id}/roles/{role_id},retrieve-project-role,Retrieve project role,False,documentation_only_not_live_verified
+projects,POST,/projects/{project_id}/roles/{role_id},update-project-role,Update project role,False,documentation_only_not_live_verified
+projects,DELETE,/projects/{project_id}/roles/{role_id},delete-project-role,Delete project role,False,documentation_only_not_live_verified
+projects,GET,/projects/{project_id}/users/{user_id}/roles,list-project-user-role-assignments,List project user role assignments,False,documentation_only_not_live_verified
+projects,POST,/projects/{project_id}/users/{user_id}/roles,assign-project-user-role,Assign project role to user,False,documentation_only_not_live_verified
+projects,GET,/projects/{project_id}/users/{user_id}/roles/{role_id},retrieve-project-user-role,Retrieve project user role,False,documentation_only_not_live_verified
+projects,DELETE,/projects/{project_id}/users/{user_id}/roles/{role_id},unassign-project-user-role,Unassign project role from user,False,documentation_only_not_live_verified
+realtime,POST,/realtime/calls,create-realtime-call,Create call,False,documentation_only_not_live_verified
+realtime,POST,/realtime/calls/{call_id}/accept,accept-realtime-call,Accept call,False,documentation_only_not_live_verified
+realtime,POST,/realtime/calls/{call_id}/hangup,hangup-realtime-call,Hang up call,False,documentation_only_not_live_verified
+realtime,POST,/realtime/calls/{call_id}/refer,refer-realtime-call,Refer call,False,documentation_only_not_live_verified
+realtime,POST,/realtime/calls/{call_id}/reject,reject-realtime-call,Reject call,False,documentation_only_not_live_verified
+realtime,POST,/realtime/client_secrets,create-realtime-client-secret,Create client secret,False,documentation_only_not_live_verified
+realtime,POST,/realtime/sessions,create-realtime-session,Create session,False,documentation_only_not_live_verified
+realtime,POST,/realtime/transcription_sessions,create-realtime-transcription-session,Create transcription session,False,documentation_only_not_live_verified
+realtime,POST,/realtime/translations/client_secrets,create-realtime-translation-client-secret,Create translation client secret,False,documentation_only_not_live_verified
+responses,POST,/responses,createResponse,Create a model response,False,documentation_only_not_live_verified
+responses,GET,/responses/{response_id},getResponse,Get a model response,False,documentation_only_not_live_verified
+responses,DELETE,/responses/{response_id},deleteResponse,Delete a model response,False,documentation_only_not_live_verified
+responses,POST,/responses/{response_id}/cancel,cancelResponse,Cancel a response,False,documentation_only_not_live_verified
+responses,GET,/responses/{response_id}/input_items,listInputItems,List input items,False,documentation_only_not_live_verified
+threads,POST,/threads,createThread,Create thread,False,documentation_only_not_live_verified
+threads,POST,/threads/runs,createThreadAndRun,Create thread and run,False,documentation_only_not_live_verified
+threads,GET,/threads/{thread_id},getThread,Retrieve thread,False,documentation_only_not_live_verified
+threads,POST,/threads/{thread_id},modifyThread,Modify thread,False,documentation_only_not_live_verified
+threads,DELETE,/threads/{thread_id},deleteThread,Delete thread,False,documentation_only_not_live_verified
+threads,GET,/threads/{thread_id}/messages,listMessages,List messages,False,documentation_only_not_live_verified
+threads,POST,/threads/{thread_id}/messages,createMessage,Create message,False,documentation_only_not_live_verified
+threads,GET,/threads/{thread_id}/messages/{message_id},getMessage,Retrieve message,False,documentation_only_not_live_verified
+threads,POST,/threads/{thread_id}/messages/{message_id},modifyMessage,Modify message,False,documentation_only_not_live_verified
+threads,DELETE,/threads/{thread_id}/messages/{message_id},deleteMessage,Delete message,False,documentation_only_not_live_verified
+threads,GET,/threads/{thread_id}/runs,listRuns,List runs,False,documentation_only_not_live_verified
+threads,POST,/threads/{thread_id}/runs,createRun,Create run,False,documentation_only_not_live_verified
+threads,GET,/threads/{thread_id}/runs/{run_id},getRun,Retrieve run,False,documentation_only_not_live_verified
+threads,POST,/threads/{thread_id}/runs/{run_id},modifyRun,Modify run,False,documentation_only_not_live_verified
+threads,POST,/threads/{thread_id}/runs/{run_id}/cancel,cancelRun,Cancel a run,False,documentation_only_not_live_verified
+threads,GET,/threads/{thread_id}/runs/{run_id}/steps,listRunSteps,List run steps,False,documentation_only_not_live_verified
+threads,GET,/threads/{thread_id}/runs/{run_id}/steps/{step_id},getRunStep,Retrieve run step,False,documentation_only_not_live_verified
+threads,POST,/threads/{thread_id}/runs/{run_id}/submit_tool_outputs,submitToolOuputsToRun,Submit tool outputs to run,False,documentation_only_not_live_verified
+uploads,POST,/uploads,createUpload,Create upload,False,documentation_only_not_live_verified
+uploads,POST,/uploads/{upload_id}/cancel,cancelUpload,Cancel upload,False,documentation_only_not_live_verified
+uploads,POST,/uploads/{upload_id}/complete,completeUpload,Complete upload,False,documentation_only_not_live_verified
+uploads,POST,/uploads/{upload_id}/parts,addUploadPart,Add upload part,False,documentation_only_not_live_verified
+vector_stores,GET,/vector_stores,listVectorStores,List vector stores,False,documentation_only_not_live_verified
+vector_stores,POST,/vector_stores,createVectorStore,Create vector store,False,documentation_only_not_live_verified
+vector_stores,GET,/vector_stores/{vector_store_id},getVectorStore,Retrieve vector store,False,documentation_only_not_live_verified
+vector_stores,POST,/vector_stores/{vector_store_id},modifyVectorStore,Modify vector store,False,documentation_only_not_live_verified
+vector_stores,DELETE,/vector_stores/{vector_store_id},deleteVectorStore,Delete vector store,False,documentation_only_not_live_verified
+vector_stores,POST,/vector_stores/{vector_store_id}/file_batches,createVectorStoreFileBatch,Create vector store file batch,False,documentation_only_not_live_verified
+vector_stores,GET,/vector_stores/{vector_store_id}/file_batches/{batch_id},getVectorStoreFileBatch,Retrieve vector store file batch,False,documentation_only_not_live_verified
+vector_stores,POST,/vector_stores/{vector_store_id}/file_batches/{batch_id}/cancel,cancelVectorStoreFileBatch,Cancel vector store file batch,False,documentation_only_not_live_verified
+vector_stores,GET,/vector_stores/{vector_store_id}/file_batches/{batch_id}/files,listFilesInVectorStoreBatch,List vector store files in a batch,False,documentation_only_not_live_verified
+vector_stores,GET,/vector_stores/{vector_store_id}/files,listVectorStoreFiles,List vector store files,False,documentation_only_not_live_verified
+vector_stores,POST,/vector_stores/{vector_store_id}/files,createVectorStoreFile,Create vector store file,False,documentation_only_not_live_verified
+vector_stores,GET,/vector_stores/{vector_store_id}/files/{file_id},getVectorStoreFile,Retrieve vector store file,False,documentation_only_not_live_verified
+vector_stores,DELETE,/vector_stores/{vector_store_id}/files/{file_id},deleteVectorStoreFile,Delete vector store file,False,documentation_only_not_live_verified
+vector_stores,POST,/vector_stores/{vector_store_id}/files/{file_id},updateVectorStoreFileAttributes,Update vector store file attributes,False,documentation_only_not_live_verified
+vector_stores,GET,/vector_stores/{vector_store_id}/files/{file_id}/content,retrieveVectorStoreFileContent,Retrieve vector store file content,False,documentation_only_not_live_verified
+vector_stores,POST,/vector_stores/{vector_store_id}/search,searchVectorStore,Search vector store,False,documentation_only_not_live_verified
+conversations,POST,/conversations,createConversation,Create a conversation,False,documentation_only_not_live_verified
+conversations,GET,/conversations/{conversation_id},getConversation,Retrieve a conversation,False,documentation_only_not_live_verified
+conversations,DELETE,/conversations/{conversation_id},deleteConversation,Delete a conversation,False,documentation_only_not_live_verified
+conversations,POST,/conversations/{conversation_id},updateConversation,Update a conversation,False,documentation_only_not_live_verified
+safety,GET,/safety/cases/{id},Getsafetycase,Get safety case,False,documentation_only_not_live_verified
+safety,GET,/safety/alerts/{id},Getprojectsafetyalert,Get project safety alert,False,documentation_only_not_live_verified
+live,GET,/live/sessions/{session_id}/content,download-live-recording,Download recording,False,documentation_only_not_live_verified
+organization,GET,/organization/external_storage,Listexternalstorageconfigurations,List external storage configurations,False,documentation_only_not_live_verified
+organization,POST,/organization/external_storage,Createanexternalstorageconfiguration,Create an external storage configuration,False,documentation_only_not_live_verified
+organization,GET,/organization/external_storage/{external_storage_id},Getanexternalstorageconfiguration,Get an external storage configuration,False,documentation_only_not_live_verified
+organization,DELETE,/organization/external_storage/{external_storage_id},Deleteanexternalstorageconfiguration,Delete an external storage configuration,False,documentation_only_not_live_verified
+organization,POST,/organization/external_storage/{external_storage_id}/validate,Validateanexternalstorageconfiguration,Validate an external storage configuration,False,documentation_only_not_live_verified
+organization,GET,/organization/spend_limit,Getorganizationspendlimit,Get organization spend limit,False,documentation_only_not_live_verified
+organization,POST,/organization/spend_limit,Updateorganizationspendlimit,Update organization spend limit,False,documentation_only_not_live_verified
+organization,DELETE,/organization/spend_limit,Deleteorganizationspendlimit,Delete organization spend limit,False,documentation_only_not_live_verified
+organization,GET,/organization/projects/{project_id}/spend_limit,Getprojectspendlimit,Get project spend limit,False,documentation_only_not_live_verified
+organization,DELETE,/organization/projects/{project_id}/spend_limit,Deleteprojectspendlimit,Delete project spend limit,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/spend_limit,Updateprojectspendlimit,Update project spend limit,False,documentation_only_not_live_verified
+organization,POST,/organization/projects/{project_id}/service_accounts/{service_account_id}/api_keys,CreateanAPIkeyforaserviceaccount,Create an API key for a service account,False,documentation_only_not_live_verified
+content_provenance_checks,POST,/content_provenance_checks,Createcontentprovenancecheck,Create content provenance check,False,documentation_only_not_live_verified
+videos,POST,/videos,createVideo,Create a video,True,documentation_only_not_live_verified
+videos,GET,/videos,ListVideos,List videos,True,documentation_only_not_live_verified
+videos,POST,/videos/characters,CreateVideoCharacter,Create a character,True,documentation_only_not_live_verified
+videos,GET,/videos/characters/{character_id},GetVideoCharacter,Retrieve a character,True,documentation_only_not_live_verified
+videos,POST,/videos/edits,CreateVideoEdit,Create a video edit,True,documentation_only_not_live_verified
+videos,POST,/videos/extensions,CreateVideoExtend,Create a video extension,True,documentation_only_not_live_verified
+videos,GET,/videos/{video_id},GetVideo,Retrieve a video,True,documentation_only_not_live_verified
+videos,DELETE,/videos/{video_id},DeleteVideo,Delete a video,True,documentation_only_not_live_verified
+videos,GET,/videos/{video_id}/content,RetrieveVideoContent,Download video content,True,documentation_only_not_live_verified
+videos,POST,/videos/{video_id}/remix,CreateVideoRemix,Create a video remix,True,documentation_only_not_live_verified
+responses,POST,/responses/input_tokens,Getinputtokencounts,Get input token counts,False,documentation_only_not_live_verified
+responses,POST,/responses/compact,Compactconversation,Compact conversation,False,documentation_only_not_live_verified
+skills,POST,/skills,CreateSkill,Create Skill,False,documentation_only_not_live_verified
+skills,GET,/skills,ListSkills,List Skills,False,documentation_only_not_live_verified
+skills,DELETE,/skills/{skill_id},DeleteSkill,Delete Skill,False,documentation_only_not_live_verified
+skills,GET,/skills/{skill_id},GetSkill,Get Skill,False,documentation_only_not_live_verified
+skills,POST,/skills/{skill_id},UpdateSkillDefaultVersion,Update Skill Default Version,False,documentation_only_not_live_verified
+skills,GET,/skills/{skill_id}/content,GetSkillContent,Get Skill Content,False,documentation_only_not_live_verified
+skills,POST,/skills/{skill_id}/versions,CreateSkillVersion,Create Skill Version,False,documentation_only_not_live_verified
+skills,GET,/skills/{skill_id}/versions,ListSkillVersions,List Skill Versions,False,documentation_only_not_live_verified
+skills,GET,/skills/{skill_id}/versions/{version},GetSkillVersion,Get Skill Version,False,documentation_only_not_live_verified
+skills,DELETE,/skills/{skill_id}/versions/{version},DeleteSkillVersion,Delete Skill Version,False,documentation_only_not_live_verified
+skills,GET,/skills/{skill_id}/versions/{version}/content,GetSkillVersionContent,Get Skill Version Content,False,documentation_only_not_live_verified
+chatkit,POST,/chatkit/sessions/{session_id}/cancel,CancelChatSessionMethod,Cancel a ChatKit session,False,documentation_only_not_live_verified
+chatkit,POST,/chatkit/sessions,CreateChatSessionMethod,Create a ChatKit session,False,documentation_only_not_live_verified
+chatkit,GET,/chatkit/threads/{thread_id}/items,ListThreadItemsMethod,List ChatKit thread items,False,documentation_only_not_live_verified
+chatkit,GET,/chatkit/threads/{thread_id},GetThreadMethod,Retrieve a ChatKit thread,False,documentation_only_not_live_verified
+chatkit,DELETE,/chatkit/threads/{thread_id},DeleteThreadMethod,Delete a ChatKit thread,False,documentation_only_not_live_verified
+chatkit,GET,/chatkit/threads,ListThreadsMethod,List ChatKit threads,False,documentation_only_not_live_verified
+agents,GET,/agents/environments/{environment_id},retrieveAgentEnvironment,Retrieve an agent environment,False,documentation_only_not_live_verified
+agents,GET,/agents/environments/{environment_id}/files,listAgentEnvironmentFiles,List agent environment files,False,documentation_only_not_live_verified
+agents,POST,/agents/environments/{environment_id}/files,createAgentEnvironmentFile,Create an agent environment file,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/subagents,listAgentSessionSubagents,List session subagents,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/subagents/{subagent_id},retrieveAgentSessionSubagent,Retrieve a session subagent,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/subagents/{subagent_id}/items,listAgentSessionSubagentItems,List subagent items,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/subagents/{subagent_id}/turns,listAgentSessionSubagentTurns,List subagent turns,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/subagents/{subagent_id}/turns/{turn_id},retrieveAgentSessionSubagentTurn,Retrieve a subagent turn,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/subagents/{subagent_id}/turns/{turn_id}/items,listAgentSessionSubagentTurnItems,List subagent turn items,False,documentation_only_not_live_verified
+agents,GET,/agents,listAgents,List agents,False,documentation_only_not_live_verified
+agents,POST,/agents,createAgent,Create an agent,False,documentation_only_not_live_verified
+agents,GET,/agents/{agent_id},retrieveAgent,Retrieve an agent,False,documentation_only_not_live_verified
+agents,POST,/agents/{agent_id},updateAgent,Update an agent,False,documentation_only_not_live_verified
+agents,DELETE,/agents/{agent_id},deleteAgent,Delete an agent,False,documentation_only_not_live_verified
+agents,GET,/agents/environments/templates,listAgentEnvironmentTemplates,List agent environment templates,False,documentation_only_not_live_verified
+agents,POST,/agents/environments/templates,createAgentEnvironmentTemplate,Create an agent environment template,False,documentation_only_not_live_verified
+agents,GET,/agents/environments/templates/{environment_template_id},retrieveAgentEnvironmentTemplate,Retrieve an agent environment template,False,documentation_only_not_live_verified
+agents,POST,/agents/environments/templates/{environment_template_id},updateAgentEnvironmentTemplate,Update an agent environment template,False,documentation_only_not_live_verified
+agents,DELETE,/agents/environments/templates/{environment_template_id},deleteAgentEnvironmentTemplate,Delete an agent environment template,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions,listAgentSessions,List agent sessions,False,documentation_only_not_live_verified
+agents,POST,/agents/sessions,createAgentSession,Create an agent session,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id},retrieveAgentSession,Retrieve an agent session,False,documentation_only_not_live_verified
+agents,POST,/agents/sessions/{session_id},updateAgentSession,Update an agent session,False,documentation_only_not_live_verified
+agents,DELETE,/agents/sessions/{session_id},deleteAgentSession,Delete an agent session,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/artifacts,listAgentSessionArtifacts,List agent session artifacts,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/artifacts/{artifact_id},retrieveAgentSessionArtifact,Retrieve an agent session artifact,False,documentation_only_not_live_verified
+agents,DELETE,/agents/sessions/{session_id}/artifacts/{artifact_id},deleteAgentSessionArtifact,Delete an agent session artifact,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/artifacts/{artifact_id}/content,retrieveAgentSessionArtifactContent,Retrieve agent session artifact content,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/events,listAgentSessionEvents,Stream agent session events,False,documentation_only_not_live_verified
+agents,POST,/agents/sessions/{session_id}/events,createAgentSessionEvents,Create agent session input events,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/items,listAgentSessionItems,List agent session items,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/traces,listAgentSessionTraces,List agent session traces,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/turns,listAgentSessionTurns,List agent session turns,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/turns/{turn_id},retrieveAgentSessionTurn,Retrieve an agent session turn,False,documentation_only_not_live_verified
+agents,GET,/agents/sessions/{session_id}/turns/{turn_id}/items,listAgentSessionTurnItems,List agent session turn items,False,documentation_only_not_live_verified
+vaults,GET,/vaults,listVaults,List vaults,False,documentation_only_not_live_verified
+vaults,POST,/vaults,createVault,Create a vault,False,documentation_only_not_live_verified
+vaults,GET,/vaults/{vault_id},retrieveVault,Retrieve a vault,False,documentation_only_not_live_verified
+vaults,DELETE,/vaults/{vault_id},deleteVault,Delete a vault,False,documentation_only_not_live_verified
+vaults,GET,/vaults/{vault_id}/credentials,listVaultCredentials,List vault credentials,False,documentation_only_not_live_verified
+vaults,POST,/vaults/{vault_id}/credentials,createVaultCredential,Create a vault credential,False,documentation_only_not_live_verified
+vaults,GET,/vaults/{vault_id}/credentials/{credential_id},retrieveVaultCredential,Retrieve a vault credential,False,documentation_only_not_live_verified
+vaults,POST,/vaults/{vault_id}/credentials/{credential_id},rotateVaultCredential,Update a vault credential,False,documentation_only_not_live_verified
+vaults,DELETE,/vaults/{vault_id}/credentials/{credential_id},deleteVaultCredential,Delete a vault credential,False,documentation_only_not_live_verified
+webhook_endpoints,GET,/webhook_endpoints,ListWebhookEndpoints,List Webhook Endpoints,False,documentation_only_not_live_verified
+webhook_endpoints,POST,/webhook_endpoints,CreateWebhookEndpoint,Create Webhook Endpoint,False,documentation_only_not_live_verified
+webhook_endpoints,GET,/webhook_endpoints/{webhook_endpoint_id},RetrieveWebhookEndpoint,Retrieve Webhook Endpoint,False,documentation_only_not_live_verified
+webhook_endpoints,POST,/webhook_endpoints/{webhook_endpoint_id},UpdateWebhookEndpoint,Update Webhook Endpoint,False,documentation_only_not_live_verified
+webhook_endpoints,DELETE,/webhook_endpoints/{webhook_endpoint_id},DeleteWebhookEndpoint,Delete Webhook Endpoint,False,documentation_only_not_live_verified
+webhook_endpoints,POST,/webhook_endpoints/{webhook_endpoint_id}/rotate_secret,RotateWebhookEndpointSigningSecret,Rotate Webhook Endpoint Signing Secret,False,documentation_only_not_live_verified
+webhook_endpoints,POST,/webhook_endpoints/{webhook_endpoint_id}/test,TestWebhookEndpoint,Test Webhook Endpoint,False,documentation_only_not_live_verified
+webhook_event_types,GET,/webhook_event_types,ListWebhookEventTypes,List Webhook Event Types,False,documentation_only_not_live_verified
+responses,POST,/responses?beta=true,beta_createResponse,Create a model response,False,documentation_only_not_live_verified
+responses,GET,/responses/{response_id}?beta=true,beta_getResponse,Get a model response,False,documentation_only_not_live_verified
+responses,DELETE,/responses/{response_id}?beta=true,beta_deleteResponse,Delete a model response,False,documentation_only_not_live_verified
+responses,POST,/responses/{response_id}/cancel?beta=true,beta_cancelResponse,Cancel a response,False,documentation_only_not_live_verified
+responses,POST,/responses/compact?beta=true,beta_Compactconversation,Compact conversation,False,documentation_only_not_live_verified
+responses,GET,/responses/{response_id}/input_items?beta=true,beta_listInputItems,List input items,False,documentation_only_not_live_verified
+responses,POST,/responses/input_tokens?beta=true,beta_Getinputtokencounts,Get input token counts,False,documentation_only_not_live_verified

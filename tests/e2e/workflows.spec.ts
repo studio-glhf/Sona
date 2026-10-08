@@ -1,0 +1,285 @@
+import { test, expect } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+test("researcher defaults, agent revisions, fixed draft, export and restart", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("button", { name: "Create an agent", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Agent controls" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("switch", { name: "Participant view" }),
+  ).toHaveAttribute("aria-checked", "false");
+  await page.getByRole("tab", { name: "Instructions", exact: true }).click();
+  const instructions = page.getByLabel("Agent instructions", { exact: true });
+  await instructions.fill(
+    "Respond in English. Help with any researcher-selected task.",
+  );
+  await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+  await page
+    .getByRole("button", { name: "Save revision", exact: true })
+    .click();
+  await page.getByRole("tab", { name: "Parameters", exact: true }).click();
+  await page.getByLabel("Speech speed", { exact: true }).fill("1.15");
+  await page.waitForTimeout(900);
+  await page.reload();
+  await expect(page.getByLabel("Speech speed", { exact: true })).toHaveValue(
+    "1.15",
+  );
+  await page.getByRole("button", { name: "Versions", exact: true }).click();
+  await expect(
+    page.getByRole("dialog", { name: "Configuration versions" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+  const download = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export agent", exact: true }).click();
+  expect((await download).suggestedFilename()).toBe("sona-agent.json");
+  await page.screenshot({
+    path: "docs/verification/researcher-1440.png",
+    fullPage: true,
+  });
+});
+test("participant preview, devices, neutral handoff and reload conceal evidence", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("switch", { name: "Participant view" }).click();
+  await expect(
+    page.getByText("Participant view", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Agent controls" }),
+  ).toHaveCount(0);
+  await expect(page.getByRole("tab", { name: "Transcript" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Devices", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: "Devices" })).toBeVisible();
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.screenshot({
+    path: "docs/verification/participant-1440.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.screenshot({
+    path: "docs/verification/participant-1280.png",
+    fullPage: true,
+  });
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Return to the researcher" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Agent controls" }),
+  ).toHaveCount(0);
+  await page.getByRole("button", { name: "Return to researcher view" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Agent controls" }),
+  ).toBeVisible();
+});
+test("study preparation, default researcher view, duplication and consent form", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "New study", exact: true }).click();
+  await page
+    .getByLabel("Study name", { exact: true })
+    .fill("Browser verification study");
+  await page
+    .getByLabel("Research question")
+    .fill("Does speech speed change clarity?");
+  await page
+    .getByRole("button", { name: "Add condition", exact: true })
+    .click();
+  await expect(page.getByLabel("Planned session view")).toHaveValue(
+    "researcher",
+  );
+  await page
+    .getByRole("button", { name: "Duplicate Condition 1", exact: true })
+    .click();
+  await expect(page.getByLabel("Planned session view")).toHaveCount(2);
+  await page.waitForTimeout(1000);
+  await page
+    .getByRole("button", { name: "Start run", exact: true })
+    .first()
+    .click();
+  await expect(
+    page.getByRole("dialog", { name: "Start study run" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Start", exact: true }),
+  ).toBeDisabled();
+  await expect(
+    page.getByLabel("The participant is also a researcher"),
+  ).toBeChecked();
+  await page.getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByRole("tab", { name: "Compare", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Compare conditions" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("No valid latency measurements", { exact: true }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "docs/verification/compare-1440.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.screenshot({
+    path: "docs/verification/compare-1280.png",
+    fullPage: true,
+  });
+});
+test("complete API inventory, schema details, credentials missing and safe connection import", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "API library", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "OpenAI API library" }),
+  ).toBeVisible();
+  await expect(page.getByText(/354 of 354 operations/)).toBeVisible();
+  await page.getByLabel("Search API operations").fill("/models");
+  await page
+    .getByRole("button")
+    .filter({ hasText: "List models" })
+    .first()
+    .click();
+  await page.getByRole("button", { name: "Run request", exact: true }).click();
+  await expect(page.getByRole("alert")).toContainText("credential");
+  await page
+    .getByRole("tab", { name: "Schema and source", exact: true })
+    .click();
+  await expect(
+    page.getByText("Operation schema", { exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Connections", exact: true }).click();
+  await page
+    .getByRole("button")
+    .filter({ hasText: "Add Google Calendar" })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "Google Calendar", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("needs-verification", { exact: true }),
+  ).toBeVisible();
+});
+test("keyboard, automated accessibility and laptop layout", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.keyboard.press("Control+k");
+  await expect(
+    page.getByRole("dialog", { name: "Workspace search" }),
+  ).toBeVisible();
+  await page.keyboard.press("Escape");
+  const result = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+    .analyze();
+  expect(
+    result.violations.map((v) => ({
+      id: v.id,
+      targets: v.nodes.map((n) => n.target),
+    })),
+  ).toEqual([]);
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await expect(
+    page.getByRole("button", { name: "Start quick test", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Open navigation", exact: true }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "docs/verification/researcher-1280.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 640, height: 800 });
+  await expect(
+    page.getByRole("button", { name: "Agent controls", exact: true }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "Agent controls", exact: true })
+    .click();
+  await expect(page.getByLabel("Find a parameter")).toBeVisible();
+  await page
+    .getByRole("button", { name: "Close controls", exact: true })
+    .click();
+});
+
+test("a draft survives leaving the editor before its debounce timer finishes", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "New agent", exact: true }).click();
+  const name = await page.locator(".workspace-header h1").innerText();
+  await page.getByRole("tab", { name: "Instructions", exact: true }).click();
+  await page
+    .getByLabel("Agent instructions", { exact: true })
+    .fill("Fast navigation fixture. Respond in Korean.");
+  const saved = page.waitForResponse(
+    (r) => r.request().method() === "PATCH" && r.url().includes("/api/agents/"),
+  );
+  await page.getByRole("button", { name: "New agent", exact: true }).click();
+  await saved;
+  await page.reload();
+  await page.getByRole("button", { name, exact: true }).first().click();
+  await page.getByRole("tab", { name: "Instructions", exact: true }).click();
+  await expect(
+    page.getByLabel("Agent instructions", { exact: true }),
+  ).toHaveValue("Fast navigation fixture. Respond in Korean.");
+});
+
+test("native controls preserve a custom voice and show missing provider evidence honestly", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const bootstrap = await (await page.request.get("/api/bootstrap")).json();
+  const selected = await page.evaluate(() =>
+    localStorage.getItem("sona-agent"),
+  );
+  const agent =
+    bootstrap.agents.find((item: any) => item.id === selected) ??
+    bootstrap.agents[0];
+  const config = structuredClone(agent.draft);
+  config.settings.audio.output.voice = { id: "voice_fixture" };
+  const response = await page.request.patch(`/api/agents/${agent.id}`, {
+    headers: { "X-Sona-Token": bootstrap.csrfToken },
+    data: { draft: config },
+  });
+  expect(response.ok()).toBe(true);
+  await page.reload();
+  await page.getByRole("tab", { name: "Parameters", exact: true }).click();
+  await expect(page.getByLabel("Voice", { exact: true })).toHaveValue(
+    "__custom__",
+  );
+  await expect(
+    page.getByText("No provider evidence", { exact: true }),
+  ).toBeVisible();
+  const updated = page.waitForResponse(
+    (response) =>
+      response.request().method() === "PATCH" &&
+      response.url().endsWith(`/api/agents/${agent.id}`),
+  );
+  await page.getByLabel("Speech speed", { exact: true }).fill("1.2");
+  expect((await updated).ok()).toBe(true);
+  await expect(
+    page
+      .getByRole("complementary", { name: "Agent controls" })
+      .getByText("Saved", { exact: true }),
+  ).toBeVisible();
+  const saved = await (
+    await page.request.get(`/api/agents/${agent.id}`, {
+      headers: { "X-Sona-Token": bootstrap.csrfToken },
+    })
+  ).json();
+  expect(saved.draft.settings.audio.output.voice).toEqual({
+    id: "voice_fixture",
+  });
+  expect(saved.draft.settings.audio.output.speed).toBe(1.2);
+  await page.request.patch(`/api/agents/${agent.id}`, {
+    headers: { "X-Sona-Token": bootstrap.csrfToken },
+    data: { draft: agent.draft },
+  });
+});

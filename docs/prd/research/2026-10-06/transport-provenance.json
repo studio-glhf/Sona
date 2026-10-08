@@ -1,0 +1,16 @@
+[
+  {
+    "source": "https://raw.githubusercontent.com/openai/openai-agents-js/main/docs/src/content/docs/guides/voice-agents/transport.mdx",
+    "path": "docs/prd/research/2026-10-06/voice-transport.mdx",
+    "sha256": "76ed8f0e8c2035dac601bbaa720b9ff99aa3d10d8166b11769d8cfb970a04aea",
+    "reviewedAt": "2026-10-06T08:50:53.875Z",
+    "note": "Official voice transport guidance; no model request."
+  },
+  {
+    "source": "https://raw.githubusercontent.com/openai/plugins/main/plugins/google-calendar/.mcp.json",
+    "path": "docs/prd/research/2026-10-06/google-calendar-mcp.json",
+    "sha256": "7a670a2ad93f430d176698941ad136c1286d502f26079f8661a3fb44dcae0cb0",
+    "reviewedAt": "2026-10-06T08:50:53.883Z",
+    "note": "Public manifest with placeholder credentials; no actual client value or grant."
+  }
+]

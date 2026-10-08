@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Sona — Autonomous execution plan</title>
+  <style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+</style>
+  <style type="text/css">:root { color-scheme: light; --ink:#18322f; --muted:#5c6d69; --teal:#14675b; --line:#dce4df; --paper:#fbfcf8; }
+* { box-sizing:border-box; }
+html { scroll-behavior:smooth; background:var(--paper); }
+body { max-width:1180px; margin:0 auto; padding:64px 58px 100px; color:var(--ink); font-family:Arial,"Noto Sans",sans-serif; font-size:16px; line-height:1.7; }
+header { padding:0 0 30px; margin:0 0 26px; border-bottom:2px solid var(--teal); }
+header::before { content:"SONA / PRODUCT SPECIFICATION"; display:block; color:var(--teal); font-size:12px; letter-spacing:2.2px; font-weight:700; margin-bottom:25px; }
+h1 { font-size:43px; line-height:1.14; letter-spacing:-1.5px; margin:0 0 16px; max-width:850px; }
+.subtitle { font-size:21px; line-height:1.4; margin:0 0 12px; color:var(--muted); }
+.date { font-size:13px; color:var(--muted); margin:0; }
+h2 { margin:58px 0 18px; font-size:28px; letter-spacing:-.6px; line-height:1.25; scroll-margin-top:24px; }
+h3 { margin:30px 0 12px; font-size:20px; line-height:1.35; }
+p { margin:0 0 18px; max-width:88ch; }
+strong { font-weight:700; }
+a { color:var(--teal); text-decoration-thickness:1px; text-underline-offset:3px; overflow-wrap:anywhere; }
+a:hover { color:#083d34; }
+ul,ol { margin:12px 0 23px; padding-left:25px; }
+li { padding-left:4px; margin:0 0 9px; }
+li > p { margin-bottom:7px; }
+.document-note { display:inline-block; padding:8px 13px; margin:12px 0 24px; background:#e8efdf; border-radius:4px; color:#365843; font-size:13px; font-weight:600; }
+#TOC { margin:0 0 28px; padding:20px 0; border-bottom:1px solid var(--line); }
+#TOC::before { content:"IN THIS PRD"; display:block; color:var(--muted); font-size:11px; font-weight:bold; letter-spacing:1.5px; margin-bottom:12px; }
+#TOC > ul { columns:2; column-gap:36px; list-style:none; padding:0; margin:0; }
+#TOC li { break-inside:avoid; padding:0; font-size:13px; line-height:1.5; margin:0 0 7px; }
+#TOC li ul { display:none; }
+#TOC a { text-decoration:none; }
+table { width:100%; border-collapse:collapse; margin:22px 0 28px; table-layout:fixed; font-size:13.6px; line-height:1.5; }
+thead { background:#eaf0eb; color:#173b32; }
+th { text-align:left; padding:12px; border-bottom:2px solid #c5d6c9; vertical-align:top; font-weight:700; }
+td { padding:12px; border-bottom:1px solid var(--line); vertical-align:top; overflow-wrap:anywhere; }
+td p, th p { margin:0; }
+tbody tr:nth-child(even) { background:#f4f6f1; }
+img { display:block; width:100%; max-width:100%; height:auto; border:1px solid #d6dfd8; border-radius:5px; }
+.concept-figure { margin:23px 0 30px; break-inside:avoid; }
+.concept-figure figcaption { color:var(--muted); font-size:13px; line-height:1.5; margin-top:10px; }
+code { font-size:.88em; background:#eaf0ea; padding:2px 4px; border-radius:3px; overflow-wrap:anywhere; }
+pre { padding:18px; background:#eaf0ea; overflow:auto; }
+blockquote { margin:20px 0; padding:10px 20px; border-left:3px solid var(--teal); color:var(--muted); }
+@media (max-width:700px) { body { padding:28px 18px 60px; font-size:15px; } h1 { font-size:33px; } h2 { font-size:24px; } #TOC > ul { columns:1; } table { font-size:12px; } th,td { padding:8px 6px; } }
+@media print {
+@page { size:A4; margin:17mm 15mm 19mm; }
+html { background:white; }
+body { max-width:none; padding:0; margin:0; font-size:10.1pt; line-height:1.48; color:#18322f; }
+header { margin-bottom:18px; padding-bottom:20px; }
+header::before { font-size:9pt; margin-bottom:15px; }
+h1 { font-size:30pt; letter-spacing:-1px; }
+.subtitle { font-size:14pt; }
+.date { font-size:9pt; }
+h2 { font-size:17pt; margin:24px 0 12px; break-after:avoid; }
+h3 { font-size:12pt; margin:20px 0 9px; break-after:avoid; }
+p { margin-bottom:11px; widows:3; orphans:3; }
+li { margin-bottom:5px; }
+table { font-size:8.2pt; line-height:1.42; margin:13px 0 18px; }
+th,td { padding:7px 7px; }
+tr { break-inside:avoid; }
+thead { display:table-header-group; }
+.concept-figure { margin:14px 0 18px; break-inside:avoid; }
+.concept-figure figcaption { font-size:8.5pt; }
+.document-note { font-size:9pt; margin-bottom:15px; padding:6px 10px; }
+#TOC { padding:12px 0; margin-bottom:16px; }
+#TOC li { font-size:8.6pt; margin-bottom:5px; }
+a { color:#14675b; text-decoration:none; }
+code { font-size:.86em; }
+}
+</style>
+  <style>#TOC::before{content:"IN THIS PLAN"}header::before{content:"SONA / EXECUTION PLAN"}</style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Sona — Autonomous execution plan</h1>
+<p class="subtitle">Build instructions for GPT-6 Astra</p>
+<p class="date">6 October 2026 · Asia/Seoul · Plan 1.0</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#mission-and-authority" id="toc-mission-and-authority">1.
+Mission and authority</a></li>
+<li><a href="#fixed-product-decisions" id="toc-fixed-product-decisions">2. Fixed product decisions</a></li>
+<li><a href="#engineering-defaults" id="toc-engineering-defaults">3.
+Engineering defaults</a></li>
+<li><a href="#unattended-prerequisite-handling" id="toc-unattended-prerequisite-handling">4. Unattended prerequisite
+handling</a></li>
+<li><a href="#build-sequence" id="toc-build-sequence">5. Build
+sequence</a></li>
+<li><a href="#first-complete-experiment" id="toc-first-complete-experiment">6. First complete experiment</a></li>
+<li><a href="#requirement-coverage" id="toc-requirement-coverage">7.
+Requirement coverage</a></li>
+<li><a href="#release-decision-and-evidence" id="toc-release-decision-and-evidence">8. Release decision and
+evidence</a></li>
+<li><a href="#execution-log-and-delivery-contract" id="toc-execution-log-and-delivery-contract">9. Execution log and
+delivery contract</a></li>
+<li><a href="#scope-protection" id="toc-scope-protection">10. Scope
+protection</a></li>
+</ul>
+</nav>
+<h2 id="mission-and-authority">1. Mission and authority</h2>
+<p>Build the local production version of Sona defined by <a href="../prd/Sona-PRD.md">PRD 1.0</a>. Complete implementation,
+verification, packaging, and setup documentation in one autonomous
+execution. Use the existing design. Do not stop after a prototype, a
+scaffold, or the first working voice call.</p>
+<p>This plan does not start application development. Give the <a href="ASTRA-BUILD-PROMPT.md">build prompt</a> to GPT-6 Astra when the
+build should start.</p>
+<p>The PRD controls product scope. This plan defines implementation
+order and engineering defaults. The user’s latest instructions take
+precedence over both documents.</p>
+<h3 id="execution-rules">Execution rules</h3>
+<ol type="1">
+<li>Read repository instructions and the current work before changes.
+Keep existing user changes.</li>
+<li>Use the existing checkout. Do not make a worktree unless a
+repository instruction or the user requests one.</li>
+<li>Do not ask routine questions or stop for milestone approval. Resolve
+implementation details with the defaults in this plan.</li>
+<li>Complete all work that does not depend on an unavailable external
+prerequisite.</li>
+<li>Keep a durable execution log. After a context reset, continue from
+the log and repository state.</li>
+<li>Repair failed checks and repeat the affected checks. Do not disable
+tests or substitute simulated success.</li>
+<li>Do not bypass account permissions, provider approvals, or platform
+approval controls.</li>
+<li>Do not publish, deploy publicly, purchase services, or change
+production calendars. The delivery target is a local application.</li>
+<li>End with runnable artifacts and a precise verification report. A
+blocked service test does not justify an unfinished interface or storage
+layer.</li>
+</ol>
+<p>“One execution” means no routine human decisions between stages. It
+does not mean one code generation without tests or repairs.</p>
+<h3 id="what-exists-now">What exists now</h3>
+<p>The repository contains the PRD, interface figures, API inventory,
+and document tools. It has no application manifest, application runtime,
+or application test suite. No applicable <code>AGENTS.md</code> was
+found during this inspection. Read instructions again before
+implementation.</p>
+<p>The PRD’s API source snapshot is dated 5 October 2026. It contains
+354 operations and 227 paths across 31 path families. These counts are
+inventory facts, not verified service coverage. Reconcile them with
+current official sources before implementation.</p>
+<p>The inspected process did not contain <code>OPENAI_API_KEY</code>,
+<code>OPENAI_PROJECT_ID</code>, <code>GOOGLE_CLIENT_ID</code>,
+<code>GOOGLE_CLIENT_SECRET</code>, or <code>GOOGLE_CALENDAR_ID</code>.
+This is not proof that all authentication routes are unavailable. An
+official runtime or another configured credential source can hold
+access.</p>
+<h2 id="fixed-product-decisions">2. Fixed product decisions</h2>
+<p>Do not reopen these decisions during the build:</p>
+<ul>
+<li>Three roles: researcher, participant, and maintainer. One person can
+have several roles. Do not build separate role accounts or a maintainer
+dashboard.</li>
+<li>Researchers have all agent controls, API parameters, tool settings,
+transcripts, charts, diagnostics, and exports.</li>
+<li>Researcher view is the default, including when the researcher is the
+participant.</li>
+<li>Participant view is optional and off by default. A saved study
+condition can intentionally select it.</li>
+<li>Participant view has essential voice controls, device selection,
+recording status, and a neutral researcher handoff. It does not show
+agent answers visually.</li>
+<li>Both views share one call. A view change does not reconnect the call
+or remove researcher permissions.</li>
+<li>The right panel edits the next-test draft during a call. The applied
+configuration stays fixed.</li>
+<li>OpenAI supplies AI processing. External services, including Google
+Calendar, can supply tools.</li>
+<li>Start with a local browser application and server. Use Chrome on
+Windows and macOS as the initial target.</li>
+<li>Do not retain raw audio by default. Quick-test evidence is
+temporary. Recorded studies need consent.</li>
+<li>Full public OpenAI API coverage remains part of v1. A voice pilot is
+an internal milestone, not a substitute for that requirement.</li>
+<li>There is no program-duration deadline or product expiry.</li>
+</ul>
+<p>Use these visual targets:</p>
+<ol type="1">
+<li><a href="../prd/images/researcher-workspace-v1.0.png">Researcher
+workspace</a>.</li>
+<li><a href="../prd/images/participant-view-v1.0.png">Participant
+view</a>.</li>
+<li><a href="../prd/images/compare-results-v1.0.png">Comparison
+view</a>.</li>
+</ol>
+<p>Keep the dark surfaces, three-column researcher layout, restrained
+controls, and evidence area. Adapt to smaller laptop viewports without
+hiding essential call controls.</p>
+<h2 id="engineering-defaults">3. Engineering defaults</h2>
+<p>Use one TypeScript workspace. Keep the server as one process with
+internal modules. Do not introduce microservices, a message broker, a
+cloud database, or another AI-provider integration.</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Area</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Runtime</td>
+<td>Node 24 LTS. Verify dependency compatibility, then pin the exact
+version.</td>
+</tr>
+<tr class="even">
+<td>Package manager</td>
+<td>pnpm with an exact version and committed lockfile.</td>
+</tr>
+<tr class="odd">
+<td>Browser application</td>
+<td>React, Vite, and TypeScript. Use semantic HTML and accessible
+component primitives.</td>
+</tr>
+<tr class="even">
+<td>Local server</td>
+<td>Fastify. Serve the built browser application from the same origin in
+production.</td>
+</tr>
+<tr class="odd">
+<td>Persistence</td>
+<td>SQLite with migrations, prepared statements, transactions, and
+explicit repository functions.</td>
+</tr>
+<tr class="even">
+<td>Application schemas</td>
+<td>Zod or an equivalent typed validator for Sona-owned contracts.</td>
+</tr>
+<tr class="odd">
+<td>Provider schemas</td>
+<td>A JSON Schema 2020-12 validator for the reconciled OpenAPI 3.1
+source. Do not discard schema features through conversion.</td>
+</tr>
+<tr class="even">
+<td>AI integration</td>
+<td>Official OpenAI SDK and documented Realtime WebRTC transport.</td>
+</tr>
+<tr class="odd">
+<td>Tool integration</td>
+<td>Official MCP client, with an optional adapter to a compatible Codex
+app-server.</td>
+</tr>
+<tr class="even">
+<td>Charts</td>
+<td>One maintained React-compatible chart package with accessible data
+tables.</td>
+</tr>
+<tr class="odd">
+<td>Tests</td>
+<td>Vitest for unit and integration tests. Playwright for browser tests.
+Separate real-service checks.</td>
+</tr>
+<tr class="even">
+<td>Credentials</td>
+<td>Server-only environment bindings or an operating-system credential
+store. Never put an encryption key beside its encrypted secrets.</td>
+</tr>
+<tr class="odd">
+<td>Release</td>
+<td>Built local application, startup commands, migration support, setup
+guide, and test evidence.</td>
+</tr>
+</tbody>
+</table>
+<p>Confirm package maintenance, licenses, and compatibility before
+installation. Pin the selected versions. If a default is incompatible,
+select the smallest maintained replacement. Record the reason without
+asking the user.</p>
+<h3 id="proposed-repository-layout">Proposed repository layout</h3>
+<pre class="text"><code>apps/web/                 researcher workspace, participant view, charts
+apps/server/              HTTP routes, sessions, storage, credentials, API runner
+packages/agent-core/      portable schema, validation, OpenAI translation, action policy
+examples/agent/           minimal runtime using agent-core and local connection bindings
+tests/fixtures/           synthetic records and redacted provider fixtures
+tests/live/               opt-in tests for actual accounts and devices
+docs/setup/               Windows/macOS setup and troubleshooting
+docs/verification/        requirement evidence, coverage, known limitations</code></pre>
+<p>The example runtime must use the same configuration validator,
+provider translation, connection interface, and action executor. Do not
+copy that logic into a second implementation.</p>
+<h3 id="boundaries-to-define-before-feature-work">Boundaries to define
+before feature work</h3>
+<ul>
+<li><strong>Configuration:</strong> portable schema version, prompt,
+model, provider settings, tools, and confirmation policy. Credential
+values and study UI state are excluded.</li>
+<li><strong>Session snapshot:</strong> immutable configuration plus
+study controls, capability revision, application version, runtime
+versions, and device context.</li>
+<li><strong>Provider adapter:</strong> capability lookup, configuration
+translation, call lifecycle, applied-setting evidence, event
+normalization, and usage records.</li>
+<li><strong>Connection adapter:</strong> authentication status, tool
+discovery, schemas, invocation, result reconciliation, and account
+identity.</li>
+<li><strong>Action executor:</strong> proposal, approval, dispatch,
+result, timeout, and unknown-outcome states. An agent cannot grant its
+own approval.</li>
+<li><strong>Evidence envelope:</strong> schema version, sequence,
+session/segment/response/tool identifiers, source, timestamps, clock
+identity, redacted payload, and completeness.</li>
+<li><strong>Storage policy:</strong> separate durable snapshots and
+action journals from temporary quick-test evidence and consented study
+evidence.</li>
+</ul>
+<p>Use interfaces for these boundaries. Implement only the OpenAI
+adapter. Do not build a generic integration framework beyond the
+interfaces needed by Sona and the example runtime.</p>
+<h2 id="unattended-prerequisite-handling">4. Unattended prerequisite
+handling</h2>
+<p>Perform this check at the start. Record availability without exposing
+secret values.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Prerequisite</th>
+<th>Autonomous action</th>
+<th>If unavailable</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>OpenAI API access</td>
+<td>Reuse configured server credentials. Check project access and
+selected model availability.</td>
+<td>Complete offline implementation and tests. Mark live voice and usage
+verification blocked.</td>
+</tr>
+<tr class="even">
+<td>Existing ChatGPT connections</td>
+<td>Use the official runtime’s authentication mechanism. Examine tool
+discovery and account selection.</td>
+<td>Try the documented direct MCP route. Do not extract cookies or
+transfer tokens from ChatGPT.</td>
+</tr>
+<tr class="odd">
+<td>Calendar authorization</td>
+<td>Reuse an authorized account and a dedicated test calendar. Validate
+scopes and restrictions.</td>
+<td>Complete the adapter and OAuth setup flow. Mark service read/write
+verification blocked.</td>
+</tr>
+<tr class="even">
+<td>Test calendar</td>
+<td>Use an explicitly designated test resource. Keep attendees and
+invitations disabled.</td>
+<td>Do not select a personal or production calendar as a
+substitute.</td>
+</tr>
+<tr class="odd">
+<td>Laptop/browser access</td>
+<td>Use provisioned Windows/macOS devices and browser control if
+available.</td>
+<td>Run synthetic browser tests. Keep physical microphone, speaker, and
+device-switch results unverified.</td>
+</tr>
+<tr class="even">
+<td>Network access</td>
+<td>Use supported network configuration and current official
+sources.</td>
+<td>Continue independent work. Record source or service access failures
+precisely.</td>
+</tr>
+<tr class="odd">
+<td>API entitlements</td>
+<td>Inspect access per operation and project.</td>
+<td>Show the restriction in the API library and coverage report. Do not
+remove the operation.</td>
+</tr>
+</tbody>
+</table>
+<p>A tool connection supplied to the coding assistant is not
+automatically a connection available to the Sona application. Tests must
+exercise Sona’s own runtime and authentication route.</p>
+<p>Do not ask for secrets in chat. Do not pause to request access during
+unattended execution. Persist the exact missing prerequisite, complete
+independent work, and include the remaining action in the final
+report.</p>
+<h3 id="test-resources-and-costs">Test resources and costs</h3>
+<p>Use an isolated test project and calendar when available. Use
+existing grants only within their scope. External writes are limited to
+test artifacts created for verification.</p>
+<p>Use a default admission budget of USD 10 for unattended billable
+smoke tests unless the environment provides a different test budget.
+Before a test, calculate a conservative upper bound from dated official
+prices. If a bound is unavailable, do not start that paid test.</p>
+<p>Limit call duration, concurrency, output, retries, and job size.
+Include transcription and tool charges in the estimate. An application
+admission budget is not a provider-enforced invoice cap. Report observed
+usage and charges that remain unknown.</p>
+<p>Do not launch fine-tuning, batch generation, paid media jobs, or
+destructive administrative requests merely to populate coverage. Use
+contract tests unless dedicated resources and a sufficient configured
+budget make the live test appropriate.</p>
+<h2 id="build-sequence">5. Build sequence</h2>
+<p>All packages below belong to one autonomous run. Checkpoints are
+internal evidence gates, not requests for approval.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Package</th>
+<th>Dependency</th>
+<th>Runnable result</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>B0. Foundation and capability baseline</td>
+<td>None</td>
+<td>Local application, shared contracts, migrations, CI, and source
+ledger.</td>
+</tr>
+<tr class="even">
+<td>B1. Connection feasibility</td>
+<td>B0</td>
+<td>Authenticated Calendar tool access through a supported route.</td>
+</tr>
+<tr class="odd">
+<td>B2. Voice and researcher workspace</td>
+<td>B0</td>
+<td>Real English/Korean voice loop with researcher evidence. Add the
+tool read when B1 is available.</td>
+</tr>
+<tr class="even">
+<td>B3. Configurations and external actions</td>
+<td>B1 + B2</td>
+<td>Named revisions and a spoken, approved Calendar write with
+recovery.</td>
+</tr>
+<tr class="odd">
+<td>B4. Studies, participant view, and persistence</td>
+<td>B2 + B3</td>
+<td>Consented study runs, optional participant UI, durable evidence,
+retention, and deletion.</td>
+</tr>
+<tr class="even">
+<td>B5. Comparisons, exports, and portable runtime</td>
+<td>B4</td>
+<td>One complete experiment and an exported agent that operates outside
+Sona’s study database.</td>
+</tr>
+<tr class="odd">
+<td>B6. Full API library</td>
+<td>B0 onward</td>
+<td>All reconciled public operations represented, editable, validated,
+and executable where authorized.</td>
+</tr>
+<tr class="even">
+<td>B7. Release verification and packaging</td>
+<td>B1–B6</td>
+<td>Installable local release with evidence and a truthful readiness
+decision.</td>
+</tr>
+</tbody>
+</table>
+<p>Start B1 and the voice portion of B2 as soon as B0 permits them. An
+OAuth failure must not prevent voice work. Build the B6 schema machinery
+with B0. Expand it after the voice experiment works.</p>
+<h3 id="b0-foundation-and-source-reconciliation">B0 — Foundation and
+source reconciliation</h3>
+<p><strong>Work</strong></p>
+<ol type="1">
+<li>Inspect instructions, existing files, runtime tools, credentials,
+and network configuration.</li>
+<li>Create the minimal workspace, pinned dependencies, development
+commands, production build, and CI.</li>
+<li>Bind the server to loopback. Validate Host and Origin. Establish a
+local session mechanism that rejects unrelated browser origins.</li>
+<li>Add server-only credential handling and redaction before logs or
+diagnostics can capture secrets.</li>
+<li>Define the shared contracts and first SQLite migration. Put
+application data outside the Git checkout.</li>
+<li>Reconcile the pinned API inventory with current official reference
+pages, model guides, SDKs, transport events, and lifecycle notices.</li>
+<li>Record each parameter’s type, permitted values, omission/default
+semantics, dependencies, model/transport restrictions, and change
+timing.</li>
+<li>Save source revisions and hashes. Keep the earlier capability
+revision for historical configurations.</li>
+</ol>
+<p><strong>Gate</strong></p>
+<p>A clean checkout installs with the lockfile and starts the local
+application. A database write survives restart. Invalid requests and
+foreign origins are rejected. A deliberate error does not expose a
+secret canary. The capability ledger distinguishes documented,
+implemented, and verified behavior.</p>
+<p><strong>Evidence</strong></p>
+<p>Setup instructions, dependency decisions, migration result, CI
+results, and the reconciled capability ledger. No parameter control may
+rely only on an image label.</p>
+<h3 id="b1-connection-feasibility-and-calendar-access">B1 — Connection
+feasibility and Calendar access</h3>
+<p><strong>Work</strong></p>
+<ol type="1">
+<li>Probe a compatible released Codex app-server through documented
+interfaces. Record the runtime version and account context.</li>
+<li>Test discovery and direct tool invocation. Prove a Calendar read
+through Sona’s connection interface.</li>
+<li>Determine whether an existing ChatGPT connection works without a new
+Google grant. Record reuse and new authorization as different
+results.</li>
+<li>If reuse fails, implement direct MCP authorization against the
+documented Calendar service. Verify audience, scopes, callback
+requirements, and organization restrictions.</li>
+<li>Use a dedicated calendar. Inspect actual tool schemas. Enforce
+selected tools and calendar restrictions in Sona.</li>
+<li>Exercise one deliberately approved test write through a minimal
+durable action record. Save the operation and external event identifiers
+before claiming success.</li>
+<li>Test revoked access, expiry, reconnection, and account separation.
+Clean up only test artifacts created by this run.</li>
+<li>Add a connection library for supported plugin manifests and MCP
+definitions. Do not execute plugin install scripts or hooks.</li>
+</ol>
+<p><strong>Gate</strong></p>
+<p>A read and approved write complete on the designated calendar.
+Wrong-account, unselected-tool, and forbidden-resource calls fail before
+dispatch. Failures return to the original draft. Reuse is advertised
+only when the same-account reuse test succeeds.</p>
+<p>If a route requires an intermediary AI agent, do not silently add it.
+Prefer the direct MCP route. If neither route meets the PRD, record the
+integration blocker and continue independent packages.</p>
+<p><strong>Evidence</strong></p>
+<p>Redacted requests/results, provider event identifiers, auth-route
+decision, scope restrictions, and failure results. A manifest URL or
+tool list is not a successful integration test.</p>
+<h3 id="b2-real-voice-loop-and-the-primary-workspace">B2 — Real voice
+loop and the primary workspace</h3>
+<p><strong>Work</strong></p>
+<ol type="1">
+<li>Build the final researcher layout early: sidebar, call area,
+evidence tabs, and right control panel.</li>
+<li>Connect browser audio through WebRTC using the documented server
+control path. Keep long-lived credentials on the server.</li>
+<li>Give Start, Mute, Devices, and End session functional behavior. Do
+not use cosmetic state changes in place of media operations.</li>
+<li>Separate connection, microphone, playback, tool, and recording
+states.</li>
+<li>Normalize events and expose live transcripts with their sources.
+Input transcription must be disclosed and configurable.</li>
+<li>Compare requested and provider-returned configuration. Mark
+non-returned fields as Sent, not confirmed as applied.</li>
+<li>Keep quick-test evidence in memory. Persist only its configuration
+snapshot and necessary redacted action journal.</li>
+<li>Exercise English and Korean speech. Add a Calendar read as soon as
+B1 permits it.</li>
+</ol>
+<p><strong>Gate</strong></p>
+<p>A real laptop microphone reaches OpenAI, spoken output plays, and
+interruptions stop speech correctly. Mute stops transmission. End
+session stops capture and new tool dispatch. Permission denial, device
+loss, playback failure, and reconnect have recovery paths.</p>
+<p>Researcher view stays open during self-tests. Draft edits target the
+next call. A view change or evidence-tab change does not create a second
+connection.</p>
+<p><strong>Evidence</strong></p>
+<p>Browser/OS/device versions, actual service identifiers, redacted
+event traces, and specific input/output/interrupt/mute/stop results.
+Headless audio fixtures do not satisfy the real-device gate.</p>
+<h3 id="b3-configuration-revisions-and-controlled-actions">B3 —
+Configuration revisions and controlled actions</h3>
+<p><strong>Work</strong></p>
+<ol type="1">
+<li>Implement neutral agent definitions, autosaved drafts, named
+revisions, duplication, history, and field differences.</li>
+<li>Share validation between Form, JSON, imports, and runtime execution.
+Keep omitted values distinct from explicit defaults.</li>
+<li>Store a fixed snapshot before a measured call. Show the applied
+configuration separately from the next-test draft.</li>
+<li>Add tool definitions, instruction versions, schema hashes, account
+bindings, and confirmation policies.</li>
+<li>Complete the action executor started in B1. Use durable states for
+proposal, approval, dispatch, result, failure, and unknown outcome.</li>
+<li>Bind approval to a proposal identifier, canonical arguments,
+destination, account, and expiry. A changed proposal needs new
+approval.</li>
+<li>Obtain approval from participant speech after completed proposal
+playback. Use the input source, not the model’s statement that approval
+exists.</li>
+<li>Use a conservative English/Korean confirmation parser. Reject
+ambiguity, negation, correction, overlap, expiry, and interrupted
+proposal playback. Do not use a substring match for “yes.”</li>
+<li>Prevent duplicate approval and duplicate dispatch. On uncertain
+writes, reconcile before a retry. Bound read retries and record visible
+attempts.</li>
+</ol>
+<p><strong>Gate</strong></p>
+<p>A spoken confirmation causes one Calendar write. Silence, rejection,
+interrupted delivery, changed arguments, stale approval, duplicate
+callbacks, and account changes do not authorize a write. Killing the
+process after dispatch does not cause an automatic duplicate on
+restart.</p>
+<p>If reliable voice approval is unavailable, block the write or
+disclose host-required visual approval as the PRD permits. Do not report
+a voice-only approval test as passed when a visual step was
+necessary.</p>
+<p><strong>Evidence</strong></p>
+<p>A real read/write session, adversarial approval tests, crash/restart
+tests, tool-schema change tests, and configuration-application
+records.</p>
+<h3 id="b4-studies-participant-view-and-evidence-storage">B4 — Studies,
+participant view, and evidence storage</h3>
+<p><strong>Work</strong></p>
+<ol type="1">
+<li>Add studies, tasks, fixed conditions, manual order, AB/BA order,
+measures, consent policy, and pseudonyms.</li>
+<li>Keep researcher participation separate from account roles and view
+selection.</li>
+<li>Implement optional Participant view and neutral handoff. New quick
+tests and conditions keep it off.</li>
+<li>Add device selection in both views. Preserve mute during input
+changes. Stop the old track before the new one transmits.</li>
+<li>Detect browser output-selection capability. Use System output with
+operating-system instructions when selection is unavailable.</li>
+<li>Record view/device changes, linked reconnect segments, deviations,
+exclusions, and missing evidence.</li>
+<li>Store consented transcripts, events, notes, ratings, outcomes, and
+annotation history. Keep participant and generated transcript sources
+separate.</li>
+<li>Implement the default 30-day retention policy, configurable
+retention, deletion, startup cleanup, and periodic cleanup.</li>
+<li>Handle out-of-order and duplicate events, partial/final transcripts,
+late tool results, failed storage, and interrupted sessions.</li>
+</ol>
+<p><strong>Gate</strong></p>
+<p>A researcher can complete a study as its participant with all
+research evidence visible. A supervised participant sees only essential
+controls and spoken agent answers. Handoff and reload do not reveal
+private panels. Capture does not start without applicable consent.</p>
+<p>A saved session survives restart with its original snapshot. Snapshot
+failure prevents the measured run. A view change preserves the session
+ID. An expired record is removed when cleanup runs. Quick-test evidence
+does not enter a later study record.</p>
+<p><strong>Evidence</strong></p>
+<p>Browser workflow results, persistence/recovery tests, consent and
+deletion tests, and both view paths on the supported laptop
+environments.</p>
+<h3 id="b5-analysis-exports-and-agent-portability">B5 — Analysis,
+exports, and agent portability</h3>
+<p><strong>Work</strong></p>
+<ol type="1">
+<li>Implement event timelines and the response/tool timing definitions
+from PRD section 8. Use a common monotonic clock for each measured
+interval.</li>
+<li>When a required event or common clock is unavailable, show a missing
+metric. Do not substitute a different latency under the same name.</li>
+<li>Add configurable ratings, outcomes, notes, coded errors, and
+recovery events.</li>
+<li>Build descriptive comparison graphs and accessible tables. Show
+participants, sessions, observations, exclusions, and missing counts
+separately.</li>
+<li>Filter by condition, view, and researcher participation. Keep unlike
+view/participation groups separate by default.</li>
+<li>Export versioned JSON and CSV with joins, units, definitions, source
+versions, and missing-data reasons. Protect against spreadsheet formula
+execution.</li>
+<li>Export <code>sona-agent.json</code> without participant data or
+credentials.</li>
+<li>Build the example runtime with the same agent-core code and a new
+authorized connection binding.</li>
+</ol>
+<p><strong>Gate</strong></p>
+<p>Complete the end-to-end experiment in section 6. Displayed results
+agree with exported records. Missing values do not become zero. The
+exported agent operates without Sona’s study database and preserves the
+same confirmation policy.</p>
+<p><strong>Evidence</strong></p>
+<p>A redacted evidence bundle, export round-trip results,
+malformed-import tests, spreadsheet-safety tests, and an
+independent-runtime read/write result.</p>
+<h3 id="b6-full-openai-api-library">B6 — Full OpenAI API library</h3>
+<p><strong>Work</strong></p>
+<ol type="1">
+<li>Expand the reconciled capability ledger into searchable operation
+and parameter views.</li>
+<li>Handle nested objects, arrays, unions, enums, references, files,
+binary results, null values, and omitted values.</li>
+<li>Validate path, query, header, and body inputs. Keep auth fields as
+server-side credential references.</li>
+<li>Implement execution handlers for request/response, streaming,
+bidirectional sessions, multipart uploads, pagination, asynchronous
+jobs, cancellation, and callbacks where documented.</li>
+<li>Use a separate lifecycle for generic API runs. An API-library
+request must not mutate a measured voice session behind its
+executor.</li>
+<li>Supply local handling for callback routes where feasible. Explain
+the public callback URL requirement when the provider must reach the
+server.</li>
+<li>Track catalog, editing, validation, execution, account restrictions,
+lifecycle, and live verification separately for each operation.</li>
+<li>Show restrictions and missing entitlements in the interface. Do not
+hide gaps or invent a default.</li>
+<li>Add explicit intent checks for destructive and billable
+administrative operations. Catalog loading must never launch a paid
+job.</li>
+<li>Exercise all execution shapes with contract fixtures. Use authorized
+live checks across the available service families.</li>
+</ol>
+<p><strong>Gate</strong></p>
+<p>Every currently offered operation in the reconciled inventory has an
+implementation disposition. All applicable fields can be represented
+without loss, validated, and sent through the correct handler. Any
+missing handler is incomplete implementation, not an account
+restriction.</p>
+<p>Provider-restricted live tests can remain explicitly unverified. They
+must not appear as passed. Full source coverage does not mean that every
+endpoint was exercised against a live account.</p>
+<p><strong>Evidence</strong></p>
+<p>An operation-level coverage report with source references, handler,
+schema tests, account restrictions, live test IDs, and gaps. Recompute
+the denominator from current sources. Do not use 354 as a fixed
+completion target.</p>
+<h3 id="b7-production-verification-and-delivery">B7 — Production
+verification and delivery</h3>
+<p><strong>Work</strong></p>
+<ol type="1">
+<li>Repair integration failures across B1–B6. Remove dead controls,
+placeholder responses, and production fallbacks to mock data.</li>
+<li>Run type checks, builds, unit tests, integration tests, and browser
+tests. Confirm that the expected tests actually executed.</li>
+<li>Test the final layouts against all three visual targets at 1440 ×
+1024 and 1280 × 800.</li>
+<li>Test keyboard use, input focus, screen readers, contrast, reduced
+motion, 200% zoom, and reflow against WCAG 2.2 AA.</li>
+<li>Inspect built assets, logs, diagnostics, exports, URLs, and source
+maps for secret canaries. Check Origin/Host enforcement, OAuth state,
+callback handling, and connection allowlists.</li>
+<li>Test clean installation, startup, shutdown, restart, schema
+migration, backup, and recovery on Windows and macOS.</li>
+<li>Keep raw study data out of source control. Keep sanitized
+verification evidence separate from private test records.</li>
+<li>Verify the portable runtime with an independent account binding. Do
+not describe an isolated test account as a completed teammate usability
+test.</li>
+<li>Write setup, maintenance, credential, connection, cost,
+troubleshooting, and release documentation.</li>
+<li>Build a release archive with source/version identity and checksums.
+Keep publication local unless separately authorized.</li>
+</ol>
+<p><strong>Gate</strong></p>
+<p>Apply the readiness decision in section 8. Fix any code-caused
+failure before ending. If an external prerequisite prevents a mandatory
+test, deliver a release candidate with that gate blocked.</p>
+<h2 id="first-complete-experiment">6. First complete experiment</h2>
+<p>Use the optional Calendar example only as a validation fixture. Sona
+must still permit other agents and tasks.</p>
+<ol type="1">
+<li>Add a neutral demonstration agent through the UI. Connect the
+dedicated test calendar.</li>
+<li>Duplicate its condition. Use two officially supported speed values
+after capability verification. The existing example suggests 0.85 and
+1.15.</li>
+<li>Keep prompt, model, voice, language, devices, tools, and
+confirmation policy fixed.</li>
+<li>Use a researcher participant with Researcher view. Obtain consent
+and complete A/B runs in a recorded order.</li>
+<li>Read calendar availability, propose an appointment, obtain spoken
+approval, and create the event once.</li>
+<li>Include a rejection, an interrupted proposal, and a service failure.
+Preserve the true outcomes.</li>
+<li>Repeat the voice and approval checks in Korean with a separate
+language condition.</li>
+<li>Exercise Participant view in a separate planned condition. Do not
+mix the two views into a clean comparison.</li>
+<li>Add ratings and coded outcomes. Compare conditions with counts and
+missing values visible.</li>
+<li>Export JSON, CSV, and the agent configuration. Operate the exported
+agent through the example runtime.</li>
+</ol>
+<p>This is a functional test, not a claim of statistical significance or
+an optimal configuration.</p>
+<h2 id="requirement-coverage">7. Requirement coverage</h2>
+<p>Each identifier needs implementation evidence and a verification
+disposition.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>PRD requirement</th>
+<th>Build packages</th>
+<th>Required evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>AG-01</td>
+<td>B2, B3</td>
+<td>Add a second agent without application-code changes.</td>
+</tr>
+<tr class="even">
+<td>CF-01</td>
+<td>B3, B4</td>
+<td>Immutable revisions, duplication, history, and field
+differences.</td>
+</tr>
+<tr class="odd">
+<td>CF-02</td>
+<td>B0, B2, B3</td>
+<td>Schema validation and requested/returned/observed records.</td>
+</tr>
+<tr class="even">
+<td>AP-01</td>
+<td>B0, B6</td>
+<td>Reconciled operation inventory with no unexplained omissions.</td>
+</tr>
+<tr class="odd">
+<td>AP-02</td>
+<td>B3, B6</td>
+<td>Lossless Form/JSON editing and parameter validation.</td>
+</tr>
+<tr class="even">
+<td>AP-03</td>
+<td>B6</td>
+<td>All necessary execution shapes with truthful live-test status.</td>
+</tr>
+<tr class="odd">
+<td>CN-00</td>
+<td>B1</td>
+<td>Existing-account reuse result or documented failure and
+fallback.</td>
+</tr>
+<tr class="even">
+<td>CN-01</td>
+<td>B1, B3</td>
+<td>Definition import, authorization, discovery, and tool
+restrictions.</td>
+</tr>
+<tr class="odd">
+<td>CN-02</td>
+<td>B1, B3</td>
+<td>Source/runtime versions, schema hashes, and change handling.</td>
+</tr>
+<tr class="even">
+<td>VS-01</td>
+<td>B2, B7</td>
+<td>Actual English/Korean microphone and speaker sessions.</td>
+</tr>
+<tr class="odd">
+<td>VS-02</td>
+<td>B2, B4</td>
+<td>Interruption, mute, end, connection loss, and recovery.</td>
+</tr>
+<tr class="even">
+<td>TL-01</td>
+<td>B1, B3</td>
+<td>Actual reads, approved writes, and rejected writes.</td>
+</tr>
+<tr class="odd">
+<td>TL-02</td>
+<td>B3</td>
+<td>Duplicate prevention and unknown-result reconciliation.</td>
+</tr>
+<tr class="even">
+<td>EX-01</td>
+<td>B4, B5</td>
+<td>Tasks, conditions, ordering, notes, and ratings.</td>
+</tr>
+<tr class="odd">
+<td>EV-01</td>
+<td>B2, B4, B5</td>
+<td>Snapshots, transcript sources, events, clocks, and gaps.</td>
+</tr>
+<tr class="even">
+<td>EV-02</td>
+<td>B5</td>
+<td>Descriptive comparisons and linked JSON/CSV exports.</td>
+</tr>
+<tr class="odd">
+<td>PT-01</td>
+<td>B3, B5, B7</td>
+<td>Exported agent operates without the study database.</td>
+</tr>
+<tr class="even">
+<td>DH-01</td>
+<td>B0, B4, B5</td>
+<td>Consent, redaction, retention, deletion, and safe exports.</td>
+</tr>
+<tr class="odd">
+<td>DX-01</td>
+<td>B0, B7</td>
+<td>Documented installation and an independent teammate setup
+result.</td>
+</tr>
+<tr class="even">
+<td>UX-01</td>
+<td>B2, B4, B7</td>
+<td>Saved context and measured interaction targets.</td>
+</tr>
+<tr class="odd">
+<td>UX-02</td>
+<td>B3, B4</td>
+<td>Optional Participant view and verified confirmation behavior.</td>
+</tr>
+<tr class="even">
+<td>UX-03</td>
+<td>B2, B4, B7</td>
+<td>Laptop layouts, accessibility, and failure recovery.</td>
+</tr>
+<tr class="odd">
+<td>UX-04</td>
+<td>B2, B4</td>
+<td>Researcher controls and evidence during researcher
+participation.</td>
+</tr>
+<tr class="even">
+<td>UX-05</td>
+<td>B4, B5</td>
+<td>Device/view controls, event records, and protocol deviations.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="release-decision-and-evidence">8. Release decision and
+evidence</h2>
+<p>Keep implementation status separate from test status. A blocked or
+skipped test is not a pass.</p>
+<h3 id="production-ready-local-v1">Production-ready local v1</h3>
+<p>Use this status only when all mandatory conditions below are
+satisfied:</p>
+<ul>
+<li>The full PRD feature set is implemented, including the API library
+and portable runtime.</li>
+<li>Core voice, Calendar reads/writes, approval, recovery, persistence,
+and export have successful real-service results.</li>
+<li>The claimed Windows/macOS environments have successful real-device
+evidence.</li>
+<li>Consent, credentials, local-server access, redaction, retention, and
+deletion checks pass.</li>
+<li>Researcher participation and optional Participant view behave as
+specified.</li>
+<li>Build, migration, installation, and accessibility checks have no
+unresolved release-blocking failure.</li>
+<li>Independent teammate setup, configuration portability, and the PRD’s
+researcher usability checks have evidence. Automated clean-install tests
+do not substitute for a teammate or participant.</li>
+<li>API coverage gaps are classified. Account-restricted verification is
+visible, and missing implementation is not concealed.</li>
+</ul>
+<p>Do not claim that all OpenAI APIs are live-tested unless the
+operation records prove it. Do not claim that the application removes
+third-party service limits.</p>
+<h3 id="release-candidate-verification-blocked">Release candidate —
+verification blocked</h3>
+<p>Use this status when implementation is complete but a mandatory
+external test lacks credentials, permissions, a device, or independent
+teammate access. Deliver all code and executable tests. Identify the
+missing prerequisite and the exact test command.</p>
+<p>A missing prerequisite must not become a reason to stop unrelated
+work. No user response is needed to complete the release candidate.</p>
+<h3 id="incomplete">Incomplete</h3>
+<p>Use this status if required code or a handler remains missing, or a
+code-caused test failure remains unresolved. Do not rename missing
+implementation as a verification blocker.</p>
+<h3 id="evidence-record">Evidence record</h3>
+<p>For each test, save its requirement IDs, application revision,
+capability revision, environment, account class, timestamp, command,
+result, and sanitized artifact path. Keep actual secrets and participant
+records out of these artifacts.</p>
+<p>For live tests, include provider request/session IDs and
+test-resource IDs after appropriate redaction. For device tests, include
+OS, browser, microphone/output route, language, and the observed
+result.</p>
+<h2 id="execution-log-and-delivery-contract">9. Execution log and
+delivery contract</h2>
+<p>Maintain <code>docs/implementation/execution-log.md</code> during the
+build. Record the active package, completed work, decisions, test
+results, failures, external blockers, and the next useful action.</p>
+<p>The log must permit another Astra turn to continue without asking the
+user to reconstruct context. Record files and revisions, not only prose
+claims.</p>
+<p>Provide these commands with their documented meanings. They are
+proposed command names until B0 implements them:</p>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Command</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>pnpm install --frozen-lockfile</code></td>
+<td>Reproduce dependency installation.</td>
+</tr>
+<tr class="even">
+<td><code>pnpm dev</code></td>
+<td>Start browser and server development processes.</td>
+</tr>
+<tr class="odd">
+<td><code>pnpm build</code></td>
+<td>Build the local production application.</td>
+</tr>
+<tr class="even">
+<td><code>pnpm start</code></td>
+<td>Start the built application and apply supported startup
+migrations.</td>
+</tr>
+<tr class="odd">
+<td><code>pnpm check</code></td>
+<td>Type checks and static code checks.</td>
+</tr>
+<tr class="even">
+<td><code>pnpm test</code></td>
+<td>Unit and integration tests with a test-count report.</td>
+</tr>
+<tr class="odd">
+<td><code>pnpm test:e2e</code></td>
+<td>Browser workflows with synthetic fixtures clearly identified.</td>
+</tr>
+<tr class="even">
+<td><code>pnpm test:live</code></td>
+<td>Opt-in service/device checks with prerequisite and budget
+checks.</td>
+</tr>
+<tr class="odd">
+<td><code>pnpm coverage:api</code></td>
+<td>Operation and parameter implementation/verification report.</td>
+</tr>
+<tr class="even">
+<td><code>pnpm example:agent</code></td>
+<td>Operate a supplied portable agent configuration.</td>
+</tr>
+<tr class="odd">
+<td><code>pnpm package</code></td>
+<td>Make the local release archive and checksums.</td>
+</tr>
+</tbody>
+</table>
+<p>Do not call a proposed command verified until it exists and succeeds
+on the reported revision.</p>
+<p>Deliver the application, example runtime, migrations, tests, setup
+guide, API coverage report, requirement evidence, and release archive.
+Document normal first-use authentication. A new teammate must supply
+their own authorized credentials.</p>
+<p>The final response must contain the readiness status, startup
+instructions, passed verification, remaining restrictions, and artifact
+paths. It must not end with a routine permission question or an offer to
+do work that remains authorized.</p>
+<h2 id="scope-protection">10. Scope protection</h2>
+<p>Use the existing design instead of another design-selection cycle.
+Use the official ASD-STE100 specification for editorial work. Do not run
+the archived Python language checker or replace it with another
+automatic compliance score.</p>
+<p>Do not reduce full v1 to the early voice milestone. Do not add
+another AI provider, a remote observer console, a maintainer dashboard,
+or shared hosting to compensate for an integration blocker.</p>
+<p>If a provider capability is unavailable, represent that fact
+accurately. Implement the documented fallback when it meets the PRD.
+Otherwise, record the unresolved capability and continue all other
+work.</p>
+</body>
+</html>
