@@ -5,7 +5,7 @@
 Sona local v1 is implemented. Local automated checks and release installation checks are recorded separately from real service results.
 The evidence does not support the status **Production-ready local v1**.
 
-Application version: `1.0.0-rc.1`. Review date: 6 October 2026, UTC.
+Application version: `1.0.0`. Review date: 6 October 2026, UTC.
 Product authority: PRD 1.0. Capability revision: `openai-2026-10-06-491c868adbdb`.
 The archive manifest identifies all source and build files, including uncommitted work.
 
@@ -80,7 +80,7 @@ These limits are visible in setup and verification records. They are not mock re
 
 ## Start the release
 
-Use Node 24.19.0 and pnpm 11.19.0. Extract `release/sona-1.0.0-rc.1-local.tar.gz`.
+Use Node 24.19.0 and pnpm 11.19.0. Extract `release/sona-1.0.0-local.tar.gz`.
 
 ```sh
 pnpm install --frozen-lockfile

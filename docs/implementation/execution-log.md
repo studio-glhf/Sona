@@ -118,3 +118,9 @@ The final release command is `pnpm package`. The extracted-release command is `p
 This report stays outside the archive to avoid a checksum that refers to itself.
 Use that report, the archive checksum, and the per-file manifest as the final delivery evidence.
 The saved cloud setup draft remains unpublished. No external deployment or production resource change occurred.
+
+## Version 1.0.0 starting point — 9 October 2026, Asia/Seoul
+
+The user requested a committed and pushed GitHub baseline before feature changes.
+The application version is 1.0.0. This version identifies the starting point; it does not remove the blocked live verification gates.
+The GUI credential and interface updates will use separate feature branches and subagent pull requests.
