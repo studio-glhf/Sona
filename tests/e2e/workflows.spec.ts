@@ -290,6 +290,14 @@ test("Settings adds and removes a server-memory API key without browser storage"
   const canary =
     "sk-proj-SonaGuiSyntheticKeyNeverUsedForProviderCalls1234567890";
   await page.goto("/");
+  const creation = page.waitForResponse(
+    (r) =>
+      r.request().method() === "POST" &&
+      new URL(r.url()).pathname === "/api/agents",
+  );
+  await page.getByRole("button", { name: "New agent", exact: true }).click();
+  const agentName = (await (await creation).json()).name;
+  await expect(page.locator(".workspace-header h1")).toHaveText(agentName);
   await page.getByRole("button", { name: "Settings", exact: true }).click();
   const settings = page.locator(".settings-page");
   await expect(
@@ -377,11 +385,7 @@ test("Settings adds and removes a server-memory API key without browser storage"
     await expect(settings.getByRole("alert")).toHaveCount(0);
     expect(await settings.innerText()).not.toContain(canary);
     // A successful save updates the workspace even when bootstrap cannot refresh.
-    await page
-      .getByRole("button")
-      .filter({ hasText: /^Agent \d+$/ })
-      .first()
-      .click();
+    await page.getByRole("button", { name: agentName, exact: true }).click();
     await expect(
       page.getByRole("button", { name: "Add API key", exact: true }),
     ).toHaveCount(0);
@@ -415,6 +419,59 @@ test("Settings adds and removes a server-memory API key without browser storage"
         targets: v.nodes.map((n) => n.target),
       })),
     ).toEqual([]);
+    // Hold a real autosave so bootstrap still contains the previous draft.
+    // A credential refresh must not replace this in-progress editor state.
+    await page.getByRole("button", { name: agentName, exact: true }).click();
+    await page.getByRole("tab", { name: "Instructions", exact: true }).click();
+    const draftText =
+      "Draft preserved during a credential refresh. Respond in English.";
+    let releaseDraft!: () => void;
+    const heldDraft = new Promise<void>((resolve) => {
+      releaseDraft = resolve;
+    });
+    const agentRoute = "**/api/agents/*";
+    await page.route(agentRoute, async (route) => {
+      if (route.request().method() === "PATCH") await heldDraft;
+      await route.continue();
+    });
+    const draftRequest = page.waitForRequest(
+      (r) => r.method() === "PATCH" && r.url().includes("/api/agents/"),
+    );
+    const draftResponse = page.waitForResponse(
+      (r) =>
+        r.request().method() === "PATCH" && r.url().includes("/api/agents/"),
+    );
+    try {
+      await page
+        .getByLabel("Agent instructions", { exact: true })
+        .fill(draftText);
+      await draftRequest;
+      await page.getByRole("button", { name: "Settings", exact: true }).click();
+      await field.fill(canary);
+      const refreshed = page.waitForResponse(
+        (r) =>
+          r.request().method() === "GET" && r.url().endsWith("/api/bootstrap"),
+      );
+      await settings
+        .getByRole("button", { name: "Save key", exact: true })
+        .click();
+      expect((await refreshed).ok()).toBe(true);
+      await expect(
+        settings.getByText("API key saved for this Sona run.", { exact: true }),
+      ).toBeVisible();
+      await page.getByRole("button", { name: agentName, exact: true }).click();
+      await page
+        .getByRole("tab", { name: "Instructions", exact: true })
+        .click();
+      await expect(
+        page.getByLabel("Agent instructions", { exact: true }),
+      ).toHaveValue(draftText);
+    } finally {
+      releaseDraft();
+      expect((await draftResponse).ok()).toBe(true);
+      await page.unroute(agentRoute);
+    }
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
     await page.route(bootstrapRoute, (route) =>
       route.fulfill({
         status: 503,
@@ -441,11 +498,7 @@ test("Settings adds and removes a server-memory API key without browser storage"
     await page.unroute(bootstrapRoute);
     const cleared = await (await page.request.get("/api/bootstrap")).json();
     expect(cleared.readiness.openaiConfigured).toBe(false);
-    await page
-      .getByRole("button")
-      .filter({ hasText: /^Agent \d+$/ })
-      .first()
-      .click();
+    await page.getByRole("button", { name: agentName, exact: true }).click();
     await expect(
       page.getByRole("button", { name: "Add API key", exact: true }),
     ).toBeVisible();

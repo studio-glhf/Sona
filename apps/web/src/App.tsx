@@ -88,6 +88,21 @@ export default function App() {
     setSessions(collection(result.sessions, "sessions"));
     setConnections(collection(result.connections, "connections"));
   };
+  const refreshReadiness = async () => {
+    const result = await api("/bootstrap");
+    setLocalToken(result.csrfToken);
+    setData((previous: Json) =>
+      previous
+        ? {
+            ...previous,
+            csrfToken: result.csrfToken,
+            version: result.version,
+            credentials: result.credentials,
+            readiness: result.readiness,
+          }
+        : previous,
+    );
+  };
   useEffect(() => {
     void refresh().catch((e) => setError(e.message));
   }, []);
@@ -746,16 +761,26 @@ export default function App() {
           <WorkspaceSettings
             version={data.version}
             active={voice.active}
-            onRefresh={refresh}
+            onRefresh={refreshReadiness}
             onCredentialChange={(configured) =>
               setData((previous: Json) =>
                 previous
                   ? {
                       ...previous,
+                      credentials: {
+                        openai: {
+                          configured,
+                          source: configured ? "session" : "none",
+                          storage: "memory",
+                        },
+                      },
                       readiness: {
                         ...previous.readiness,
                         openaiConfigured: configured,
                         modelsVerified: [],
+                        missing: configured
+                          ? []
+                          : ["Add your OpenAI API key in Settings."],
                       },
                     }
                   : previous,
