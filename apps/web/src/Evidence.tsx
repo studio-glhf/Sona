@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Activity } from "lucide-react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -165,13 +166,7 @@ export function Evidence({
       <div className="evidence-body">
         {recorded && session?.snapshot?.consent && (
           <details className="evidence-caption">
-            <summary>Consent and retention</summary>
-            <p>
-              Consent {session.snapshot.consent.scope} · Policy{" "}
-              {session.snapshot.consent.policyVersion} · Local retention{" "}
-              {session.snapshot.retentionDays ?? 30} days. Raw audio is not
-              saved.
-            </p>
+            <summary>Participant agreement</summary>
             <ActionButton
               disabled={withdrawn}
               action={async () => {
@@ -193,236 +188,262 @@ export function Evidence({
             </ActionButton>
           </details>
         )}
-        {!recorded && (
-          <p className="evidence-caption">
-            Live evidence — not saved. Closing this result or starting another
-            test removes this evidence.
-          </p>
+        {!recorded && session && (
+          <p className="evidence-caption">Live evidence · Not saved</p>
         )}
-        {tab === "Transcript" && (
-          <>
-            {transcript.size === 0 ? (
-              <Empty title="Your conversation appears here">
-                Start a voice test. Participant speech appears only when input
-                transcription is on.
-              </Empty>
-            ) : (
-              [...transcript.values()].map((line) => (
-                <article className="transcript-line" key={line.key}>
-                  <div className={`avatar ${line.participant ? "" : "agent"}`}>
-                    {line.participant ? "P" : "S"}
-                  </div>
-                  <div>
-                    <div className="transcript-meta">
-                      <strong>
-                        {line.participant ? "Participant" : "Agent"}
-                      </strong>
-                      <span>
-                        {line.source} · {line.final ? "Final" : "Partial"}
-                      </span>
-                    </div>
-                    <p>{line.text}</p>
-                  </div>
-                </article>
-              ))
-            )}
-            {transcript.size > 0 && (
-              <p className="muted small">
-                Input transcripts are independent from voice perception.
-                Generated text can include speech that was not heard.
-              </p>
-            )}
-          </>
-        )}
-        {tab === "Events" && (
-          <>
-            {events.length === 0 ? (
-              <Empty title="No events yet">
-                Connection, speech, tools, interruptions, and device changes
-                appear in the timeline.
-              </Empty>
-            ) : (
-              <ol className="timeline">
-                {events.map((event, index) => (
-                  <li key={event.id ?? event.event_id ?? index}>
-                    <details>
-                      <summary>
-                        <time>
-                          {event.receivedAt
-                            ? new Date(event.receivedAt).toLocaleTimeString()
-                            : String(index + 1).padStart(3, "0")}
-                        </time>
-                        <strong>
-                          {event.type ?? event.payload?.type ?? "Event"}
-                        </strong>
-                        <span>{event.source ?? event.clockSource ?? ""}</span>
-                      </summary>
-                      <pre>{pretty(event)}</pre>
-                    </details>
-                  </li>
-                ))}
-              </ol>
-            )}
-          </>
-        )}
-        {tab === "Charts" && (
-          <>
-            <h3>Response-start latency · s</h3>
-            <p className="muted">
-              Server speech-stop receipt to audio-stream-start receipt. This
-              does not measure physical speech-to-speaker delay.
+        {!session && !events.length ? (
+          <div className="evidence-welcome">
+            <Activity size={22} aria-hidden="true" />
+            <h3>
+              {tab === "Notes"
+                ? "Make space for what you learn"
+                : "Listen. Explore. Learn."}
+            </h3>
+            <p>
+              {tab === "Notes"
+                ? "Your notes and ratings will be ready after you start a test."
+                : "Start a voice test to see the conversation, events, and measurements here."}
             </p>
-            {points.length ? (
+          </div>
+        ) : (
+          <>
+            {tab === "Transcript" && (
               <>
-                <ResponsiveContainer width="100%" height={230}>
-                  <LineChart data={points}>
-                    <CartesianGrid stroke="#3c3c3c" />
-                    <XAxis dataKey="turn" stroke="#b4b4b4" />
-                    <YAxis unit=" s" stroke="#b4b4b4" />
-                    <Tooltip />
-                    <Line
-                      dataKey="seconds"
-                      stroke="#438fff"
-                      connectNulls={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-                <table>
-                  <caption>Response latency measurements</caption>
-                  <thead>
-                    <tr>
-                      <th>Turn</th>
-                      <th>Seconds</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {points.map((p: Json) => (
-                      <tr key={p.turn}>
-                        <td>{p.turn}</td>
-                        <td>{p.seconds}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </>
-            ) : (
-              <Empty title="No valid measurements">
-                Missing:{" "}
-                {metrics.responseLatencyMissingReason ??
-                  "The required server events or a common clock are not available."}
-              </Empty>
-            )}
-            <h3>Tool latency</h3>
-            <p className="muted">
-              Dispatch to result or error, for each visible attempt. Approval
-              wait is separate.
-            </p>
-            {(runtime?.actions ?? []).length ? (
-              (runtime.actions as Json[]).map((action) => (
-                <details key={action.id}>
-                  <summary>
-                    {action.toolName ?? action.tool} ·{" "}
-                    {action.status ?? action.state}
-                  </summary>
-                  <pre>{pretty(reconciled[action.id] ?? action)}</pre>
-                  {(reconciled[action.id]?.state ?? action.state) ===
-                    "unknown" && (
-                    <>
-                      <p>
-                        The external result is unknown. Reconciliation uses a
-                        configured read. It does not repeat the write.
-                      </p>
-                      <ActionButton
-                        action={async () => {
-                          const next = await api(
-                            `/actions/${encodeURIComponent(action.id)}/reconcile`,
-                            {},
-                          );
-                          setReconciled({ ...reconciled, [action.id]: next });
-                          onUpdated?.();
-                        }}
+                {transcript.size === 0 ? (
+                  <Empty title="Your conversation appears here">
+                    Start a voice test. Participant speech appears only when
+                    input transcription is on.
+                  </Empty>
+                ) : (
+                  [...transcript.values()].map((line) => (
+                    <article className="transcript-line" key={line.key}>
+                      <div
+                        className={`avatar ${line.participant ? "" : "agent"}`}
                       >
-                        Reconcile result
-                      </ActionButton>
-                    </>
-                  )}
-                </details>
-              ))
-            ) : (
-              <p className="muted">No tool attempts in this session.</p>
+                        {line.participant ? "P" : "S"}
+                      </div>
+                      <div>
+                        <div className="transcript-meta">
+                          <strong>
+                            {line.participant ? "Participant" : "Agent"}
+                          </strong>
+                          <span>
+                            {line.source} · {line.final ? "Final" : "Partial"}
+                          </span>
+                        </div>
+                        <p>{line.text}</p>
+                      </div>
+                    </article>
+                  ))
+                )}
+                {transcript.size > 0 && (
+                  <p className="muted small">
+                    Input transcripts are independent from voice perception.
+                    Generated text can include speech that was not heard.
+                  </p>
+                )}
+              </>
             )}
+            {tab === "Events" && (
+              <>
+                {events.length === 0 ? (
+                  <Empty title="No events yet">
+                    Connection, speech, tools, interruptions, and device changes
+                    appear in the timeline.
+                  </Empty>
+                ) : (
+                  <ol className="timeline">
+                    {events.map((event, index) => (
+                      <li key={event.id ?? event.event_id ?? index}>
+                        <details>
+                          <summary>
+                            <time>
+                              {event.receivedAt
+                                ? new Date(
+                                    event.receivedAt,
+                                  ).toLocaleTimeString()
+                                : String(index + 1).padStart(3, "0")}
+                            </time>
+                            <strong>
+                              {event.type ?? event.payload?.type ?? "Event"}
+                            </strong>
+                            <span>
+                              {event.source ?? event.clockSource ?? ""}
+                            </span>
+                          </summary>
+                          <pre>{pretty(event)}</pre>
+                        </details>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </>
+            )}
+            {tab === "Charts" && (
+              <>
+                <h3>Response-start latency · s</h3>
+                <p className="muted">
+                  Server speech-stop receipt to audio-stream-start receipt. This
+                  does not measure physical speech-to-speaker delay.
+                </p>
+                {points.length ? (
+                  <>
+                    <ResponsiveContainer width="100%" height={230}>
+                      <LineChart data={points}>
+                        <CartesianGrid stroke="#3c3c3c" />
+                        <XAxis dataKey="turn" stroke="#b4b4b4" />
+                        <YAxis unit=" s" stroke="#b4b4b4" />
+                        <Tooltip />
+                        <Line
+                          dataKey="seconds"
+                          stroke="#438fff"
+                          connectNulls={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                    <table>
+                      <caption>Response latency measurements</caption>
+                      <thead>
+                        <tr>
+                          <th>Turn</th>
+                          <th>Seconds</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {points.map((p: Json) => (
+                          <tr key={p.turn}>
+                            <td>{p.turn}</td>
+                            <td>{p.seconds}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </>
+                ) : (
+                  <Empty title="No valid measurements">
+                    Missing:{" "}
+                    {metrics.responseLatencyMissingReason ??
+                      "The required server events or a common clock are not available."}
+                  </Empty>
+                )}
+                <h3>Tool latency</h3>
+                <p className="muted">
+                  Dispatch to result or error, for each visible attempt.
+                  Approval wait is separate.
+                </p>
+                {(runtime?.actions ?? []).length ? (
+                  (runtime.actions as Json[]).map((action) => (
+                    <details key={action.id}>
+                      <summary>
+                        {action.toolName ?? action.tool} ·{" "}
+                        {action.status ?? action.state}
+                      </summary>
+                      <pre>{pretty(reconciled[action.id] ?? action)}</pre>
+                      {(reconciled[action.id]?.state ?? action.state) ===
+                        "unknown" && (
+                        <>
+                          <p>
+                            The external result is unknown. Reconciliation uses
+                            a configured read. It does not repeat the write.
+                          </p>
+                          <ActionButton
+                            action={async () => {
+                              const next = await api(
+                                `/actions/${encodeURIComponent(action.id)}/reconcile`,
+                                {},
+                              );
+                              setReconciled({
+                                ...reconciled,
+                                [action.id]: next,
+                              });
+                              onUpdated?.();
+                            }}
+                          >
+                            Reconcile result
+                          </ActionButton>
+                        </>
+                      )}
+                    </details>
+                  ))
+                ) : (
+                  <p className="muted">No tool attempts in this session.</p>
+                )}
+              </>
+            )}
+            {tab === "Notes" && (
+              <>
+                <div className="row spread">
+                  <h3>Outcomes and notes</h3>
+                  <SaveState
+                    status={recorded ? saveStatus : "Temporary — not saved"}
+                  />
+                </div>
+                <label className="field">
+                  Task outcome
+                  <select
+                    value={taskResult}
+                    onChange={(e) => setTaskResult(e.target.value)}
+                  >
+                    <option value="unknown">Unknown</option>
+                    <option value="success">Success</option>
+                    <option value="partial">Partial success</option>
+                    <option value="failure">Failure</option>
+                  </select>
+                </label>
+                <label className="field">
+                  Researcher notes
+                  <textarea
+                    value={notes}
+                    rows={6}
+                    onChange={(e) => setNotes(e.target.value)}
+                  />
+                </label>
+                <label className="field">
+                  Error and recovery codes
+                  <input
+                    value={codes}
+                    onChange={(e) => setCodes(e.target.value)}
+                    placeholder="Separate codes with commas"
+                  />
+                </label>
+                <h3>Participant ratings</h3>
+                {measures.map((m: Json) => (
+                  <label className="field" key={m.id}>
+                    {m.question}
+                    <select
+                      value={ratings[m.id] ?? ""}
+                      onChange={(e) =>
+                        setRatings({
+                          ...ratings,
+                          [m.id]:
+                            e.target.value === ""
+                              ? null
+                              : Number(e.target.value),
+                        })
+                      }
+                    >
+                      <option value="">Skipped / missing</option>
+                      {Array.from(
+                        { length: (m.max ?? 7) - (m.min ?? 1) + 1 },
+                        (_, i) => i + (m.min ?? 1),
+                      ).map((value) => (
+                        <option key={value} value={value}>
+                          {value}
+                          {value === m.min
+                            ? ` — ${m.lowAnchor ?? m.low}`
+                            : value === m.max
+                              ? ` — ${m.highAnchor ?? m.high}`
+                              : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                ))}
+              </>
+            )}
+            {error && <Notice error>{error}</Notice>}
           </>
         )}
-        {tab === "Notes" && (
-          <>
-            <div className="row spread">
-              <h3>Outcomes and notes</h3>
-              <SaveState
-                status={recorded ? saveStatus : "Temporary — not saved"}
-              />
-            </div>
-            <label className="field">
-              Task outcome
-              <select
-                value={taskResult}
-                onChange={(e) => setTaskResult(e.target.value)}
-              >
-                <option value="unknown">Unknown</option>
-                <option value="success">Success</option>
-                <option value="partial">Partial success</option>
-                <option value="failure">Failure</option>
-              </select>
-            </label>
-            <label className="field">
-              Researcher notes
-              <textarea
-                value={notes}
-                rows={6}
-                onChange={(e) => setNotes(e.target.value)}
-              />
-            </label>
-            <label className="field">
-              Error and recovery codes
-              <input
-                value={codes}
-                onChange={(e) => setCodes(e.target.value)}
-                placeholder="Separate codes with commas"
-              />
-            </label>
-            <h3>Participant ratings</h3>
-            {measures.map((m: Json) => (
-              <label className="field" key={m.id}>
-                {m.question}
-                <select
-                  value={ratings[m.id] ?? ""}
-                  onChange={(e) =>
-                    setRatings({
-                      ...ratings,
-                      [m.id]:
-                        e.target.value === "" ? null : Number(e.target.value),
-                    })
-                  }
-                >
-                  <option value="">Skipped / missing</option>
-                  {Array.from(
-                    { length: (m.max ?? 7) - (m.min ?? 1) + 1 },
-                    (_, i) => i + (m.min ?? 1),
-                  ).map((value) => (
-                    <option key={value} value={value}>
-                      {value}
-                      {value === m.min
-                        ? ` — ${m.lowAnchor ?? m.low}`
-                        : value === m.max
-                          ? ` — ${m.highAnchor ?? m.high}`
-                          : ""}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            ))}
-          </>
-        )}
-        {error && <Notice error>{error}</Notice>}
       </div>
     </section>
   );

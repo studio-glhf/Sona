@@ -283,3 +283,120 @@ test("native controls preserve a custom voice and show missing provider evidence
     data: { draft: agent.draft },
   });
 });
+
+test("Settings adds and removes a server-memory API key without browser storage", async ({
+  page,
+}) => {
+  const canary =
+    "sk-proj-SonaGuiSyntheticKeyNeverUsedForProviderCalls1234567890";
+  await page.goto("/");
+  await page.getByRole("button", { name: "Settings", exact: true }).click();
+  const settings = page.locator(".settings-page");
+  await expect(
+    settings.getByText("No API key added", { exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText("Data policy", { exact: true })).toHaveCount(0);
+  await expect(page.getByText(/Set OPENAI_API_KEY/)).toHaveCount(0);
+  const field = page.getByLabel("OpenAI API key", { exact: true });
+  await expect(field).toHaveAttribute("type", "password");
+  await expect(
+    settings.getByRole("button", { name: "Save key", exact: true }),
+  ).toBeDisabled();
+  try {
+    await field.fill(canary);
+    const saved = page.waitForResponse(
+      (r) =>
+        r.request().method() === "PUT" &&
+        r.url().endsWith("/api/settings/credentials/openai"),
+    );
+    await settings
+      .getByRole("button", { name: "Save key", exact: true })
+      .click();
+    const response = await saved;
+    expect(response.ok()).toBe(true);
+    expect(await response.text()).not.toContain(canary);
+    await expect(field).toHaveValue("");
+    await expect(
+      settings.getByText("API key added", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      settings.getByText("API key saved for this Sona run.", { exact: true }),
+    ).toBeVisible();
+    const bootstrap = await (await page.request.get("/api/bootstrap")).json();
+    expect(bootstrap.readiness.openaiConfigured).toBe(true);
+    expect(JSON.stringify(bootstrap)).not.toContain(canary);
+    const browserStorage = await page.evaluate(() => ({
+      local: { ...localStorage },
+      session: { ...sessionStorage },
+    }));
+    expect(JSON.stringify(browserStorage)).not.toContain(canary);
+    await page.reload();
+    await page.getByRole("button", { name: "Settings", exact: true }).click();
+    await expect(
+      settings.getByText("API key added", { exact: true }),
+    ).toBeVisible();
+    await expect(
+      page.getByLabel("OpenAI API key", { exact: true }),
+    ).toHaveValue("");
+    const result = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
+      .analyze();
+    expect(
+      result.violations.map((v) => ({
+        id: v.id,
+        targets: v.nodes.map((n) => n.target),
+      })),
+    ).toEqual([]);
+    await settings
+      .getByRole("button", { name: "Remove key", exact: true })
+      .click();
+    await expect(
+      settings.getByText("No API key added", { exact: true }),
+    ).toBeVisible();
+    const cleared = await (await page.request.get("/api/bootstrap")).json();
+    expect(cleared.readiness.openaiConfigured).toBe(false);
+    await page
+      .getByRole("button")
+      .filter({ hasText: /^Agent \d+$/ })
+      .first()
+      .click();
+    await expect(
+      page.getByRole("button", { name: "Add API key", exact: true }),
+    ).toBeVisible();
+  } finally {
+    const bootstrap = await (await page.request.get("/api/bootstrap")).json();
+    await page.request.delete("/api/settings/credentials/openai", {
+      headers: { "X-Sona-Token": bootstrap.csrfToken },
+    });
+  }
+});
+
+test("quick tests open directly with calm evidence and no processing-notice gate", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("tab", { name: "Notes", exact: true }).click();
+  await expect(
+    page.getByText("Make space for what you learn", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByLabel("Researcher notes", { exact: true }),
+  ).toHaveCount(0);
+  const submitted = page.waitForRequest(
+    (r) =>
+      r.method() === "POST" && new URL(r.url()).pathname === "/api/sessions",
+  );
+  await page
+    .getByRole("button", { name: "Start quick test", exact: true })
+    .click();
+  const request = await submitted;
+  expect(request.postDataJSON().mode).toBe("quick");
+  expect(request.postDataJSON().processingAccepted).toBeUndefined();
+  expect(request.postDataJSON().consent).toBeUndefined();
+  await expect(
+    page.getByRole("dialog", { name: "Voice processing notice" }),
+  ).toHaveCount(0);
+  expect(
+    await page.evaluate(() => localStorage.getItem("sona-processing-accepted")),
+  ).toBeNull();
+});

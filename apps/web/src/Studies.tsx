@@ -522,25 +522,6 @@ export function StudyPage({
             participant, before breaks. Focus on one comparison before adding
             combinations.
           </p>
-          <label className="field">
-            Consent policy
-            <textarea
-              rows={4}
-              value={
-                study.consentPolicy?.text ??
-                "OpenAI processes speech. Selected external services receive tool requests. Sona saves transcripts, events, ratings, and notes locally for 30 days. Raw audio is not saved. Provider retention is separate."
-              }
-              onChange={(e) =>
-                update("consentPolicy", {
-                  ...study.consentPolicy,
-                  text: e.target.value,
-                  version: study.consentPolicy?.version ?? "1",
-                  scope: "session",
-                  rawAudio: false,
-                })
-              }
-            />
-          </label>
           <JsonEditor
             label="Measures and rating anchors"
             value={
@@ -1019,18 +1000,12 @@ export function RunForm({
           />
           The participant is also a researcher
         </label>
-        <Notice>
-          {study.consentPolicy?.text ??
-            "OpenAI processes speech. Sona saves transcripts, events, notes, and ratings locally under the workspace retention policy. Raw audio is not saved. Selected tools use external services; their retention policies are separate."}
-        </Notice>
-        <p>
-          Local retention: {retentionDays} days. A later increase does not
-          extend this record.
+        <p className="muted small">
+          Study transcripts and results are saved. Raw audio is not saved.
         </p>
         {consentStatus.applicable ? (
           <Notice>
-            Existing consent applies to this participant, study policy, and
-            retention period.
+            Participant agreement is already recorded for this study.
           </Notice>
         ) : (
           <label className="check">
@@ -1040,8 +1015,7 @@ export function RunForm({
               checked={consent}
               onChange={(e) => setConsent(e.target.checked)}
             />
-            The participant gives consent for the{" "}
-            {study.consentPolicy?.scope ?? "session"} and this policy.
+            Participant agreed to this study
           </label>
         )}
         <button
