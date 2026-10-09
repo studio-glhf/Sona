@@ -1,0 +1,18 @@
+{
+  "format": "sona-connection-feasibility/v1",
+  "timestamp": "2026-10-06T09:11:08.719Z",
+  "applicationVersion": "1.0.0-rc.1",
+  "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+  "environment": "Linux cloud; local Sona server",
+  "command": "POST /api/connections/bridge (official local runtime probe only)",
+  "httpStatus": 200,
+  "runtimeAvailable": false,
+  "runtimeVersion": "codex-cli 0.159.0-alpha.3",
+  "accountAvailable": false,
+  "serversAvailable": 0,
+  "reuseVerified": false,
+  "reason": "The Codex app-server stopped. Reconnect before another run.",
+  "providerModelRequests": 0,
+  "calendarReadWrites": 0,
+  "disposition": "Verification blocked: real same-account Calendar read and approved write are absent."
+}

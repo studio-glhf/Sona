@@ -1,0 +1,52 @@
+name: local-v1
+on: [push, pull_request]
+jobs:
+  check:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check
+      - run: pnpm test
+      - run: pnpm build
+  quality:
+    name: quality
+    needs: check
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require all platform checks to pass
+        env:
+          PLATFORM_RESULT: ${{ needs.check.result }}
+        run: test "$PLATFORM_RESULT" = success
+  browser:
+    name: browser
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - run: corepack enable
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm exec playwright install --with-deps chromium
+      - name: Use the installed Playwright Chromium
+        run: node --input-type=module -e 'import { chromium } from "@playwright/test"; import { appendFileSync } from "node:fs"; appendFileSync(process.env.GITHUB_ENV, "SONA_CHROMIUM_PATH=" + chromium.executablePath() + "\n");'
+      - run: pnpm test:e2e
+      - name: Upload browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-results
+          path: |
+            test-results/
+            playwright-report/
+          if-no-files-found: ignore

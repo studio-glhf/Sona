@@ -1,0 +1,322 @@
+{
+  "format": "sona-verification-summary/v1",
+  "recordedAt": "2026-10-09T07:05:40.461Z",
+  "applicationVersion": "1.1.1",
+  "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+  "environment": "linux 6.18.44 x64",
+  "accountClass": "No live project or Google grant; synthetic service fixtures only",
+  "status": "Release candidate — verification blocked",
+  "sourceIdentity": "The release manifest records the final integration commit and exact per-file SHA-256 values. The v1.0.0 tag preserves the starting point.",
+  "node": "v24.19.0",
+  "pnpm": "11.19.0",
+  "providerModelRequests": 0,
+  "calendarReadWrites": 0,
+  "records": [
+    {
+      "applicationVersion": "1.1.0",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-09T00:57:42.111Z",
+      "id": "locked-install",
+      "command": "XDG_DATA_HOME=/workspace/.local/share CI=true pnpm install --frozen-lockfile",
+      "result": "passed",
+      "scope": "Frozen lockfile; all 320 dependency-policy entries verified; default pnpm store under writable XDG path.",
+      "evidenceAge": "Retained baseline evidence; not repeated during the Settings feedback update."
+    },
+    {
+      "applicationVersion": "1.1.1",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-09T07:05:40.461Z",
+      "id": "types",
+      "command": "XDG_DATA_HOME=/workspace/.local/share CI=true pnpm check",
+      "result": "passed",
+      "scope": "TypeScript source checks."
+    },
+    {
+      "applicationVersion": "1.1.1",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-09T07:05:40.461Z",
+      "id": "unit-integration",
+      "command": "XDG_DATA_HOME=/workspace/.local/share CI=true pnpm exec vitest run --reporter=json --outputFile=docs/verification/unit-results.json",
+      "result": "passed",
+      "scope": "Local records and synthetic service contracts; no live voice or Calendar.",
+      "passed": 165,
+      "failed": 0,
+      "files": 9,
+      "timestamp": "2026-10-09T07:02:00.119Z",
+      "artifact": "docs/verification/unit-results.json"
+    },
+    {
+      "applicationVersion": "1.1.1",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-09T07:05:40.461Z",
+      "id": "build",
+      "command": "XDG_DATA_HOME=/workspace/.local/share CI=true pnpm build",
+      "result": "passed",
+      "scope": "Production browser and local server build; no source maps.",
+      "note": "Vite reports a browser chunk above 500 kB. This is a build warning."
+    },
+    {
+      "applicationVersion": "1.1.1",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-09T07:05:40.461Z",
+      "id": "browser",
+      "command": "XDG_DATA_HOME=/workspace/.local/share CI=true pnpm test:e2e",
+      "result": "passed",
+      "scope": "Headless Linux Chromium, 30 workflows. Explicit media/provider fixtures; no physical microphone or live-key claim.",
+      "passed": 30,
+      "failed": 0,
+      "skipped": 0,
+      "flaky": 0,
+      "timestamp": "2026-10-09T07:03:18.032Z",
+      "browser": "Chromium 151.0.7922.173 (Debian 13)",
+      "artifact": "docs/verification/browser-results.json"
+    },
+    {
+      "applicationVersion": "1.1.0",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-09T00:57:42.111Z",
+      "id": "visual-review",
+      "command": "node /tmp/sona-design-review.mjs",
+      "result": "passed",
+      "scope": "Actual browser captures at 1440/1280/640 widths; matched baseline capture; editorial visual review.",
+      "artifact": "design-qa.md",
+      "renderedEvidence": "docs/verification/design-review-results.json",
+      "evidenceAge": "Retained baseline evidence; not repeated during the Settings feedback update."
+    },
+    {
+      "applicationVersion": "1.1.0",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-09T00:57:42.111Z",
+      "id": "live-prerequisites",
+      "command": "SONA_LIVE=1 SONA_LIVE_URL=http://127.0.0.1:4336 node node_modules/tsx/dist/cli.mjs tests/live/run.ts",
+      "result": "blocked",
+      "passed": 2,
+      "failed": 0,
+      "blocked": 7,
+      "timestamp": "2026-10-09T00:51:00.728Z",
+      "scope": "Local protected bootstrap and health; GUI presence kept separate from command environment. No paid call or external write.",
+      "artifact": "docs/verification/live-results.json",
+      "evidenceAge": "Retained baseline evidence; not repeated during the Settings feedback update."
+    },
+    {
+      "applicationVersion": "1.0.0-rc.1",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-06T09:56:22.405Z",
+      "id": "api-coverage",
+      "requirements": [
+        "AP-01",
+        "AP-02",
+        "AP-03"
+      ],
+      "command": "pnpm coverage:api",
+      "timestamp": "2026-10-06T08:57:15.555Z",
+      "result": "passed",
+      "scope": "Retrieved source catalog, schema compilation, handler selection, and transport fixtures; independent lifecycle reconciliation is unverified.",
+      "denominator": {
+        "operations": 354,
+        "paths": 227,
+        "families": 31,
+        "transportEventUnions": 10,
+        "webhookEvents": 26
+      },
+      "summary": {
+        "cataloged": 354,
+        "schemaCompiled": 354,
+        "implementedHandlers": 354,
+        "livePassed": 0,
+        "schemaFailures": 0
+      },
+      "parameterDescriptors": 19615,
+      "artifact": "docs/verification/api-coverage.json",
+      "evidenceAge": "Retained baseline evidence; not repeated during the Settings feedback update."
+    },
+    {
+      "applicationVersion": "1.0.0-rc.1",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-06T09:56:22.405Z",
+      "id": "development-lifecycle",
+      "requirements": [
+        "DX-01",
+        "UX-03"
+      ],
+      "command": "node scripts/dev.ts (pnpm dev target), isolated ports 4337/5183",
+      "result": "passed",
+      "scope": "Readiness, selected local Origin, proxy, and owned supervisor shutdown",
+      "artifact": "docs/verification/development-results.json",
+      "evidenceAge": "Retained baseline evidence; not repeated during the Settings feedback update."
+    },
+    {
+      "applicationVersion": "1.0.0-rc.1",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-06T09:56:22.405Z",
+      "id": "codex-feasibility",
+      "requirements": [
+        "CN-00"
+      ],
+      "command": "POST /api/connections/bridge",
+      "result": "blocked",
+      "scope": "Available alpha app-server stopped before account discovery; no grant or tool invocation.",
+      "artifact": "docs/verification/connection-feasibility.json",
+      "evidenceAge": "Retained baseline evidence; not repeated during the Settings feedback update."
+    },
+    {
+      "applicationVersion": "1.1.1",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-09T07:05:40.461Z",
+      "id": "release-installation",
+      "command": "XDG_DATA_HOME=/workspace/.local/share CI=true pnpm verify:release",
+      "result": "See final archive-specific report",
+      "scope": "Extracted archive; GUI key entry, removal and restart; locked installation; security; revisions; persistence; export; backup; deletion; independent runtime; credential canaries.",
+      "artifact": "release/installation-report.json"
+    },
+    {
+      "id": "settings-feedback",
+      "applicationVersion": "1.1.1",
+      "recordedAt": "2026-10-09T07:05:40.461Z",
+      "result": "passed",
+      "scope": "11 key-check and 10 microphone workflows; remaining nine regression workflows pass. Automated accessibility checks and editorial inspection of actual fixture screens.",
+      "artifact": "design-qa.md",
+      "sources": "docs/implementation/KEY-VERIFICATION-SOURCES.md",
+      "liveCredentialCheck": "blocked: no authorized project key in this coding environment",
+      "physicalMicrophoneCheck": "blocked: no access to the user laptop or physical input/output device"
+    }
+  ],
+  "externalBlockers": [
+    {
+      "id": "voice-en-kr",
+      "requirements": [
+        "VS-01",
+        "VS-02",
+        "CF-02"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "An authorized OpenAI project, a supported selected model, dated prices, and actual laptop microphone/speaker access.",
+      "detail": "Complete the English and Korean voice protocol in docs/verification/live-checks.md."
+    },
+    {
+      "id": "calendar-read-write",
+      "requirements": [
+        "CN-01",
+        "TL-01",
+        "TL-02"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "A Sona-authorized Google account and an explicitly designated test calendar with no attendees or invitations.",
+      "detail": "Complete the read, spoken approval, rejection, duplicate, and unknown-outcome protocol."
+    },
+    {
+      "id": "chatgpt-reuse",
+      "requirements": [
+        "CN-00"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "A compatible released Codex app-server, its supported ChatGPT login, and an existing Calendar grant in the selected account.",
+      "detail": "Prove a same-account read and approved write without a new Google grant. Discovery alone is insufficient."
+    },
+    {
+      "id": "independent-runtime",
+      "requirements": [
+        "PT-01"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "An exported sona-agent.json and a different authorized local binding.",
+      "detail": "Operate the example runtime without the Sona study database."
+    },
+    {
+      "id": "physical-laptops",
+      "requirements": [
+        "VS-01",
+        "VS-02",
+        "UX-03",
+        "UX-05"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "Actual Windows and macOS laptops with current Chrome and physical microphones and speakers.",
+      "detail": "Do microphone, output, interruption, device-loss, output-selection, and recovery checks. Headless Chromium is insufficient."
+    },
+    {
+      "id": "researcher-usability",
+      "requirements": [
+        "UX-01",
+        "UX-03",
+        "UX-04"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "A representative researcher and supervised participant.",
+      "detail": "Record activations, time, mistakes, backtracking, and assistance for the PRD tasks."
+    },
+    {
+      "id": "teammate-setup",
+      "requirements": [
+        "DX-01",
+        "PT-01"
+      ],
+      "status": "blocked",
+      "scope": "Mandatory real-service/device/person gate",
+      "prerequisite": "An independent teammate with a laptop and their own authorized credentials.",
+      "detail": "Install the release, run the study procedure, and operate the portable agent. An automated clean install is insufficient."
+    }
+  ],
+  "cloudSetup": {
+    "previousDraftSaved": true,
+    "currentProposalSaved": false,
+    "lastSaveResult": "stale_base",
+    "publication": "Configuration changed after the previous draft; publication state not established by that error.",
+    "proposal": "docs/setup/cloud-environment-proposal.json",
+    "githubApiVerified": true,
+    "fieldsProposed": [
+      "install_script",
+      "start_skill"
+    ],
+    "networkUpdateProposed": false,
+    "secretsAdded": 0
+  },
+  "writingReview": {
+    "source": "Supplied ASD-STE100 Issue 9",
+    "method": "Editorial review of meaning, syntax, and technical names",
+    "archivedCheckerRun": false,
+    "automatedScore": null
+  },
+  "github": {
+    "baselineTag": "v1.0.0",
+    "baselineCommit": "4e1317471a3080cb6ba966885b6db4de9bed8a1b",
+    "pullRequests": [
+      "https://github.com/studio-glhf/Sona/pull/16",
+      "https://github.com/studio-glhf/Sona/pull/17",
+      "https://github.com/studio-glhf/Sona/pull/18",
+      "https://github.com/studio-glhf/Sona/pull/19",
+      "https://github.com/studio-glhf/Sona/pull/20",
+      "https://github.com/studio-glhf/Sona/pull/21"
+    ],
+    "mainProtectionPreserved": true,
+    "selfApproval": false
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "reviewedAt": "2026-10-05T22:22:07.379Z",
+  "source": "https://raw.githubusercontent.com/openai/openai-openapi/master/openapi.json",
+  "sha256": "491c868adbdb24cf556048f996dc214181085721807bfe9ee28c60627e53d79e",
+  "previousSha256": "266531cc8bfd29c102dbdef9a3eab9b61663aa6993a7e7c18c505f0c32bd6b62",
+  "sourceCommit": "unavailable: GitHub API blocked by network policy",
+  "version": "2.3.0",
+  "openapi": "3.1.0",
+  "officialSdk": {
+    "source": "https://raw.githubusercontent.com/openai/openai-node/master/package.json",
+    "version": "7.28.0"
+  },
+  "lifecycleReconciliation": "unverified: official lifecycle pages blocked by CONNECT 403; schema deprecation flags preserved",
+  "verification": "No API account or paid request used"
+}

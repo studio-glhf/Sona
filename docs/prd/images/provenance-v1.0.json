@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "date": "2026-10-06",
+  "kind": "Generated interface illustrations, not application screenshots",
+  "figures": [
+    {
+      "file": "researcher-workspace-v1.0.png",
+      "source": "exec-272993b7-2540-471c-8ec3-4e0254304756.png",
+      "purpose": "Default researcher workspace, including researcher participation"
+    },
+    {
+      "file": "participant-view-v1.0.png",
+      "source": "exec-0322a9e4-4623-4404-8b3a-2c2e23b90b84.png",
+      "purpose": "Optional participant interface with device controls and system-output fallback"
+    },
+    {
+      "file": "compare-results-v1.0.png",
+      "source": "exec-fcc499bd-d2ca-4959-bc8a-2ec4d4b80b3b.png",
+      "purpose": "Condition comparison with example data and explicit missing latency observations"
+    }
+  ]
+}

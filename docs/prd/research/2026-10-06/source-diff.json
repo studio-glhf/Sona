@@ -1,0 +1,136 @@
+[
+  {
+    "path": "/components/schemas/CreateCompletionRequest/properties/prompt/nullable",
+    "old": "true"
+  },
+  {
+    "path": "/components/schemas/CreateCompletionRequest/properties/prompt/oneOf",
+    "old": "[{\"type\":\"string\",\"default\":\"\",\"example\":\"This is a test.\"},{\"type\":\"array\",\"items\":{\"type\":\"string\",\"default\":\"\",\"example\":\"This is a test.\"}},{\"type\":\"array\",\"minItems\":1,\"items\":{\"type\":\"integer\"},\"example\":\"[1212, 318, 257, 1332, 13]\"},{\"type\":\"array\",\"minItems\":1,\"items\":{\"type\":\"array\",\"minItems\":1,\"items\":{\"type\":\"integer\"}},\"example\":\"[[121",
+    "new": "[{\"type\":\"string\",\"default\":\"\",\"example\":\"This is a test.\"},{\"type\":\"array\",\"items\":{\"type\":\"string\",\"default\":\"\",\"example\":\"This is a test.\"}},{\"type\":\"array\",\"minItems\":1,\"items\":{\"type\":\"integer\"},\"example\":\"[1212, 318, 257, 1332, 13]\"},{\"type\":\"array\",\"minItems\":1,\"items\":{\"type\":\"array\",\"minItems\":1,\"items\":{\"type\":\"integer\"}},\"example\":\"[[121"
+  },
+  {
+    "path": "/components/schemas/CreateImageEditRequest/properties/response_format/type",
+    "old": "\"string\"",
+    "new": "[\"string\",\"null\"]"
+  },
+  {
+    "path": "/components/schemas/CreateImageEditRequest/properties/response_format/enum",
+    "old": "[\"url\",\"b64_json\"]",
+    "new": "[\"url\",\"b64_json\",null]"
+  },
+  {
+    "path": "/components/schemas/CreateImageEditRequest/properties/response_format/nullable",
+    "old": "true"
+  },
+  {
+    "path": "/components/schemas/CreateImageRequest/properties/response_format/type",
+    "old": "\"string\"",
+    "new": "[\"string\",\"null\"]"
+  },
+  {
+    "path": "/components/schemas/CreateImageRequest/properties/response_format/enum",
+    "old": "[\"url\",\"b64_json\"]",
+    "new": "[\"url\",\"b64_json\",null]"
+  },
+  {
+    "path": "/components/schemas/CreateImageRequest/properties/response_format/nullable",
+    "old": "true"
+  },
+  {
+    "path": "/components/schemas/CreateImageRequest/properties/style/type",
+    "old": "\"string\"",
+    "new": "[\"string\",\"null\"]"
+  },
+  {
+    "path": "/components/schemas/CreateImageRequest/properties/style/enum",
+    "old": "[\"vivid\",\"natural\"]",
+    "new": "[\"vivid\",\"natural\",null]"
+  },
+  {
+    "path": "/components/schemas/CreateImageRequest/properties/style/nullable",
+    "old": "true"
+  },
+  {
+    "path": "/components/schemas/CreateImageVariationRequest/properties/model/anyOf",
+    "old": "[{\"type\":\"string\"},{\"type\":\"string\",\"enum\":[\"dall-e-2\"],\"x-stainless-const\":true}]",
+    "new": "[{\"type\":\"string\"},{\"type\":\"string\",\"enum\":[\"dall-e-2\"],\"x-stainless-const\":true},{\"type\":\"null\"}]"
+  },
+  {
+    "path": "/components/schemas/CreateImageVariationRequest/properties/model/nullable",
+    "old": "true"
+  },
+  {
+    "path": "/components/schemas/CreateImageVariationRequest/properties/n/type",
+    "old": "\"integer\"",
+    "new": "[\"integer\",\"null\"]"
+  },
+  {
+    "path": "/components/schemas/CreateImageVariationRequest/properties/n/nullable",
+    "old": "true"
+  },
+  {
+    "path": "/components/schemas/CreateImageVariationRequest/properties/response_format/type",
+    "old": "\"string\"",
+    "new": "[\"string\",\"null\"]"
+  },
+  {
+    "path": "/components/schemas/CreateImageVariationRequest/properties/response_format/enum",
+    "old": "[\"url\",\"b64_json\"]",
+    "new": "[\"url\",\"b64_json\",null]"
+  },
+  {
+    "path": "/components/schemas/CreateImageVariationRequest/properties/response_format/nullable",
+    "old": "true"
+  },
+  {
+    "path": "/components/schemas/CreateImageVariationRequest/properties/size/type",
+    "old": "\"string\"",
+    "new": "[\"string\",\"null\"]"
+  },
+  {
+    "path": "/components/schemas/CreateImageVariationRequest/properties/size/enum",
+    "old": "[\"256x256\",\"512x512\",\"1024x1024\"]",
+    "new": "[\"256x256\",\"512x512\",\"1024x1024\",null]"
+  },
+  {
+    "path": "/components/schemas/CreateImageVariationRequest/properties/size/nullable",
+    "old": "true"
+  },
+  {
+    "path": "/components/schemas/RealtimeClientEventSessionUpdate/description",
+    "old": "\"Send this event to update the session’s configuration.\\nThe client may send this event at any time to update any field\\nexcept for `voice` and `model`. `voice` can be updated only if there have been no other audio outputs yet.\\n\\nWhen the server receives a `session.update`, it will respond\\nwith a `session.updated` event showing the full, effectiv",
+    "new": "\"Send this event to update the session’s configuration.\\nThe client may send this event at any time to update any field\\nexcept for `voice` and `model`. `voice` can be updated only if there have been no other audio outputs yet.\\n\\nWhen the server receives a `session.update`, it will respond\\nwith a `session.updated` event showing the full, effectiv"
+  },
+  {
+    "path": "/components/schemas/RealtimeSession/properties/input_audio_noise_reduction/type",
+    "old": "\"object\""
+  },
+  {
+    "path": "/components/schemas/RealtimeSession/properties/input_audio_noise_reduction/not",
+    "new": "{\"type\":[\"array\",\"string\",\"number\",\"boolean\"]}"
+  },
+  {
+    "path": "/components/schemas/RealtimeSessionCreateRequestGA/properties/audio/properties/input/properties/noise_reduction/type",
+    "old": "\"object\""
+  },
+  {
+    "path": "/components/schemas/RealtimeSessionCreateRequestGA/properties/audio/properties/input/properties/noise_reduction/not",
+    "new": "{\"type\":[\"array\",\"string\",\"number\",\"boolean\"]}"
+  },
+  {
+    "path": "/components/schemas/RealtimeTranscriptionSessionCreateRequest/properties/input_audio_noise_reduction/type",
+    "old": "\"object\""
+  },
+  {
+    "path": "/components/schemas/RealtimeTranscriptionSessionCreateRequest/properties/input_audio_noise_reduction/not",
+    "new": "{\"type\":[\"array\",\"string\",\"number\",\"boolean\"]}"
+  },
+  {
+    "path": "/components/schemas/RealtimeTranscriptionSessionCreateRequestGA/properties/audio/properties/input/properties/noise_reduction/type",
+    "old": "\"object\""
+  },
+  {
+    "path": "/components/schemas/RealtimeTranscriptionSessionCreateRequestGA/properties/audio/properties/input/properties/noise_reduction/not",
+    "new": "{\"type\":[\"array\",\"string\",\"number\",\"boolean\"]}"
+  }
+]

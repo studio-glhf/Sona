@@ -1,0 +1,35 @@
+{
+  "title": "Sona — Product requirements",
+  "images": [
+    {
+      "loaded": true,
+      "embedded": true
+    },
+    {
+      "loaded": true,
+      "embedded": true
+    },
+    {
+      "loaded": true,
+      "embedded": true
+    }
+  ],
+  "figureCount": 3,
+  "tables": 19,
+  "missingAnchors": [],
+  "horizontalOverflow": false,
+  "externalAssets": [],
+  "version": "1.0",
+  "pageErrors": [],
+  "status": "Document rendering only. No automated language-compliance check or application test.",
+  "pdfPages": 30,
+  "pdfBoundsFlags": [],
+  "pdfImageInstances": 3,
+  "visuallyExaminedPages": [
+    1,
+    7,
+    9,
+    10
+  ],
+  "visualResult": "Cover and all three interface figures examined. No visible clipping or overlap. Figures match the specified default view, optional participant interface, and comparison layout."
+}

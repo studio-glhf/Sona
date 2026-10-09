@@ -1,0 +1,90 @@
+{
+  "format": "sona-key-verification-source/v1",
+  "retrievedAt": "2026-10-09",
+  "source": "https://raw.githubusercontent.com/openai/openai-openapi/master/openapi.json",
+  "sha256": "ff5a4408cabb13e09430813b67a59f67366a58a4dec1f20bac89e4c96fab7fb5",
+  "scope": "Selected official operation excerpt; referenced schemas resolve against the hashed full source, not the older Sona catalog.",
+  "servers": [
+    {
+      "url": "https://api.openai.com/v1"
+    }
+  ],
+  "path": "/models",
+  "method": "get",
+  "operation": {
+    "operationId": "listModels",
+    "tags": [
+      "Models"
+    ],
+    "summary": "List models",
+    "description": "Lists the currently available models, and provides basic information about each one such as the owner and availability.",
+    "responses": {
+      "200": {
+        "description": "OK",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ListModelsResponse"
+            }
+          }
+        }
+      },
+      "403": {
+        "description": "The API credential does not have permission to list models.",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/PermissionErrorResponse"
+            }
+          }
+        }
+      }
+    },
+    "x-oaiMeta": {
+      "group": "models",
+      "examples": {
+        "request": {
+          "curl": "curl https://api.openai.com/v1/models \\\n  -H \"Authorization: Bearer $OPENAI_API_KEY\"\n",
+          "python": "from openai import OpenAI\nclient = OpenAI()\n\nclient.models.list()\n",
+          "javascript": "import OpenAI from \"openai\";\n\nconst openai = new OpenAI();\n\nasync function main() {\n  const list = await openai.models.list();\n\n  for await (const model of list) {\n    console.log(model);\n  }\n}\nmain();",
+          "csharp": "using System;\n\nusing OpenAI.Models;\n\nOpenAIModelClient client = new(\n    apiKey: Environment.GetEnvironmentVariable(\"OPENAI_API_KEY\")\n);\n\nforeach (var model in client.GetModels().Value)\n{\n    Console.WriteLine(model.Id);\n}\n"
+        },
+        "response": "{\n  \"object\": \"list\",\n  \"data\": [\n    {\n      \"id\": \"model-id-0\",\n      \"object\": \"model\",\n      \"created\": 1686935002,\n      \"owned_by\": \"organization-owner\",\n      \"shutdown_date\": null\n    },\n    {\n      \"id\": \"model-id-1\",\n      \"object\": \"model\",\n      \"created\": 1686935002,\n      \"owned_by\": \"organization-owner\",\n      \"shutdown_date\": null\n    },\n    {\n      \"id\": \"model-id-2\",\n      \"object\": \"model\",\n      \"created\": 1686935002,\n      \"owned_by\": \"openai\",\n      \"shutdown_date\": \"2026-10-23\"\n    }\n  ]\n}\n"
+      }
+    }
+  },
+  "schemas": {
+    "ListModelsResponse": {
+      "type": "object",
+      "properties": {
+        "object": {
+          "type": "string",
+          "enum": [
+            "list"
+          ],
+          "x-stainless-const": true
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/components/schemas/Model"
+          }
+        }
+      },
+      "required": [
+        "object",
+        "data"
+      ]
+    }
+  },
+  "securitySchemes": {
+    "ApiKeyAuth": {
+      "type": "http",
+      "scheme": "bearer"
+    },
+    "AdminApiKeyAuth": {
+      "type": "http",
+      "scheme": "bearer"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-10-06T09:06:50.359Z",
+  "command": "node scripts/dev.ts (pnpm dev target)",
+  "environment": "Linux; isolated local ports 4337/5183",
+  "serviceRequests": 0,
+  "checks": [
+    {
+      "id": "development-proxy-and-origin",
+      "status": "passed"
+    },
+    {
+      "id": "development-shutdown",
+      "status": "passed"
+    }
+  ]
+}

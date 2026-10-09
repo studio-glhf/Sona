@@ -1,0 +1,14 @@
+{
+  "review_date": "2026-10-05",
+  "timezone": "Asia/Seoul",
+  "source": "https://raw.githubusercontent.com/openai/openai-openapi/13fa6e7ab9301b00c03af2a5d2f584e7a9b84391/openapi.json",
+  "source_commit": "13fa6e7ab9301b00c03af2a5d2f584e7a9b84391",
+  "sha256": "266531cc8bfd29c102dbdef9a3eab9b61663aa6993a7e7c18c505f0c32bd6b62",
+  "openapi_version": "3.1.0",
+  "spec_info_version": "2.3.0",
+  "path_count": 227,
+  "operation_count": 354,
+  "family_count": 31,
+  "deprecated_flags": 16,
+  "note": "Counts reflect the official specification snapshot, not proof that every endpoint is currently offered, accessible, implemented or live-tested. Separate docs/SDK/transport reviews remain necessary. Schema references resolve against the accompanying compressed official specification."
+}
