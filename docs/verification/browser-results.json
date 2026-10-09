@@ -74,7 +74,7 @@
       "timeout": 60000,
       "env": {
         "SONA_PORT": "4318",
-        "SONA_DATA_DIR": "/tmp/sona-browser-czEDZh",
+        "SONA_DATA_DIR": "/tmp/sona-browser-0PA2Ap",
         "OPENAI_API_KEY": "",
         "OPENAI_ADMIN_KEY": "",
         "GOOGLE_CLIENT_ID": "",
@@ -107,12 +107,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4326,
+                  "duration": 4364,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-06T09:44:34.299Z",
+                  "startTime": "2026-10-08T17:11:00.189Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -141,12 +141,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1959,
+                  "duration": 1488,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-06T09:44:39.788Z",
+                  "startTime": "2026-10-08T17:11:05.313Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -175,12 +175,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 3953,
+                  "duration": 3265,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-06T09:44:41.780Z",
+                  "startTime": "2026-10-08T17:11:06.817Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -209,12 +209,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 1726,
+                  "duration": 1592,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-06T09:44:45.767Z",
+                  "startTime": "2026-10-08T17:11:10.103Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -243,12 +243,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 4053,
+                  "duration": 2778,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-06T09:44:47.516Z",
+                  "startTime": "2026-10-08T17:11:11.720Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -277,12 +277,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2328,
+                  "duration": 1583,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-06T09:44:51.596Z",
+                  "startTime": "2026-10-08T17:11:14.521Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -311,12 +311,12 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 2560,
+                  "duration": 1985,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-06T09:44:53.955Z",
+                  "startTime": "2026-10-08T17:11:16.128Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -328,15 +328,83 @@
           "file": "workflows.spec.ts",
           "line": 234,
           "column": 1
+        },
+        {
+          "title": "Settings adds and removes a server-memory API key without browser storage",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-local",
+              "projectName": "chromium-local",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 6074,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-08T17:11:18.128Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-6679bb58db1051d6c4cc",
+          "file": "workflows.spec.ts",
+          "line": 287,
+          "column": 1
+        },
+        {
+          "title": "quick tests open directly with calm evidence and no processing-notice gate",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium-local",
+              "projectName": "chromium-local",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1202,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-08T17:11:24.215Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "26aa48cee8983222f549-62ddb4f9ceae57b0064d",
+          "file": "workflows.spec.ts",
+          "line": 513,
+          "column": 1
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-06T09:44:29.940Z",
-    "duration": 26789.038,
-    "expected": 7,
+    "startTime": "2026-10-08T17:10:57.464Z",
+    "duration": 28107.224,
+    "expected": 9,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

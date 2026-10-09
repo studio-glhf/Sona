@@ -1,9 +1,9 @@
 {
   "format": "sona-live-verification/v1",
-  "timestamp": "2026-10-06T09:11:09.385Z",
+  "timestamp": "2026-10-09T00:51:00.728Z",
   "environment": "linux 6.18.44 x64",
   "node": "v24.19.0",
-  "appVersion": "1.0.0-rc.1",
+  "appVersion": "1.1.0",
   "scope": "Prerequisite checks and opt-in local runtime checks. Physical voice, OAuth grants, external writes, and teammate observations need their own evidence.",
   "credentials": {
     "OPENAI_API_KEY": false,
@@ -11,6 +11,11 @@
     "GOOGLE_CLIENT_ID": false,
     "GOOGLE_CLIENT_SECRET": false,
     "GOOGLE_CALENDAR_ID": false
+  },
+  "credentialStatusScope": "The credentials fields describe this command's environment only. Server key presence is recorded separately and does not verify provider access.",
+  "serverCredential": {
+    "openaiConfigured": false,
+    "source": "none"
   },
   "admissionBudgetUSD": 10,
   "estimatedChargesUSD": 0,

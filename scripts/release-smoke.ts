@@ -23,7 +23,7 @@ const temporary = await mkdtemp(path.join(os.tmpdir(), "sona-release-check-"));
 const checks: { id: string; status: "passed" | "failed"; detail: string }[] =
   [];
 const processes = new Set<ChildProcess>();
-const canary = `sona-private-fixture-${randomBytes(20).toString("hex")}`;
+const canary = `sk-proj-synthetic_release_fixture_${randomBytes(20).toString("hex")}`;
 const logs: string[] = [];
 const sha = (bytes: Buffer) => createHash("sha256").update(bytes).digest("hex");
 const environment = {
@@ -222,7 +222,6 @@ try {
       ...environment,
       SONA_DATA_DIR: dataDir,
       SONA_PORT: port,
-      OPENAI_API_KEY: canary,
     });
   let server = start();
   await ready(base, server);
@@ -256,6 +255,41 @@ try {
     if (!page.ok || !page.headers.get("content-security-policy"))
       throw new Error("Built browser delivery or security headers failed.");
     return "Built page, bootstrap, host/origin restrictions, and local token checks passed.";
+  });
+  await check("gui-credential-lifecycle", async () => {
+    if (local.data.readiness.openaiConfigured)
+      throw new Error("The clean installation inherited an OpenAI key.");
+    const denied = await fetch(`${base}/api/settings/credentials/openai`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ apiKey: canary }),
+    });
+    if (denied.status !== 401)
+      throw new Error("API key entry accepted an untrusted local request.");
+    const saved = (await (
+      await local.request(
+        "/settings/credentials/openai",
+        { apiKey: canary },
+        "PUT",
+      )
+    ).json()) as any;
+    if (
+      !saved.openai.configured ||
+      saved.openai.source !== "session" ||
+      JSON.stringify(saved).includes(canary)
+    )
+      throw new Error("GUI credential status or redaction failed.");
+    const cleared = (await (
+      await local.request("/settings/credentials/openai", undefined, "DELETE")
+    ).json()) as any;
+    if (cleared.openai.configured)
+      throw new Error("Removing the GUI credential did not disable access.");
+    await local.request(
+      "/settings/credentials/openai",
+      { apiKey: canary },
+      "PUT",
+    );
+    return "Protected GUI key entry, status-only responses, removal, and re-entry passed without an environment key or provider request.";
   });
   await check("configuration-study-export", async () => {
     agent = await (
@@ -310,7 +344,6 @@ try {
         kind: "quick",
         agentId: agent.id,
         researcherParticipant: true,
-        processingAccepted: true,
       })
     ).json();
     const changed = structuredClone(agent.draft);
@@ -358,6 +391,11 @@ try {
   await ready(base, server);
   local = await client(base);
   await check("restart-migration-backup-delete", async () => {
+    if (
+      local.data.readiness.openaiConfigured ||
+      local.data.credentials.openai.source !== "none"
+    )
+      throw new Error("A GUI credential survived server restart.");
     const recovered = (await (
       await local.request(`/sessions/${session.id}`)
     ).json()) as any;

@@ -124,3 +124,86 @@ The saved cloud setup draft remains unpublished. No external deployment or produ
 The user requested a committed and pushed GitHub baseline before feature changes.
 The application version is 1.0.0. This version identifies the starting point; it does not remove the blocked live verification gates.
 The GUI credential and interface updates will use separate feature branches and subagent pull requests.
+
+## Interface and credential update — 9 October 2026, Asia/Seoul
+
+### Product decisions
+
+The user's later instructions replace the earlier GUI key and notice requirements.
+Settings accepts an OpenAI project key. The local server keeps the key in memory until restart.
+The Data policy editor and Voice processing notice are removed. A quick test records no agreement claim.
+Supervised study agreement remains explicit. Raw audio storage remains off.
+
+The existing layout remains. Neutral selections, clear type, soft input corners, and compact session controls reduce visual density.
+Empty evidence panels have short messages. Notes and ratings appear when a test exists.
+All researcher controls and evidence remain available. Participant view remains optional and off by default.
+
+The starting point stays at version 1.0.0. The interface update uses application version 1.1.0.
+The immutable API source revision stays dated 6 October. This update does not claim another official source retrieval.
+
+### Subagent review
+
+The credential subagent implemented protected GUI routes, shared dynamic credentials, active-operation locks, and exact secret redaction.
+The server returns key status only. Removal disables a legacy environment seed for the current run.
+Retired key values remain in memory only for diagnostic redaction.
+
+The interface subagent implemented Settings and the visual changes.
+The main agent reviewed both diffs and the combined behavior before accepting them.
+The accepted UI commit is `3547a957e2bcc691bbde2fe2f2865567d9c7742d`.
+The credential branch includes the Windows repair at `35f079d1ee1c06245d5c661ff610c18dc28a52fc`.
+
+An integrated browser test found stale readiness after accepted key removal and a failed background refresh.
+The repair applies the accepted status immediately. A scoped metadata refresh preserves pending drafts.
+The browser fixture holds a real draft save during key entry. The draft remains visible until its save completes.
+
+GitHub Windows CI found a fixture cleanup-order error.
+Two applications used the same temporary SQLite directory. The first cleanup deleted that directory before the second application closed.
+The repair closes all fixture applications before deleting unique directories. The test assertions remain unchanged.
+
+### Local verification
+
+Frozen installation passes with 320 dependency-policy entries verified.
+Cloud commands use `XDG_DATA_HOME=/workspace/.local/share` and pnpm's default store.
+The earlier custom-store installation caused pnpm to request another install during script execution. The matching writable XDG configuration resolves it.
+TypeScript and the production build pass. The existing browser chunk warning remains.
+
+All 145 unit and integration tests pass in eight files.
+All nine browser workflows pass in Linux Chromium.
+The isolated GUI workflow also passes after the readiness and draft repairs.
+The visual review uses matched baseline and current captures at 1440 pixels.
+Additional captures examine 1280 and 640 pixels. Settings has no automated accessibility violations in the selected tags.
+The actual screen captures produce no console errors.
+
+The live harness keeps GUI key presence separate from command environment bindings.
+Its controlled GUI-status check passes. The final prerequisite report has two local passes and seven blocked external gates.
+It starts no paid model request or external write.
+
+The final release commands are `pnpm package` and `pnpm verify:release` with the same cloud XDG path.
+The installation report stays outside the archive. It records the exact tested checksum.
+The release checks now include protected GUI key entry, removal, and restart.
+
+### GitHub delivery
+
+The baseline commit and annotated `v1.0.0` tag were pushed before feature changes.
+The remotely verified baseline commit is `4e1317471a3080cb6ba966885b6db4de9bed8a1b`.
+The direct push to protected `main` was rejected. No protection was changed.
+
+The publishing subagent created [baseline PR 16](https://github.com/studio-glhf/Sona/pull/16), [credential PR 17](https://github.com/studio-glhf/Sona/pull/17), and [interface PR 18](https://github.com/studio-glhf/Sona/pull/18).
+The interface PR follows the credential PR. The main agent attached all three actual pull requests to this task.
+The final reviewed integration is published to `codex/sona-refinement` and advances the UI head without a force push.
+
+The authenticated GitHub account is also the author of each pull request. Formal self-approval is not permitted.
+Local supervisor acceptance does not represent a GitHub APPROVED review. No merge occurs in this task.
+The GitHub delivery record separates remote CI, local checks, and physical-device evidence.
+
+### Cloud setup and release limits
+
+Actual GitHub API access and pull-request creation now succeed. No further user action is necessary for that access.
+An updated setup-draft save returned `stale_base` because the configuration changed after the earlier draft.
+The complete proposed installation and startup instructions are preserved in `docs/setup/cloud-environment-proposal.json`.
+The platform requires a new setup chat from current environment settings to reconcile that file.
+Current local setup and application checks remain usable. Draft persistence is not claimed for the revised scripts.
+
+The release status remains **Release candidate — verification blocked**.
+Real voice, Calendar, ChatGPT connection reuse, physical devices, and representative-user checks retain their stated prerequisites.
+No credential, participant record, private STE source, or environment file enters the release archive.

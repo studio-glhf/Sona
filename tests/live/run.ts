@@ -44,6 +44,12 @@ const metadata = {
       "GOOGLE_CALENDAR_ID",
     ].map((name) => [name, Boolean(process.env[name])]),
   ),
+  credentialStatusScope:
+    "The credentials fields describe this command's environment only. Server key presence is recorded separately and does not verify provider access.",
+  serverCredential: {
+    openaiConfigured: null as boolean | null,
+    source: null as "session" | "environment" | "none" | null,
+  },
   admissionBudgetUSD: budget,
   estimatedChargesUSD: 0,
   observedChargesUSD: null,
@@ -61,6 +67,12 @@ if (optedIn) {
     const data = (await response.json()) as {
       csrfToken?: string;
       token?: string;
+      credentials?: {
+        openai?: {
+          configured?: boolean;
+          source?: "session" | "environment" | "none";
+        };
+      };
     };
     const token = data.csrfToken ?? data.token;
     if (!token)
@@ -68,6 +80,10 @@ if (optedIn) {
     const cookie = response.headers.get("set-cookie")?.split(";")[0];
     if (!cookie)
       throw new Error("Bootstrap did not return a local session cookie.");
+    metadata.serverCredential = {
+      openaiConfigured: data.credentials?.openai?.configured ?? null,
+      source: data.credentials?.openai?.source ?? null,
+    };
     headers = { "X-Sona-Token": token, Cookie: cookie };
     checks.push({
       id: "local-runtime",

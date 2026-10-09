@@ -1,125 +1,113 @@
 {
   "format": "sona-verification-summary/v1",
-  "recordedAt": "2026-10-06T09:56:22.405Z",
-  "applicationVersion": "1.0.0-rc.1",
+  "recordedAt": "2026-10-09T00:57:42.111Z",
+  "applicationVersion": "1.1.0",
   "capabilityRevision": "openai-2026-10-06-491c868adbdb",
   "environment": "linux 6.18.44 x64",
   "accountClass": "No live project or Google grant; synthetic service fixtures only",
   "status": "Release candidate — verification blocked",
-  "sourceIdentity": "release/RELEASE-MANIFEST.json contains exact per-file SHA-256 identities; Git HEAD does not identify this uncommitted tree.",
+  "sourceIdentity": "The release manifest records the final integration commit and exact per-file SHA-256 values. The v1.0.0 tag preserves the starting point.",
   "node": "v24.19.0",
   "pnpm": "11.19.0",
   "providerModelRequests": 0,
   "calendarReadWrites": 0,
   "records": [
     {
-      "applicationVersion": "1.0.0-rc.1",
+      "applicationVersion": "1.1.0",
       "capabilityRevision": "openai-2026-10-06-491c868adbdb",
       "environment": "linux 6.18.44 x64",
       "accountClass": "No live project or Google grant; synthetic service fixtures only",
-      "recordedAt": "2026-10-06T09:56:22.405Z",
+      "recordedAt": "2026-10-09T00:57:42.111Z",
       "id": "locked-install",
-      "requirements": [
-        "DX-01"
-      ],
-      "command": "XDG_DATA_HOME=/workspace/.local/share pnpm install --frozen-lockfile --store-dir /workspace/.pnpm-store",
+      "command": "XDG_DATA_HOME=/workspace/.local/share CI=true pnpm install --frozen-lockfile",
       "result": "passed",
-      "scope": "Existing checkout; frozen lockfile and supply-chain policy checks",
-      "artifact": "pnpm-lock.yaml"
+      "scope": "Frozen lockfile; all 320 dependency-policy entries verified; default pnpm store under writable XDG path."
     },
     {
-      "applicationVersion": "1.0.0-rc.1",
+      "applicationVersion": "1.1.0",
       "capabilityRevision": "openai-2026-10-06-491c868adbdb",
       "environment": "linux 6.18.44 x64",
       "accountClass": "No live project or Google grant; synthetic service fixtures only",
-      "recordedAt": "2026-10-06T09:56:22.405Z",
+      "recordedAt": "2026-10-09T00:57:42.111Z",
       "id": "types",
-      "requirements": [
-        "CF-02",
-        "AP-02",
-        "DX-01"
-      ],
-      "command": "pnpm check",
+      "command": "XDG_DATA_HOME=/workspace/.local/share CI=true pnpm check",
       "result": "passed",
-      "scope": "TypeScript source checks"
+      "scope": "TypeScript source checks."
     },
     {
-      "applicationVersion": "1.0.0-rc.1",
+      "applicationVersion": "1.1.0",
       "capabilityRevision": "openai-2026-10-06-491c868adbdb",
       "environment": "linux 6.18.44 x64",
       "accountClass": "No live project or Google grant; synthetic service fixtures only",
-      "recordedAt": "2026-10-06T09:56:22.405Z",
+      "recordedAt": "2026-10-09T00:57:42.111Z",
       "id": "unit-integration",
-      "requirements": [
-        "AG-01",
-        "CF-01",
-        "CF-02",
-        "AP-01",
-        "AP-02",
-        "AP-03",
-        "CN-01",
-        "CN-02",
-        "VS-02",
-        "TL-01",
-        "TL-02",
-        "EX-01",
-        "EV-01",
-        "EV-02",
-        "PT-01",
-        "DH-01"
-      ],
-      "command": "pnpm exec vitest run --reporter=json --outputFile=docs/verification/unit-results.json",
-      "timestamp": "2026-10-06T09:54:33.191Z",
+      "command": "XDG_DATA_HOME=/workspace/.local/share CI=true pnpm exec vitest run --reporter=json --outputFile=docs/verification/unit-results.json",
       "result": "passed",
-      "passed": 137,
+      "scope": "Local records and synthetic service contracts; no live voice or Calendar.",
+      "passed": 145,
       "failed": 0,
-      "files": 7,
-      "scope": "Local records and synthetic service contracts. Not live voice or Calendar evidence.",
+      "files": 8,
+      "timestamp": "2026-10-09T00:54:21.793Z",
       "artifact": "docs/verification/unit-results.json"
     },
     {
-      "applicationVersion": "1.0.0-rc.1",
+      "applicationVersion": "1.1.0",
       "capabilityRevision": "openai-2026-10-06-491c868adbdb",
       "environment": "linux 6.18.44 x64",
       "accountClass": "No live project or Google grant; synthetic service fixtures only",
-      "recordedAt": "2026-10-06T09:56:22.405Z",
+      "recordedAt": "2026-10-09T00:57:42.111Z",
       "id": "build",
-      "requirements": [
-        "DX-01",
-        "UX-03"
-      ],
-      "command": "pnpm build",
+      "command": "XDG_DATA_HOME=/workspace/.local/share CI=true pnpm build",
       "result": "passed",
-      "scope": "Production browser and local server build; no source maps",
+      "scope": "Production browser and local server build; no source maps.",
       "note": "Vite reports a browser chunk above 500 kB. This is a build warning."
     },
     {
-      "applicationVersion": "1.0.0-rc.1",
+      "applicationVersion": "1.1.0",
       "capabilityRevision": "openai-2026-10-06-491c868adbdb",
       "environment": "linux 6.18.44 x64",
       "accountClass": "No live project or Google grant; synthetic service fixtures only",
-      "recordedAt": "2026-10-06T09:56:22.405Z",
+      "recordedAt": "2026-10-09T00:57:42.111Z",
       "id": "browser",
-      "requirements": [
-        "CF-01",
-        "CF-02",
-        "AP-01",
-        "AP-02",
-        "DH-01",
-        "UX-01",
-        "UX-02",
-        "UX-03",
-        "UX-04"
-      ],
-      "command": "pnpm test:e2e",
-      "timestamp": "2026-10-06T09:44:29.940Z",
+      "command": "XDG_DATA_HOME=/workspace/.local/share CI=true pnpm test:e2e",
       "result": "passed",
-      "passed": 7,
+      "scope": "Headless Linux Chromium; no physical audio, screen reader, native zoom, or person observation.",
+      "passed": 9,
       "failed": 0,
       "skipped": 0,
-      "scope": "Headless Linux Chromium; no physical audio, screen reader, native zoom, or person observation.",
+      "flaky": 0,
+      "timestamp": "2026-10-08T17:10:57.464Z",
       "browser": "Chromium 151.0.7922.173 (Debian 13)",
       "artifact": "docs/verification/browser-results.json"
+    },
+    {
+      "applicationVersion": "1.1.0",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-09T00:57:42.111Z",
+      "id": "visual-review",
+      "command": "node /tmp/sona-design-review.mjs",
+      "result": "passed",
+      "scope": "Actual browser captures at 1440/1280/640 widths; matched baseline capture; editorial visual review.",
+      "artifact": "design-qa.md",
+      "renderedEvidence": "docs/verification/design-review-results.json"
+    },
+    {
+      "applicationVersion": "1.1.0",
+      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
+      "environment": "linux 6.18.44 x64",
+      "accountClass": "No live project or Google grant; synthetic service fixtures only",
+      "recordedAt": "2026-10-09T00:57:42.111Z",
+      "id": "live-prerequisites",
+      "command": "SONA_LIVE=1 SONA_LIVE_URL=http://127.0.0.1:4336 node node_modules/tsx/dist/cli.mjs tests/live/run.ts",
+      "result": "blocked",
+      "passed": 2,
+      "failed": 0,
+      "blocked": 7,
+      "timestamp": "2026-10-09T00:51:00.728Z",
+      "scope": "Local protected bootstrap and health; GUI presence kept separate from command environment. No paid call or external write.",
+      "artifact": "docs/verification/live-results.json"
     },
     {
       "applicationVersion": "1.0.0-rc.1",
@@ -152,7 +140,8 @@
         "schemaFailures": 0
       },
       "parameterDescriptors": 19615,
-      "artifact": "docs/verification/api-coverage.json"
+      "artifact": "docs/verification/api-coverage.json",
+      "evidenceAge": "Retained baseline record; not a new API retrieval or real-service test during interface refinement."
     },
     {
       "applicationVersion": "1.0.0-rc.1",
@@ -168,37 +157,8 @@
       "command": "node scripts/dev.ts (pnpm dev target), isolated ports 4337/5183",
       "result": "passed",
       "scope": "Readiness, selected local Origin, proxy, and owned supervisor shutdown",
-      "artifact": "docs/verification/development-results.json"
-    },
-    {
-      "applicationVersion": "1.0.0-rc.1",
-      "capabilityRevision": "openai-2026-10-06-491c868adbdb",
-      "environment": "linux 6.18.44 x64",
-      "accountClass": "No live project or Google grant; synthetic service fixtures only",
-      "recordedAt": "2026-10-06T09:56:22.405Z",
-      "id": "live-prerequisites",
-      "requirements": [
-        "VS-01",
-        "VS-02",
-        "CN-00",
-        "CN-01",
-        "TL-01",
-        "TL-02",
-        "PT-01",
-        "DX-01",
-        "UX-01",
-        "UX-03",
-        "UX-04",
-        "UX-05"
-      ],
-      "command": "SONA_LIVE=1 pnpm test:live",
-      "timestamp": "2026-10-06T09:11:09.385Z",
-      "result": "blocked",
-      "passed": 2,
-      "failed": 0,
-      "blocked": 7,
-      "scope": "Two local runtime checks only. No paid call or external write.",
-      "artifact": "docs/verification/live-results.json"
+      "artifact": "docs/verification/development-results.json",
+      "evidenceAge": "Retained baseline record; not a new API retrieval or real-service test during interface refinement."
     },
     {
       "applicationVersion": "1.0.0-rc.1",
@@ -213,25 +173,19 @@
       "command": "POST /api/connections/bridge",
       "result": "blocked",
       "scope": "Available alpha app-server stopped before account discovery; no grant or tool invocation.",
-      "artifact": "docs/verification/connection-feasibility.json"
+      "artifact": "docs/verification/connection-feasibility.json",
+      "evidenceAge": "Retained baseline record; not a new API retrieval or real-service test during interface refinement."
     },
     {
-      "applicationVersion": "1.0.0-rc.1",
+      "applicationVersion": "1.1.0",
       "capabilityRevision": "openai-2026-10-06-491c868adbdb",
       "environment": "linux 6.18.44 x64",
       "accountClass": "No live project or Google grant; synthetic service fixtures only",
-      "recordedAt": "2026-10-06T09:56:22.405Z",
+      "recordedAt": "2026-10-09T00:57:42.111Z",
       "id": "release-installation",
-      "requirements": [
-        "DX-01",
-        "PT-01",
-        "DH-01",
-        "CF-01",
-        "EV-02"
-      ],
-      "command": "SONA_PNPM_STORE=/workspace/.pnpm-store pnpm verify:release",
-      "result": "See the final archive-specific report",
-      "scope": "Extracted archive, locked installation, security, persistence, export, backup, deletion, runtime isolation, and canary checks; synthetic local records only",
+      "command": "XDG_DATA_HOME=/workspace/.local/share CI=true pnpm verify:release",
+      "result": "See final archive-specific report",
+      "scope": "Extracted archive; GUI key entry, removal and restart; locked installation; security; revisions; persistence; export; backup; deletion; independent runtime; credential canaries.",
       "artifact": "release/installation-report.json"
     }
   ],
@@ -318,13 +272,17 @@
     }
   ],
   "cloudSetup": {
-    "draftSaved": true,
-    "fields": [
+    "previousDraftSaved": true,
+    "currentProposalSaved": false,
+    "lastSaveResult": "stale_base",
+    "publication": "Configuration changed after the previous draft; publication state not established by that error.",
+    "proposal": "docs/setup/cloud-environment-proposal.json",
+    "githubApiVerified": true,
+    "fieldsProposed": [
       "install_script",
       "start_skill"
     ],
-    "published": false,
-    "networkPolicy": "preserved",
+    "networkUpdateProposed": false,
     "secretsAdded": 0
   },
   "writingReview": {
@@ -332,5 +290,16 @@
     "method": "Editorial review of meaning, syntax, and technical names",
     "archivedCheckerRun": false,
     "automatedScore": null
+  },
+  "github": {
+    "baselineTag": "v1.0.0",
+    "baselineCommit": "4e1317471a3080cb6ba966885b6db4de9bed8a1b",
+    "pullRequests": [
+      "https://github.com/studio-glhf/Sona/pull/16",
+      "https://github.com/studio-glhf/Sona/pull/17",
+      "https://github.com/studio-glhf/Sona/pull/18"
+    ],
+    "mainProtectionPreserved": true,
+    "selfApproval": false
   }
 }

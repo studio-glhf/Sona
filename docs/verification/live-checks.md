@@ -11,6 +11,7 @@ pnpm test:live
 This command makes `docs/verification/live-results.json`. Exit code 2 means one or more prerequisites are absent. It is not a failed application test or a passed live gate.
 
 To include the running local server, set `SONA_LIVE=1` in the local shell. Then run the same command. The default URL is `http://127.0.0.1:4317`.
+The report keeps command environment bindings separate from the server's GUI key status. Neither status proves provider access.
 
 Set `SONA_LIVE_CONNECTION_ID` to an existing authorized binding for read-only tool discovery. Discovery does not invoke a Calendar tool.
 
@@ -45,7 +46,7 @@ Do not start an unknown-cost test. Do not create fine-tuning, batch, or paid med
 2. Record the browser version and device names.
 3. Add a neutral agent with a verified model and audio output.
 4. Keep **Participant view** off.
-5. Start an English quick test with the applicable processing notice.
+5. Enter the OpenAI project key in **Settings**, then start an English quick test.
 6. Speak a short request and hear the complete answer.
 7. Examine input and generated transcripts with their separate source labels.
 8. Examine requested and returned settings.

@@ -143,8 +143,8 @@ The study database is `sona.sqlite`. `SONA_DATA_DIR` can select another private 
 
 Saved records have a 30-day retention period by default. Cleanup occurs at startup and during operation. It cannot run while Sona is stopped.
 
-A shorter policy can remove older records sooner. A longer policy applies to new records. It does not extend the period accepted for existing records.
-Sona can reuse study consent when participant code, policy, scope, and retention still match. Session consent applies to one session only.
+The GUI has no Data policy editor. The server keeps its existing retention and deletion rules.
+Sona can reuse study agreement when participant code, study protocol, scope, and retention still match. Session agreement applies to one session only.
 The researcher can withdraw consent from the session evidence panel. Capture stops for sessions that use that consent record.
 
 Delete selected studies or sessions through Sona. Exports, backups, provider records, and Calendar events are separate copies or resources. Local deletion is not forensic erasure.
@@ -174,10 +174,11 @@ For browser tests outside the supplied cloud environment, install Chromium with 
 The supplied cloud environment uses these installation settings:
 
 ```sh
-XDG_DATA_HOME=/workspace/.local/share pnpm install --frozen-lockfile --store-dir /workspace/.pnpm-store
+export XDG_DATA_HOME=/workspace/.local/share
+CI=true pnpm install --frozen-lockfile
 ```
 
-These paths apply to the cloud workspace. Teammates can use the normal installation command.
+Use the same `XDG_DATA_HOME` for subsequent cloud commands. This path applies to the cloud workspace. Teammates can use the normal installation command.
 
 ## Costs and service limits
 

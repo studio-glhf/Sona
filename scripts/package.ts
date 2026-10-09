@@ -11,6 +11,7 @@ await readFile(path.join(root, "dist/server.mjs"));
 await readFile(path.join(root, "dist/web/index.html"));
 const exact = [
   "README.md",
+  "design-qa.md",
   "LICENSE",
   ".env.example",
   ".gitignore",

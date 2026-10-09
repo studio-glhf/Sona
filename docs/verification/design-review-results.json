@@ -1,0 +1,48 @@
+{
+  "recordedAt": "2026-10-09T00:50:42.459Z",
+  "applicationVersion": "1.1.0",
+  "browser": "151.0.7922.173",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 1024
+    },
+    {
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "width": 640,
+      "height": 800
+    }
+  ],
+  "deviceScaleFactor": 1,
+  "consoleErrors": [],
+  "settingsAxeViolations": [],
+  "layout": {
+    "viewport": 1280,
+    "document": 1280,
+    "main": {
+      "x": 0,
+      "y": 0,
+      "width": 940,
+      "height": 800,
+      "top": 0,
+      "right": 940,
+      "bottom": 800,
+      "left": 0
+    },
+    "panel": {
+      "x": 941,
+      "y": 0,
+      "width": 339,
+      "height": 800,
+      "top": 0,
+      "right": 1280,
+      "bottom": 800,
+      "left": 941
+    }
+  },
+  "source": "v1.0.0 baseline and PRD concept; intentional refinement, not a pixel clone",
+  "physicalDeviceVerified": false
+}

@@ -14,6 +14,8 @@ pnpm start
 
 Open `http://127.0.0.1:4317` in desktop Chrome. The release archive includes a build, so it does not need another build before startup.
 
+Open **Settings**, enter your OpenAI API key, then select **Save key**. Sona keeps the key in local server memory until Sona restarts.
+
 Read the [setup guide](docs/setup/README.md) for private credential bindings, Google authorization, devices, data storage, and troubleshooting.
 
 Sona includes:
@@ -31,7 +33,8 @@ Raw audio is not saved. The initial local retention period is 30 days. ChatGPT s
 
 The [release assessment](docs/verification/readiness.md) separates local checks from blocked service, device, and person checks.
 The [requirement evidence](docs/verification/requirement-evidence.md) links implementation and verification records.
+The [interface review](design-qa.md) includes actual screens. The [GitHub record](docs/implementation/github-delivery.md) links the starting point and feature pull requests.
 
-The product authority is [PRD 1.0](docs/prd/Sona-PRD.md). Its [PDF](docs/prd/Sona-PRD.pdf) and [HTML](docs/prd/Sona-PRD.html) include the selected UI figures.
+The product authority is [PRD 1.0](docs/prd/Sona-PRD.md), with the user's [interface update](docs/implementation/workspace-refinement.md). Its [PDF](docs/prd/Sona-PRD.pdf) and [HTML](docs/prd/Sona-PRD.html) include the original selected UI figures.
 The [execution log](docs/implementation/execution-log.md) records implementation decisions.
 The [editorial record](docs/prd/language-review.md) describes the PRD review against ASD-STE100 Issue 9.
