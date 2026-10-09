@@ -185,7 +185,12 @@ describe("local server integration", { timeout: 20000 }, () => {
     expect(saved.statusCode).toBe(200);
     expect(saved.headers["cache-control"]).toBe("no-store");
     expect(saved.json()).toEqual({
-      openai: { configured: true, source: "session", storage: "memory" },
+      openai: {
+        configured: true,
+        source: "session",
+        storage: "memory",
+        verification: { state: "unchecked", checkedAt: null, reason: null },
+      },
     });
     expect(saved.body).not.toContain(key);
     expect(voice.configured).toBe(true);
@@ -213,6 +218,151 @@ describe("local server integration", { timeout: 20000 }, () => {
     pending.push({ app: restarted.app, dir });
     expect(restarted.voice.configured).toBe(false);
     expect(restarted.store.agents.get(agent.id).name).toBe("GUI fixture");
+  });
+  it("checks the current GUI key without model execution, disclosure, or persisted access claims", async () => {
+    const { request, app, store, dir } = await setup();
+    const key = "sk-proj-synthetic_verify_HTTP_canary";
+    const modelId = "model_identifier_private_fixture";
+    const fetch = vi.fn(async (url, init) => {
+      if (url === "data:,") return new Response("");
+      expect(String(url)).toBe("https://api.openai.com/v1/models");
+      expect(new Headers(init.headers).get("authorization")).toBe(
+        `Bearer ${key}`,
+      );
+      return new Response(
+        JSON.stringify({
+          object: "list",
+          data: [
+            { id: modelId, object: "model", created: 0, owned_by: "fixture" },
+          ],
+        }),
+        {
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": `private_${key}`,
+          },
+        },
+      );
+    });
+    vi.stubGlobal("fetch", fetch);
+    await request("PUT", "/api/settings/credentials/openai", { apiKey: key });
+    expect(fetch).not.toHaveBeenCalled();
+    const verified = await request(
+      "POST",
+      "/api/settings/credentials/openai/verify",
+    );
+    expect(verified.statusCode).toBe(200);
+    expect(verified.headers["cache-control"]).toBe("no-store");
+    expect(verified.json().openai.verification).toEqual({
+      state: "verified",
+      checkedAt: expect.any(String),
+      reason: null,
+    });
+    expect(verified.body).not.toContain(key);
+    expect(verified.body).not.toContain(modelId);
+    const boot = (await request("GET", "/api/bootstrap")).json();
+    expect(boot.credentials).toEqual(verified.json());
+    expect(boot.readiness.modelsVerified).toEqual([]);
+    expect(store.metadata.get("verifiedModels")).toEqual([]);
+    expect(store.metadata.list("verification")).toEqual([]);
+    const removed = await request("DELETE", "/api/settings/credentials/openai");
+    expect(removed.json().openai.verification.state).toBe("unchecked");
+    await app.close();
+    for (const file of readdirSync(dir)) {
+      const content = readFileSync(join(dir, file));
+      expect(content.includes(Buffer.from(key)), file).toBe(false);
+      expect(content.includes(Buffer.from(modelId)), file).toBe(false);
+    }
+    const restarted = await createApp({ dataDir: dir, port: 4317, env: {} });
+    pending.push({ app: restarted.app, dir });
+    const status = await restarted.app.inject({
+      url: "/api/bootstrap",
+      headers: { host: "127.0.0.1:4317" },
+    });
+    expect(status.json().credentials.openai.verification).toEqual({
+      state: "unchecked",
+      checkedAt: null,
+      reason: null,
+    });
+  });
+  it("protects the key check route and rejects checks without a saved key", async () => {
+    const { request, app, headers } = await setup();
+    const fetch = vi.fn();
+    vi.stubGlobal("fetch", fetch);
+    expect(
+      (
+        await app.inject({
+          method: "POST",
+          url: "/api/settings/credentials/openai/verify",
+          headers: { host: headers.host },
+        })
+      ).statusCode,
+    ).toBe(401);
+    expect(
+      (
+        await app.inject({
+          method: "POST",
+          url: "/api/settings/credentials/openai/verify",
+          headers: { ...headers, origin: "https://unrelated.example" },
+        })
+      ).statusCode,
+    ).toBe(403);
+    const missing = await request(
+      "POST",
+      "/api/settings/credentials/openai/verify",
+      { apiKey: "sk-proj-synthetic_body_must_not_be_used" },
+    );
+    expect(missing.statusCode).toBe(400);
+    expect(missing.json().code).toBe("MISSING_PROJECT_API_KEY");
+    expect(fetch).not.toHaveBeenCalled();
+  });
+  it("coalesces simultaneous HTTP key checks and holds the key lease until completion", async () => {
+    const { request } = await setup();
+    let started!: () => void;
+    const fetched = new Promise<void>((resolve) => {
+      started = resolve;
+    });
+    let complete!: (response: Response) => void;
+    const fetch = vi.fn((url) => {
+      if (url === "data:,") return Promise.resolve(new Response(""));
+      started();
+      return new Promise<Response>((resolve) => {
+        complete = resolve;
+      });
+    });
+    vi.stubGlobal("fetch", fetch);
+    await request("PUT", "/api/settings/credentials/openai", {
+      apiKey: "sk-proj-synthetic_coalesced_check",
+    });
+    const a = Promise.resolve(
+      request("POST", "/api/settings/credentials/openai/verify"),
+    );
+    await fetched;
+    expect(
+      (await request("GET", "/api/settings/credentials")).json().openai
+        .verification.state,
+    ).toBe("checking");
+    expect(
+      (await request("DELETE", "/api/settings/credentials/openai")).json().code,
+    ).toBe("CREDENTIAL_IN_USE");
+    const b = Promise.resolve(
+      request("POST", "/api/settings/credentials/openai/verify"),
+    );
+    complete(
+      new Response(JSON.stringify({ object: "list", data: [] }), {
+        headers: { "content-type": "application/json" },
+      }),
+    );
+    const results = await Promise.all([a, b]);
+    expect(
+      results.map((result) => result.json().openai.verification.state),
+    ).toEqual(["verified", "verified"]);
+    expect(fetch.mock.calls.filter(([url]) => url !== "data:,")).toHaveLength(
+      1,
+    );
+    expect(
+      (await request("DELETE", "/api/settings/credentials/openai")).statusCode,
+    ).toBe(200);
   });
   it("protects GUI key changes from untrusted browsers and blocks replacement until a quick test ends", async () => {
     const { app, request, headers } = await setup();

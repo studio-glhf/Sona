@@ -512,6 +512,9 @@ export async function createApp(options: AppOptions) {
       );
   });
   app.get("/api/settings/credentials", async () => credentials.status());
+  app.post("/api/settings/credentials/openai/verify", async () =>
+    credentials.verify(),
+  );
   app.put("/api/settings/credentials/openai", async (req) => {
     const result = credentials.set(body(req).apiKey);
     verifiedModels.clear();

@@ -1,4 +1,15 @@
 import { redact } from "../../../packages/agent-core/src/index.js";
+import {
+  verifyOpenAIKey,
+  type KeyVerificationOutcome,
+  type KeyVerificationReason,
+} from "./key-verification.js";
+
+export interface KeyVerification {
+  state: "unchecked" | "checking" | "verified" | "rejected" | "unavailable";
+  checkedAt: string | null;
+  reason: KeyVerificationReason | null;
+}
 
 /** Project credentials belong to this server run, never the study database. */
 export class SessionCredentials {
@@ -7,6 +18,15 @@ export class SessionCredentials {
   private retired = new Set<string>();
   private leases = 0;
   private isBusy = () => false;
+  private generation = 0;
+  private verification: KeyVerification = {
+    state: "unchecked",
+    checkedAt: null,
+    reason: null,
+  };
+  private pendingVerification?: Promise<
+    ReturnType<SessionCredentials["status"]>
+  >;
   constructor(private readonly env: NodeJS.ProcessEnv) {
     this.project = env.OPENAI_API_KEY || undefined;
     this.source = this.project ? "environment" : "none";
@@ -35,6 +55,7 @@ export class SessionCredentials {
         configured: Boolean(this.project),
         source: this.source,
         storage: "memory" as const,
+        verification: { ...this.verification },
       },
     };
   }
@@ -64,6 +85,7 @@ export class SessionCredentials {
     this.project = apiKey;
     this.retired.add(apiKey);
     this.source = "session";
+    this.resetVerification();
     return this.status();
   }
   remove() {
@@ -71,7 +93,50 @@ export class SessionCredentials {
     // Never fall back to a preseeded environment key after an explicit removal.
     this.project = undefined;
     this.source = "none";
+    this.resetVerification();
     return this.status();
+  }
+  private resetVerification() {
+    this.generation++;
+    this.verification = { state: "unchecked", checkedAt: null, reason: null };
+    this.pendingVerification = undefined;
+  }
+  verify(
+    check: (
+      apiKey: string,
+    ) => Promise<KeyVerificationOutcome> = verifyOpenAIKey,
+  ): Promise<ReturnType<SessionCredentials["status"]>> {
+    if (this.pendingVerification) return this.pendingVerification;
+    if (!this.project)
+      throw Object.assign(new Error("Add an OpenAI project API key first."), {
+        statusCode: 400,
+        code: "MISSING_PROJECT_API_KEY",
+      });
+    const generation = this.generation;
+    const lease = this.acquire();
+    this.verification = { state: "checking", checkedAt: null, reason: null };
+    const pending = Promise.resolve()
+      .then(() => check(lease.credentials.project!))
+      .then(
+        (outcome) => outcome,
+        // This also protects against an unexpected checker failure.
+        () => ({ state: "unavailable", reason: "response" }) as const,
+      )
+      .then((outcome) => {
+        if (generation === this.generation)
+          this.verification = {
+            ...outcome,
+            checkedAt: new Date().toISOString(),
+          };
+        return this.status();
+      })
+      .finally(() => {
+        lease.release();
+        if (this.pendingVerification === pending)
+          this.pendingVerification = undefined;
+      });
+    this.pendingVerification = pending;
+    return pending;
   }
   acquire() {
     this.leases++;
@@ -93,5 +158,6 @@ export class SessionCredentials {
     this.project = undefined;
     this.retired.clear();
     this.source = "none";
+    this.resetVerification();
   }
 }
