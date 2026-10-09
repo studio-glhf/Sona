@@ -1434,6 +1434,9 @@ button svg {
 .credential-status .connected {
   background: #42cba4;
 }
+.credential-status .rejected {
+  background: #ffaeba;
+}
 .settings-section form {
   max-width: 560px;
 }

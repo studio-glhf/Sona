@@ -4,9 +4,7 @@ test("researcher defaults, agent revisions, fixed draft, export and restart", as
   page,
 }) => {
   await page.goto("/");
-  await page
-    .getByRole("button", { name: "Create an agent", exact: true })
-    .click();
+  await page.getByRole("button", { name: "New agent", exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Agent controls" }),
   ).toBeVisible();
@@ -289,6 +287,21 @@ test("Settings adds and removes a server-memory API key without browser storage"
 }) => {
   const canary =
     "sk-proj-SonaGuiSyntheticKeyNeverUsedForProviderCalls1234567890";
+  // This lifecycle test never sends its synthetic key to OpenAI. Dedicated
+  // server transport fixtures and key-verification workflows cover the check.
+  await page.route("**/api/settings/credentials/openai/verify", (route) =>
+    route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        openai: {
+          configured: true,
+          source: "session",
+          storage: "memory",
+          verification: { state: "unchecked", checkedAt: null, reason: null },
+        },
+      }),
+    }),
+  );
   await page.goto("/");
   const creation = page.waitForResponse(
     (r) =>
@@ -372,7 +385,7 @@ test("Settings adds and removes a server-memory API key without browser storage"
     expect(await response.text()).not.toContain(canary);
     await expect(field).toHaveValue("");
     await expect(
-      settings.getByText("API key added", { exact: true }),
+      settings.getByText("API key added · Not checked", { exact: true }),
     ).toBeVisible();
     await expect(
       settings.getByText("API key saved for this Sona run.", { exact: true }),
@@ -391,7 +404,7 @@ test("Settings adds and removes a server-memory API key without browser storage"
     ).toHaveCount(0);
     await page.getByRole("button", { name: "Settings", exact: true }).click();
     await expect(
-      settings.getByText("API key added", { exact: true }),
+      settings.getByText("API key added · Not checked", { exact: true }),
     ).toBeVisible();
     await page.unroute(bootstrapRoute);
     const bootstrap = await (await page.request.get("/api/bootstrap")).json();
@@ -405,7 +418,7 @@ test("Settings adds and removes a server-memory API key without browser storage"
     await page.reload();
     await page.getByRole("button", { name: "Settings", exact: true }).click();
     await expect(
-      settings.getByText("API key added", { exact: true }),
+      settings.getByText("API key added · Not checked", { exact: true }),
     ).toBeVisible();
     await expect(
       page.getByLabel("OpenAI API key", { exact: true }),

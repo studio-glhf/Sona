@@ -64,7 +64,7 @@ export function runtimeSessionMemory(actionJournal: ActionJournal) {
         snapshot: {
           configuration: structuredClone(config),
           configurationHash: canonicalHash(config),
-          versions: { runtime: "1.1.0", ...versions },
+          versions: { runtime: "1.1.1", ...versions },
           devices: {},
           rawAudio: false,
         },

@@ -5,9 +5,10 @@
 Sona local v1 is implemented. Local automated checks and release installation checks are recorded separately from real service results.
 The evidence does not support the status **Production-ready local v1**.
 
-Application version: `1.1.0`. Review date: 9 October 2026, Asia/Seoul.
+Application version: `1.1.1`. Review date: 9 October 2026, Asia/Seoul.
 Product authority: PRD 1.0 and [the user's later interface update](../implementation/workspace-refinement.md).
-Capability revision: `openai-2026-10-06-491c868adbdb`. This interface update does not claim a new API source retrieval.
+Capability revision: `openai-2026-10-06-491c868adbdb`. The full API catalog keeps this source revision.
+The [key-check sources](../implementation/KEY-VERIFICATION-SOURCES.md) were retrieved separately on 9 October.
 The archive manifest identifies all source and build files, including uncommitted work.
 
 ## Build gates
@@ -46,6 +47,9 @@ It does not prove installation by another person.
 ## Interface update
 
 Settings accepts the OpenAI project key. The server keeps it in memory until restart.
+Settings checks the key with an authenticated model-list read and shows progress and the result.
+Model-list acceptance does not prove voice permissions or billing credit. No live key was available for this update.
+Devices reports the microphone permission result in the dialog. Its new browser tests use synthetic media.
 The Data policy editor and Voice processing notice are removed. Study agreement remains explicit.
 The quieter workspace keeps all researcher controls and evidence.
 

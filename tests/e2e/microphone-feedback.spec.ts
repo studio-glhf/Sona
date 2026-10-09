@@ -139,6 +139,10 @@ test("microphone check shows checking and success, checks selected input, and re
     .withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"])
     .analyze();
   expect(result.violations).toEqual([]);
+  await page.screenshot({
+    path: "docs/verification/microphone-success-fixture-1440.png",
+    fullPage: true,
+  });
 });
 
 for (const [errorName, guidance] of [

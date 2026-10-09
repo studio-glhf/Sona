@@ -1,6 +1,6 @@
 # Requirement evidence
 
-Application version: `1.1.0`. Product authority: PRD 1.0 and [the user's interface update](../implementation/workspace-refinement.md).
+Application version: `1.1.1`. Product authority: PRD 1.0 and [the user's interface update](../implementation/workspace-refinement.md).
 Capability revision: `openai-2026-10-06-491c868adbdb`.
 
 An automated fixture is a synthetic service or evidence record used by a test.
@@ -39,7 +39,7 @@ The reviewed feature history and final integration branch identify the current a
 ## Evidence files
 
 - [Unit and integration results](unit-results.json): synthetic records and service contracts.
-- [Browser results](browser-results.json): Linux headless Chromium, nine workflows.
+- [Browser results](browser-results.json): Linux headless Chromium; includes key-check and microphone-feedback fixtures.
 - [Interface review](../../design-qa.md) and [rendered screen results](design-review-results.json).
 - [API operation coverage](api-coverage.json) and [parameter coverage](api-parameters.json).
 - [Live prerequisite results](live-results.json): local runtime checks and blocked external gates.
@@ -57,3 +57,13 @@ The baseline pull request passes automated checks on Ubuntu, Windows, and macOS.
 The initial feature Windows test failed during fixture cleanup. A restarted fixture still held the same SQLite directory.
 The repair closes all fixture applications before directory deletion. It preserves the test assertions.
 The GitHub delivery record gives the final feature check state. These CI results are separate from physical laptop and participant checks.
+
+## Settings feedback evidence
+
+`WorkspaceSettings.tsx` shows the automatic key-check result and retry control.
+`key-verification.ts` uses OpenAI's documented model-list request and safe error classes.
+Credential and server tests cover the verification lease, reset, route protection, response validation, and secret redaction.
+`key-verification.spec.ts` covers progress, result states, retry, polling, and safe transport failure.
+
+`components.tsx` reports microphone access in Devices. `microphone-feedback.spec.ts` checks the selected device, failures, and temporary-track cleanup.
+The fixtures do not verify physical microphone access or a live OpenAI key.

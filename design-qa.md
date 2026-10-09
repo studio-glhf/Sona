@@ -80,3 +80,20 @@ The compact drawer close control can receive further visual refinement after lap
 These are P3 improvements. They do not block the examined layout.
 
 final result: passed
+# Settings feedback review — 9 October 2026
+
+The selected dark layout remains unchanged. Both result areas stay beside the control that starts the check.
+The key check uses a quiet status dot and short result text. Only verified access has a green dot.
+Failure text does not expose provider or browser diagnostics. Retry stays available after a failed check.
+The Devices dialog shows microphone progress and recovery guidance in an accessible live region.
+
+Actual Chromium captures:
+
+- [Verified key result, 1440 pixels](docs/verification/settings-key-verified-fixture-1440.png).
+- [Verified key result, 1280 pixels](docs/verification/settings-key-verified-fixture-1280.png).
+- [Rejected key result](docs/verification/settings-key-rejected-fixture-1440.png).
+- [Microphone result](docs/verification/microphone-success-fixture-1440.png).
+
+The main agent inspected these rendered screens. Spacing, text, status, and controls remain readable.
+Automated accessibility checks pass for the key-result page and microphone dialog in the selected WCAG tags.
+The captures use explicit response and media fixtures. They do not prove a live key or physical microphone result.

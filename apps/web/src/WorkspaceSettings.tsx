@@ -6,6 +6,19 @@ type CredentialStatus = {
   configured: boolean;
   source: "session" | "environment" | "none";
   storage: "memory";
+  verification?: {
+    state: "unchecked" | "checking" | "verified" | "rejected" | "unavailable";
+    checkedAt: string | null;
+    reason:
+      | "authentication"
+      | "permission"
+      | "rate_limit"
+      | "timeout"
+      | "network"
+      | "service"
+      | "response"
+      | null;
+  };
 };
 
 export function WorkspaceSettings({
@@ -26,10 +39,15 @@ export function WorkspaceSettings({
   const [credential, setCredential] = useState<CredentialStatus | null>(null);
   const [key, setKey] = useState("");
   const [busy, setBusy] = useState(false);
+  const [checking, setChecking] = useState(false);
+  const [checkError, setCheckError] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [refreshHint, setRefreshHint] = useState("");
   const keyInput = useRef<HTMLInputElement>(null);
+  const checkingRef = useRef(false);
+  const verification = credential?.verification;
+  const isChecking = checking || verification?.state === "checking";
   useEffect(() => {
     if (credential && !credential.configured) keyInput.current?.focus();
   }, [credential?.configured]);
@@ -49,14 +67,79 @@ export function WorkspaceSettings({
       mounted = false;
     };
   }, []);
+  useEffect(() => {
+    if (verification?.state !== "checking") return;
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      void api("/settings/credentials")
+        .then((result) => {
+          if (!cancelled) setCredential(result.openai);
+        })
+        .catch(() => {
+          if (!cancelled) {
+            setCredential((previous) =>
+              previous
+                ? {
+                    ...previous,
+                    verification: {
+                      state: "unavailable",
+                      checkedAt: null,
+                      reason: null,
+                    },
+                  }
+                : previous,
+            );
+            setCheckError("Could not complete the API key check. Try again.");
+          }
+        });
+    }, 500);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [verification]);
+  const verifyKey = async () => {
+    if (checkingRef.current) return;
+    checkingRef.current = true;
+    setChecking(true);
+    setCheckError("");
+    try {
+      const result = await api(
+        "/settings/credentials/openai/verify",
+        undefined,
+        "POST",
+      );
+      setCredential(result.openai);
+    } catch {
+      // A local transport failure does not establish that OpenAI rejected the key.
+      setCredential((previous) =>
+        previous
+          ? {
+              ...previous,
+              verification: {
+                state: "unavailable",
+                checkedAt: null,
+                reason: null,
+              },
+            }
+          : previous,
+      );
+      setCheckError("Could not complete the API key check. Try again.");
+    } finally {
+      checkingRef.current = false;
+      setChecking(false);
+    }
+  };
   const changeKey = async (remove = false) => {
-    if (busy || active || !credential || (!remove && !key.trim())) return;
+    if (busy || isChecking || active || !credential || (!remove && !key.trim()))
+      return;
     const apiKey = key.trim();
     setKey("");
     setBusy(true);
     setError("");
     setMessage("");
     setRefreshHint("");
+    setCheckError("");
     try {
       const result = await api(
         "/settings/credentials/openai",
@@ -68,6 +151,7 @@ export function WorkspaceSettings({
       setMessage(
         remove ? "API key removed." : "API key saved for this Sona run.",
       );
+      if (!remove) await verifyKey();
       try {
         await onRefresh();
       } catch {
@@ -92,6 +176,25 @@ export function WorkspaceSettings({
       setBusy(false);
     }
   };
+  const verificationMessage =
+    verification?.state === "verified"
+      ? "OpenAI accepted this key for the model list. Voice access and billing are checked separately."
+      : verification?.state === "rejected"
+        ? "OpenAI rejected this key. Replace it with an active project API key."
+        : verification?.state === "unavailable"
+          ? verification.reason === "permission"
+            ? "This key cannot read the model list. Check its permissions; it may still have access to other APIs."
+            : verification.reason === "rate_limit"
+              ? "OpenAI limited the check. Try again later."
+              : verification.reason === "timeout"
+                ? "OpenAI did not respond in time. Try again."
+                : verification.reason === "network"
+                  ? "Could not reach OpenAI. Check your connection and try again."
+                  : verification.reason === "service" ||
+                      verification.reason === "response"
+                    ? "OpenAI could not complete the check. Try again later."
+                    : "The check did not complete. Try again."
+          : "This key is saved. Check it to confirm OpenAI access.";
   return (
     <div className="page settings-page">
       <header className="page-header">
@@ -116,14 +219,22 @@ export function WorkspaceSettings({
             </p>
           </div>
         </div>
-        <div className="credential-status" role="status">
+        <div className="credential-status" role="status" aria-live="polite">
           <span
-            className={`status-dot ${credential?.configured ? "connected" : "unconfigured"}`}
+            className={`status-dot ${credential?.configured && verification?.state === "verified" && !isChecking ? "connected" : verification?.state === "rejected" && !isChecking ? "rejected" : "unconfigured"}`}
           />
           {credential === null
             ? "Loading key settings…"
             : credential.configured
-              ? "API key added"
+              ? isChecking
+                ? "Checking API key…"
+                : verification?.state === "verified"
+                  ? "API key verified"
+                  : verification?.state === "rejected"
+                    ? "API key rejected"
+                    : verification?.state === "unavailable"
+                      ? "API key added · Could not verify"
+                      : "API key added · Not checked"
               : "No API key added"}
         </div>
         <form
@@ -148,7 +259,7 @@ export function WorkspaceSettings({
                   : "Enter your API key"
               }
               value={key}
-              disabled={busy || active || credential === null}
+              disabled={busy || isChecking || active || credential === null}
               onChange={(event) => {
                 setKey(event.target.value);
                 setError("");
@@ -166,7 +277,13 @@ export function WorkspaceSettings({
             <button
               className="primary"
               type="submit"
-              disabled={busy || active || credential === null || !key.trim()}
+              disabled={
+                busy ||
+                isChecking ||
+                active ||
+                credential === null ||
+                !key.trim()
+              }
             >
               {busy ? "Updating…" : "Save key"}
             </button>
@@ -174,10 +291,20 @@ export function WorkspaceSettings({
               <button
                 type="button"
                 className="text-button"
-                disabled={busy || active}
+                disabled={busy || isChecking || active}
                 onClick={() => void changeKey(true)}
               >
                 Remove key
+              </button>
+            )}
+            {credential?.configured && (
+              <button
+                type="button"
+                className="text-button"
+                disabled={busy || isChecking}
+                onClick={() => void verifyKey()}
+              >
+                {isChecking ? "Checking…" : "Check key"}
               </button>
             )}
             <a
@@ -200,6 +327,23 @@ export function WorkspaceSettings({
             {error}
           </p>
         )}
+        {credential?.configured && !isChecking && (
+          <p
+            className={
+              verification?.state === "rejected"
+                ? "error-text"
+                : "settings-feedback"
+            }
+            role={verification?.state === "rejected" ? "alert" : "status"}
+          >
+            {verificationMessage}
+          </p>
+        )}
+        {checkError && (
+          <p className="error-text" role="alert">
+            {checkError}
+          </p>
+        )}
         {message && (
           <p className="settings-feedback" role="status">
             {message}
@@ -211,8 +355,8 @@ export function WorkspaceSettings({
           </p>
         )}
         <p className="settings-footnote">
-          API use is billed separately from ChatGPT. Saving a key does not
-          verify model access.
+          API use is billed separately from ChatGPT. The key check reads the
+          model list and does not generate a model response.
         </p>
       </section>
       <section

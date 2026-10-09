@@ -45,9 +45,13 @@ pnpm start
 Start Sona without an environment file. Open **Settings**, enter your OpenAI project API key, then select **Save key**.
 
 Sona holds the key in local server memory until the server stops. It does not save the key in the browser, the study database, configurations, logs, or exports.
-The form clears after submission. It shows whether a key is present; it does not return the key.
+The form clears after submission. It shows the key's verification status; it does not return the key.
 
-Saving checks the key format. It does not call OpenAI or confirm project access. A voice or API request must establish that access separately.
+Saving checks the format, then requests OpenAI's model list. The check does not generate a model response.
+**API key verified** means OpenAI accepted the key for this request. Voice access and billing need separate checks.
+**API key rejected** means OpenAI returned an authentication error. Replace the key with an active project key.
+**Could not verify** means permission, network, or service conditions prevented the check. It does not establish that the key is invalid.
+Select **Check key** to try again. Each check has a ten-second limit and no automatic retry.
 
 To replace or remove the key, first end active tests and API operations. Select **Remove key** to disable OpenAI access for the current run.
 Removing a key also disables any legacy environment seed. It does not fall back to that seed until a server restart.
@@ -87,6 +91,7 @@ No connection from the coding assistant transfers to Sona. Use Sona's supported 
 
 1. Open **Settings**, enter your project API key, and select **Save key**.
 2. Open **Devices** and select the microphone.
+   Select **Check microphone permission** to test access. The dialog shows the result and releases the temporary microphone stream.
 3. Select the output, if Chrome permits output selection.
 4. If the selector shows **System output**, select the output in the operating system.
 5. Add an agent or import `sona-agent.json`.

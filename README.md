@@ -15,6 +15,7 @@ pnpm start
 Open `http://127.0.0.1:4317` in desktop Chrome. The release archive includes a build, so it does not need another build before startup.
 
 Open **Settings**, enter your OpenAI API key, then select **Save key**. Sona keeps the key in local server memory until Sona restarts.
+Sona checks the key with OpenAI and shows the result. This check does not confirm voice access or billing credit.
 
 Read the [setup guide](docs/setup/README.md) for private credential bindings, Google authorization, devices, data storage, and troubleshooting.
 

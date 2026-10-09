@@ -30,3 +30,18 @@ Browser checks must cover the original research workflows, keyboard use, automat
 
 Synthetic credentials test application behavior. They do not prove real OpenAI access or voice quality.
 Real voice, Calendar, account reuse, and physical-device gates retain their separate status.
+
+## Settings feedback update
+
+Application version: `1.1.1`.
+
+**Check microphone permission** reports checking, success, or recovery guidance inside the Devices dialog.
+It checks the selected microphone and releases the temporary stream. It does not start a voice session or upload audio.
+
+**Save key** saves the credential, then checks it with OpenAI's authenticated model-list request.
+Settings shows **API key verified**, **API key rejected**, or **Could not verify**.
+An unchecked key has a separate status. Select **Check key** to repeat the check.
+Permission and service failures do not establish an invalid key. Voice and billing access need separate checks.
+
+The [official source record](KEY-VERIFICATION-SOURCES.md) defines the contract and its limits.
+The key and verification result remain in server memory. Removing the key or restarting Sona resets the result.

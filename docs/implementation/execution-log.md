@@ -207,3 +207,43 @@ Current local setup and application checks remain usable. Draft persistence is n
 The release status remains **Release candidate — verification blocked**.
 Real voice, Calendar, ChatGPT connection reuse, physical devices, and representative-user checks retain their stated prerequisites.
 No credential, participant record, private STE source, or environment file enters the release archive.
+
+## Settings feedback update — 9 October 2026
+
+The user reported no visible microphone-check result and requested verification after GUI key entry.
+This change uses version `1.1.1`. It preserves the selected layout and the `v1.0.0` starting point.
+
+The main agent reviewed microphone commit `feeb212a69cc045f86954c75fa8d68d45a208e80` and key-check commit `bc5927b9074713bffdf456f2fcab7125c4ca7cb9`.
+Both subagents created feature pull requests. PR 19 and PR 20 pass Ubuntu, Windows, and macOS CI.
+Local supervisor acceptance does not represent a formal GitHub self-approval. No merge into protected `main` occurs.
+
+Devices now reports progress, permission success, and safe recovery guidance in the dialog.
+The check uses the selected microphone and releases temporary tracks after completion or a late dialog-close response.
+It does not use the active voice stream or send audio to a provider.
+
+The official OpenAI specification supports an authenticated `GET /v1/models` read.
+The server uses the official SDK, pins the API origin, limits the check to ten seconds, and disables retries.
+HTTP 200 confirms acceptance for that read. HTTP 401 reports authentication rejection.
+Permission, rate-limit, network, and service failures report an unavailable check.
+No result establishes voice permission or billing credit. The separate model-access evidence remains unchanged.
+The source record and operation excerpt are in `docs/implementation/KEY-VERIFICATION-SOURCES.md` and `key-verification-source.json`.
+
+Settings starts the check after Save. It also provides a retry control and restores an ongoing result when reopened.
+The credential and result remain in server memory. Key replacement, removal, and server restart reset verification.
+The protected verification request carries no key in its browser request body.
+Synthetic-key browser tests intercept verification explicitly. No test credential reaches OpenAI.
+
+TypeScript and the production build pass. All 165 unit/integration tests pass in nine files.
+All 30 Chromium workflows pass, including 11 key-check workflows, ten microphone workflows, and nine existing regressions.
+The initial focused run found a test assertion that expected a boolean for the model-access list.
+The corrected assertion requires an empty list. The full run passes with this contract check intact.
+The baseline workflow now creates its own agent and does not depend on an empty database from test-file order.
+
+Actual Settings captures were inspected at 1440 and 1280 pixels. The microphone dialog capture was also inspected.
+Key-result and Devices accessibility checks pass in the selected automated tags.
+These checks use explicit service and media fixtures. Real key validation and physical microphone operation remain unverified.
+The supplied writing standard guides editorial judgment. No language checker or automated compliance score runs.
+
+The release status remains **Release candidate — verification blocked**.
+The user laptop and its browser session are not available through this cloud localhost.
+No existing user server is restarted. The release archive provides the updated build and setup instructions.

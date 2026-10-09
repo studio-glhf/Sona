@@ -19,9 +19,12 @@ The local `release/sona-1.0.0-local.tar.gz` archive remains available.
 | [#16](https://github.com/studio-glhf/Sona/pull/16) | Local v1.0.0 starting point | `main` |
 | [#17](https://github.com/studio-glhf/Sona/pull/17) | Project key routes and dynamic credential binding | `codex/sona-local-v1` |
 | [#18](https://github.com/studio-glhf/Sona/pull/18) | GUI key form, simpler flows, refined workspace, and final release evidence | `codex/gui-credentials` |
+| [#19](https://github.com/studio-glhf/Sona/pull/19) | Visible microphone-check results | `codex/sona-refinement` |
+| [#20](https://github.com/studio-glhf/Sona/pull/20) | Safe server-side OpenAI key verification | `codex/sona-refinement` |
 
 Subagents created the pull requests. The main agent reviewed the changes and the combined tests.
-The final application branch is `codex/sona-refinement`. Its tested integration also advances the UI branch without a force push.
+The interface release is on `codex/sona-refinement`. The Settings feedback integration uses `codex/settings-validation`.
+Earlier branches and the starting-point tag remain available. No force push occurs.
 The release manifest records the exact source revision and file hashes.
 
 The credential subagent's repair commit is `35f079d1ee1c06245d5c661ff610c18dc28a52fc`.
@@ -33,7 +36,7 @@ Both remain in the integration history.
 GitHub protects `main`. The initial direct push was rejected because a pull request and required checks are necessary.
 The agent did not change the protections. No pull request is merged by this build task.
 
-The authenticated account and all three pull-request authors are `htcrefactor`.
+The authenticated account and the pull-request authors are `htcrefactor`.
 GitHub does not permit self-approval. The main agent's code acceptance does not represent a GitHub APPROVED review.
 Another authorized reviewer or the repository's normal review process must satisfy those rules.
 
@@ -43,7 +46,9 @@ Baseline CI passes on Ubuntu, Windows, and macOS.
 Initial feature Windows CI found a fixture-cleanup error. The fixture closed one application before deleting a directory shared by another application.
 The repair closes all applications before deleting unique directories. It keeps all credential and restart assertions.
 
-The final PR check results are recorded in GitHub. Local evidence includes 145 unit/integration tests and nine browser workflows.
+The version 1.1.0 release passed 145 unit/integration tests and nine browser workflows.
+The version 1.1.1 results are in the current verification summary.
+Microphone PR 19 and key-check PR 20 pass Ubuntu, Windows, and macOS CI at their reviewed heads.
 CI and headless browser checks do not prove physical microphone, speaker, Calendar, or participant operation.
 
 ## Cloud configuration

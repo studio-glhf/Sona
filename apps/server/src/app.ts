@@ -166,12 +166,12 @@ export async function createApp(options: AppOptions) {
   });
   app.get("/api/health", async () => ({
     status: "ok",
-    version: "1.1.0",
+    version: "1.1.1",
     databaseSchema: store.schemaVersion,
   }));
   app.get("/api/bootstrap", async (req, reply) => ({
     csrfToken: security.bootstrap(req, reply),
-    version: "1.1.0",
+    version: "1.1.1",
     agents: store.agents.list(),
     studies: store.studies.list(),
     sessions: store.sessions.list().map(info),
@@ -430,7 +430,7 @@ export async function createApp(options: AppOptions) {
         processingAccepted: input.processingAccepted === true,
         devices: input.devices,
         versions: {
-          application: "1.1.0",
+          application: "1.1.1",
           capability: CAPABILITY_REVISION,
           node: process.version,
           openaiSdk: "7.28.0",
