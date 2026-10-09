@@ -19,7 +19,12 @@ export async function verifyOpenAIKey(
 ): Promise<KeyVerificationOutcome> {
   const deadline = AbortSignal.timeout(10_000);
   try {
-    const client = new OpenAI({ apiKey, timeout: 10_000, maxRetries: 0 });
+    const client = new OpenAI({
+      apiKey,
+      baseURL: "https://api.openai.com/v1",
+      timeout: 10_000,
+      maxRetries: 0,
+    });
     const response = await client.models
       .list({ signal: deadline })
       .asResponse();
