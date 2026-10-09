@@ -10,10 +10,10 @@ const pending: { app: any; dir: string }[] = [];
 afterEach(async () => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
-  for (const p of pending.splice(0)) {
-    await p.app.close();
-    rmSync(p.dir, { recursive: true, force: true });
-  }
+  const resources = pending.splice(0);
+  for (const { app } of resources) await app.close();
+  for (const dir of new Set(resources.map(({ dir }) => dir)))
+    rmSync(dir, { recursive: true, force: true });
 });
 async function setup(key = "") {
   const dir = mkdtempSync(join(tmpdir(), "sona-http-"));
