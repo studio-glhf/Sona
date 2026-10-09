@@ -3,6 +3,23 @@
 Repository: [studio-glhf/Sona](https://github.com/studio-glhf/Sona).
 Review date: 9 October 2026, Asia/Seoul.
 
+## Default-branch delivery
+
+The user authorized completion of the pull requests and integration into `main` after the local release.
+[PR 21](https://github.com/studio-glhf/Sona/pull/21) now targets `main` and contains the complete reviewed version 1.1.1.
+It includes the baseline and all feature commits from PRs 16–20.
+
+The branch protection requires checks named `quality` and `browser`.
+The platform matrix alone did not produce these names. The workflow now supplies both checks.
+`quality` requires successful type, unit, and build checks on Ubuntu, Windows, and macOS.
+`browser` runs the 30 Chromium workflows with an installed Playwright browser.
+No required check is removed. No successful status is fabricated.
+
+The repository permits squash merges only. A normal merge of PR 21 integrates the complete application in one operation.
+Earlier feature PRs can then close as superseded. Their branch history and the `v1.0.0` tag remain available.
+Final merge and closure results are recorded in `release/main-integration.json`, outside the archive.
+The sections below record the earlier build and its original stacked review order.
+
 ## Preserved starting point
 
 The user requested a commit and push before feature changes.
@@ -21,7 +38,7 @@ The local `release/sona-1.0.0-local.tar.gz` archive remains available.
 | [#18](https://github.com/studio-glhf/Sona/pull/18) | GUI key form, simpler flows, refined workspace, and final release evidence | `codex/gui-credentials` |
 | [#19](https://github.com/studio-glhf/Sona/pull/19) | Visible microphone-check results | `codex/sona-refinement` |
 | [#20](https://github.com/studio-glhf/Sona/pull/20) | Safe server-side OpenAI key verification | `codex/sona-refinement` |
-| [#21](https://github.com/studio-glhf/Sona/pull/21) | Reviewed Settings integration, UI results, regression tests, and version 1.1.1 | `codex/sona-refinement` |
+| [#21](https://github.com/studio-glhf/Sona/pull/21) | Complete reviewed local application, including Settings integration and version 1.1.1 | `main` |
 
 Subagents created the pull requests. The main agent reviewed the changes and the combined tests.
 The interface release is on `codex/sona-refinement`. The Settings feedback integration uses `codex/settings-validation`.

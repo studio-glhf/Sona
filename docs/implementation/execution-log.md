@@ -255,3 +255,25 @@ The release commands are `pnpm package` and `pnpm verify:release` with the exist
 `release/settings-github-verification.json` records final GitHub CI for the published head.
 These reports remain outside the archive. The archive manifest records the final source revision and per-file hashes.
 The earlier 1.0.0 and 1.1.0 archives remain available.
+
+## Default-branch integration — 9 October 2026, Asia/Seoul
+
+The user requested pushed code and completed pull requests on the default branch.
+This request authorizes a normal GitHub merge after the required checks pass.
+The complete reviewed application is already pushed. Earlier feature PRs target feature branches rather than `main`.
+
+Inspection found that `main` requires `quality` and `browser` status checks.
+The current three-platform workflow passes but supplies different check names.
+The workflow now supplies a `quality` job that requires every platform result to pass.
+A separate `browser` job builds the application and runs the real Chromium test suite with synthetic service/media fixtures.
+The workflow installs the browser and sets its executable path explicitly for GitHub's Ubuntu runner.
+Branch protections remain unchanged. Required statuses are produced by actual jobs.
+
+PR 21 is retargeted to `main`. Its source history contains the baseline and the feature heads from PRs 16–20.
+The repository permits only squash merges. One normal squash merge therefore delivers the complete version 1.1.1.
+Older PRs close as superseded after that merge. No older prototype is merged over the current application.
+`release/main-integration.json` will record the exact final checks, merge commit, default-branch contents, and closed PR states.
+The baseline tag and earlier source branches are retained.
+
+The explicitly requested GitHub plugin is not callable in this session and has no install entry in the current tool catalog.
+The authenticated GitHub CLI uses the available supported connection. It does not request a token or copy cookies.
