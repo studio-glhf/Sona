@@ -5,6 +5,7 @@ const key = "sk-proj-synthetic_verification_transport_canary";
 afterEach(() => {
   vi.useRealTimers();
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 describe("OpenAI model-list key check", () => {
@@ -129,6 +130,24 @@ describe("OpenAI model-list key check", () => {
     expect(await verifyOpenAIKey(key)).toEqual({
       state: "unavailable",
       reason: "response",
+    });
+  });
+
+  it("keeps the saved key on the official API origin despite a base URL environment override", async () => {
+    vi.stubEnv("OPENAI_BASE_URL", "https://unrelated.example/v1");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url) => {
+        if (url === "data:,") return new Response("");
+        expect(String(url)).toBe("https://api.openai.com/v1/models");
+        return new Response(JSON.stringify({ object: "list", data: [] }), {
+          headers: { "content-type": "application/json" },
+        });
+      }),
+    );
+    expect(await verifyOpenAIKey(key)).toEqual({
+      state: "verified",
+      reason: null,
     });
   });
 });
