@@ -247,3 +247,11 @@ The supplied writing standard guides editorial judgment. No language checker or 
 The release status remains **Release candidate — verification blocked**.
 The user laptop and its browser session are not available through this cloud localhost.
 No existing user server is restarted. The release archive provides the updated build and setup instructions.
+
+The publishing subagent created [integration PR 21](https://github.com/studio-glhf/Sona/pull/21) and verified the remote branch.
+The main agent attached all three Settings pull requests to this task.
+The release commands are `pnpm package` and `pnpm verify:release` with the existing writable cloud XDG path.
+`release/installation-report.json` records the exact archive checksum and extracted-install results.
+`release/settings-github-verification.json` records final GitHub CI for the published head.
+These reports remain outside the archive. The archive manifest records the final source revision and per-file hashes.
+The earlier 1.0.0 and 1.1.0 archives remain available.

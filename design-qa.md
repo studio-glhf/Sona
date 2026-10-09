@@ -80,7 +80,10 @@ The compact drawer close control can receive further visual refinement after lap
 These are P3 improvements. They do not block the examined layout.
 
 final result: passed
-# Settings feedback review — 9 October 2026
+
+## Settings feedback review — 9 October 2026
+
+Application version: `1.1.1`. The earlier review above applies to version `1.1.0`.
 
 The selected dark layout remains unchanged. Both result areas stay beside the control that starts the check.
 The key check uses a quiet status dot and short result text. Only verified access has a green dot.

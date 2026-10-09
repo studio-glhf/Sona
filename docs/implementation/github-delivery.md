@@ -21,6 +21,7 @@ The local `release/sona-1.0.0-local.tar.gz` archive remains available.
 | [#18](https://github.com/studio-glhf/Sona/pull/18) | GUI key form, simpler flows, refined workspace, and final release evidence | `codex/gui-credentials` |
 | [#19](https://github.com/studio-glhf/Sona/pull/19) | Visible microphone-check results | `codex/sona-refinement` |
 | [#20](https://github.com/studio-glhf/Sona/pull/20) | Safe server-side OpenAI key verification | `codex/sona-refinement` |
+| [#21](https://github.com/studio-glhf/Sona/pull/21) | Reviewed Settings integration, UI results, regression tests, and version 1.1.1 | `codex/sona-refinement` |
 
 Subagents created the pull requests. The main agent reviewed the changes and the combined tests.
 The interface release is on `codex/sona-refinement`. The Settings feedback integration uses `codex/settings-validation`.
@@ -49,6 +50,8 @@ The repair closes all applications before deleting unique directories. It keeps 
 The version 1.1.0 release passed 145 unit/integration tests and nine browser workflows.
 The version 1.1.1 results are in the current verification summary.
 Microphone PR 19 and key-check PR 20 pass Ubuntu, Windows, and macOS CI at their reviewed heads.
+PR 21 contains the integrated feature commits and main-agent acceptance.
+Its exact-head CI record is in `release/settings-github-verification.json`, outside the archive.
 CI and headless browser checks do not prove physical microphone, speaker, Calendar, or participant operation.
 
 ## Cloud configuration
